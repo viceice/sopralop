@@ -1,0 +1,42 @@
+SoPraLOP
+(c)2007 Michael Kriese & Peer Sterner
+
+
+Version 0.4 - 17.10.2007 (voraussichtlicher Termin)
+-------------------------------------------------------------------------------
+ -	Koordinatensystem hat Einheiten
+ -	Hilflinien für Minimum / Maximum zum Ablesen der Werte an den
+	Koordinaten-Achsen
+ -	Duales Problem kann angezeigt werden
+ -	BugFix: Fehler beim Speichern behoben, welcher zu fehlerhaftem
+	XML-Code führte
+ -	BugFix: Fehler beim Öffnen von Problemen behoben, welcher zu fehler-
+	haftem Laden von Problemen führte
+ - Spezialfälle eines LOP's behandeln
+	
+ -	TODO:
+	+ Korrekte Skalierung des Koordinatensystems
+	+ Hilfe einbauen
+-------------------------------------------------------------------------------
+Version 0.3 - 24.09.2007
+-------------------------------------------------------------------------------
+ - Oberfläche überarbeitet
+ - Einfache LOP's können gelöst werden
+ - Speicherformat angepasst
+ - BugFix: Fehldarstellung des Kegels bei nicht sortierten Vektoren behoben
+ - Migration von Java3D Version 1.5.0 auf 1.5.1
+-------------------------------------------------------------------------------
+Version 0.2 - 30.07.2007
+-------------------------------------------------------------------------------
+ - Umwandlung von Applet zu Webstart-Programm
+ - Oberflaeche komplett ueberarbeitet
+ - Probleme koennen gespeichert & geladen werden
+ - About-Fenster hinzugefuegt
+ - Beispiel-Probleme ladbar
+ - 3D-Fenster laesst sich mit [F5] zuruecksetzen und mit [ESC] schliessen
+-------------------------------------------------------------------------------
+Version 0.1 - 03.06.2007
+-------------------------------------------------------------------------------
+ - Initiale Version (Beta-Status)
+-------------------------------------------------------------------------------
+ 

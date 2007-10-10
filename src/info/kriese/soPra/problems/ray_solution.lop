@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<lop type="max">
+<vectors>
+  <vector x="0/1" y="0/1" z="8/1"  />
+  <vector x="4/1" y="4/1" z="4/1"  />
+  <vector x="2/1" y="-2/1" z="2/1"  />
+  <vector x="2/1" y="0/1" z="2/1"  />
+</vectors>
+<target  x="2/1" y="2/1" z="0/1" />
+<ops x="equal" y="equal"/>
+<sol value="2/1" case="0" />
+</lop>
+
