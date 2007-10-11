@@ -57,8 +57,7 @@ public final class Gauss {
      * 
      * @return - neuen Vektor z mit z.X = x1, z.Y = x2 und z.Z = z
      */
-    public Vector3Frac gaussElimination(Vector3Frac l1, Vector3Frac l2,
-	    Vector3Frac target) {
+    public Vector3Frac gaussElimination(Vector3Frac l1, Vector3Frac l2, Vector3Frac target) {
 
 	Vector3Frac a = l1.clone();
 	Vector3Frac b = l2.clone();
@@ -112,9 +111,60 @@ public final class Gauss {
 	return z;
     }
 
-    public Vector3Frac gaussElimination(Vector3Frac l1, Vector3Frac l2,
-	    Vector3Frac l3, Vector3Frac target) {
-	// TODO Auto-generated method stub
-	return null;
-    }
+    public Vector3Frac gaussElimination(Vector3Frac l1, Vector3Frac l2,  
+	    Vector3Frac constant, Vector3Frac target) {
+    	Vector3Frac a = l1.clone();
+    	Vector3Frac b = l2.clone();
+    	Vector3Frac z = target.clone();
+    	z.setCoordX(z.getCoordX().sub(constant.getCoordX()));
+    	z.setCoordY(z.getCoordY().sub(constant.getCoordY()));
+
+    	if (a.getCoordX().getNumerator() == 0
+    		&& b.getCoordY().getNumerator() == 0) {
+    	    z.setCoordX(z.getCoordX().div(b.getCoordX()));
+    	    z.setCoordY(z.getCoordY().div(a.getCoordY()));
+    	    Fractional temp = z.getCoordX();
+    	    z.setCoordX(z.getCoordY());
+    	    z.setCoordY(temp);
+    	} else if (a.getCoordY().getNumerator() == 0
+    		&& b.getCoordX().getNumerator() == 0) {
+    	    z.setCoordX(z.getCoordX().div(a.getCoordX()));
+    	    z.setCoordY(z.getCoordY().div(b.getCoordY()));
+    	} else if (a.getCoordX().getNumerator() == 0) {
+    	    z.setCoordX(z.getCoordX().div(b.getCoordX()));
+    	    z.setCoordY((z.getCoordY().sub(b.getCoordY().mul(z.getCoordX())))
+    		    .div(a.getCoordY()));
+    	    Fractional temp = z.getCoordX();
+    	    z.setCoordX(z.getCoordY());
+    	    z.setCoordY(temp);
+    	} else if (a.getCoordY().getNumerator() == 0) {
+    	    z.setCoordY(z.getCoordY().div(b.getCoordY()));
+    	    z.setCoordX((z.getCoordX().sub(b.getCoordX().mul(z.getCoordY())))
+    		    .div(a.getCoordX()));
+    	} else if (b.getCoordX().getNumerator() == 0) {
+    	    z.setCoordX(z.getCoordX().div(a.getCoordX()));
+    	    z.setCoordY((z.getCoordY().sub(a.getCoordY().mul(z.getCoordX())))
+    		    .div(b.getCoordY()));
+    	} else if (b.getCoordY().getNumerator() == 0) {
+    	    z.setCoordY(z.getCoordY().div(a.getCoordY()));
+    	    z.setCoordX((z.getCoordX().sub(a.getCoordX().mul(z.getCoordY())))
+    		    .div(b.getCoordX()));
+    	    Fractional temp = z.getCoordX();
+    	    z.setCoordX(z.getCoordY());
+    	    z.setCoordY(temp);
+    	} else {
+    	    Fractional factor = this.zero.sub(a.getCoordY().div(a.getCoordX()));
+    	    b.setCoordY(b.getCoordY().add(factor.mul(b.getCoordX())));
+    	    z.setCoordY((z.getCoordY().add(factor.mul(z.getCoordX()))).div(b
+    		    .getCoordY()));
+    	    z.setCoordX((z.getCoordX().sub(b.getCoordX().mul(z.getCoordY())))
+    		    .div(a.getCoordX()));
+    	}
+
+    	z.setCoordZ(((a.getCoordZ().mul(z.getCoordX())).add((b.getCoordZ().mul(z
+    		.getCoordY())))).add(constant.getCoordZ()));
+
+    	return z;
+        }
 }
+
