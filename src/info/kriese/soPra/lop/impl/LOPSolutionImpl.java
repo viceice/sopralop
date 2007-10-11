@@ -46,8 +46,7 @@ import info.kriese.soPra.math.impl.FractionalFactory;
  * @since 23.08.2007
  * 
  */
-final class LOPSolutionImpl implements
-	LOPSolution {
+final class LOPSolutionImpl implements LOPSolution {
 
     private final List<LOPSolutionArea> areas;
 

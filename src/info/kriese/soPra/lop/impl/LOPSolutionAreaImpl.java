@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 11.10.2007 - Version 0.2
+ * - toString Methode überladen
  * 09.10.2007 - Version 0.1
  *  - Datei hinzugefuegt
  */
@@ -30,17 +32,15 @@ import info.kriese.soPra.math.Vector3Frac;
 /**
  * 
  * @author Michael Kriese
- * @version 0.1
+ * @version 0.2
  * @since 09.10.2007
  * 
  */
-public final class LOPSolutionAreaImpl implements
-	LOPSolutionArea {
+public final class LOPSolutionAreaImpl implements LOPSolutionArea {
 
     private final Vector3Frac l1, l2;
 
-    protected LOPSolutionAreaImpl(Vector3Frac l1,
-	    Vector3Frac l2) {
+    protected LOPSolutionAreaImpl(Vector3Frac l1, Vector3Frac l2) {
 	this.l1 = l1;
 	this.l2 = l2;
     }
@@ -51,6 +51,11 @@ public final class LOPSolutionAreaImpl implements
 
     public Vector3Frac getL2() {
 	return this.l2;
+    }
+
+    @Override
+    public String toString() {
+	return "[ " + this.l1 + " | " + this.l2 + " ]";
     }
 
 }

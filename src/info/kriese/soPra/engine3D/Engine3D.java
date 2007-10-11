@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 11.10.2007 - version 0.3.6
+ * - Neues Skalierungsverfahren
  * 10.10.2007 - Version 0.3.5
  * - Startdrehung des Koordinatensystems verbessert
  * - Startposition verbessert
@@ -91,7 +93,7 @@ import com.sun.j3d.utils.universe.ViewingPlatform;
  * Stellt Methoden zur Berechnung der 3D-Szene bereit.
  * 
  * @author Michael Kriese
- * @version 0.3.5
+ * @version 0.3.6
  * @since 26.04.2007
  */
 public final class Engine3D {
@@ -246,6 +248,29 @@ public final class Engine3D {
 
     private void computeSolution() {
 
+	Vector3Frac vec = this.lop.getTarget();
+
+	this.size = (vec.getCoordX().toFloat() > vec.getCoordY().toFloat() ? vec
+		.getCoordX().toFloat()
+		: vec.getCoordY().toFloat());
+
+	this.size = (this.size > this.lop.getSolution().getValue() ? this.size
+		: (float) this.lop.getSolution().getValue()) + 3.0f;
+
+	this.intersection.setVisible(false);
+
+	this.hull.build(this.lop.getVectors());
+
+	// fuege Koordinatensystem hinzu
+	this.coordsPlane.compute(this.size);
+
+	// fuege Kegel hinzu
+	this.cone.compute(this.hull.getVertices(), this.hull.getFaces(),
+		this.size);
+
+	// fuege ZielVektor hinzu
+	this.targetLine.compute(this.lop.getTarget().toVector3f(), this.size);
+
 	int sCase = this.lop.getSolution().getSpecialCase();
 
 	if (sCase == LOPSolution.SIMPLE
@@ -257,6 +282,8 @@ public final class Engine3D {
 	    tg.setCoordZ(Fractional.MAX_VALUE);
 	    this.intersection.compute(tg.toVector3f());
 	}
+
+	resetScene();
     }
 
     /**

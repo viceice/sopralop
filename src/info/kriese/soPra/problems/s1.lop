@@ -8,5 +8,4 @@
 	</vectors>
 	<target x="3/1" y="2/1" z="0/1" />
 	<ops x="equal" y="equal" />
-	<sol value="2/1" case="2" />
 </lop>

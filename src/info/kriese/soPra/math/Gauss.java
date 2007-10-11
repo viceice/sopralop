@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 11.10.2007 - Version 0.3
+ * - Gauß auf beliebige Ebenen im Raum erweitert (TODO: Peer)
  * 08.10.2007 - Version 0.2
  * - unnötige Variablen und Methoden entfernt (optimalZ, optimalVectors ...)
  * 27.04.2007 - Version 0.1
@@ -33,7 +35,7 @@ import info.kriese.soPra.math.impl.FractionalFactory;
  * 
  * @author Peer Sterner
  * @since 27.04.2007
- * @version 0.1
+ * @version 0.3
  */
 public final class Gauss {
 
@@ -108,5 +110,11 @@ public final class Gauss {
 		.getCoordY()))));
 
 	return z;
+    }
+
+    public Vector3Frac gaussElimination(Vector3Frac l1, Vector3Frac l2,
+	    Vector3Frac l3, Vector3Frac target) {
+	// TODO Auto-generated method stub
+	return null;
     }
 }

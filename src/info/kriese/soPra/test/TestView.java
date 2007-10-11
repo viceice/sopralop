@@ -57,8 +57,10 @@ public final class TestView {
 
 	new Engine3D(view, solver.getProblem());
 
+	solver.open(IOUtils.getURL("problems/ray_solution.lop"));
+
+	System.err.flush();
 	System.out.println("Problem: ");
-	solver.open(IOUtils.getURL("problems/unlimited_high.lop"));
 	solver.print(System.out);
 
 	solver.getProblem().showSolution();

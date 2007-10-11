@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 11.10.2007 - Version 0.3.7
+ * - Spezialfallbehandlung überarbeitet, sie war fehlerhaft
  * 09.10.2007 - Version 0.3.6
  * - Speichern der optimalen Vektoren überarbeitet
  * - Lösung wird nicht mehr aus Datei geladen (Live Berechnung)
@@ -51,6 +53,7 @@
  */
 package info.kriese.soPra.math;
 
+import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.io.IOUtils;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPSolution;
@@ -75,7 +78,7 @@ import org.xml.sax.SAXParseException;
 
 /**
  * @author Michael Kriese
- * @version 0.3.6
+ * @version 0.3.7
  * @since 10.05.2007
  * 
  */
@@ -203,11 +206,11 @@ public final class LOPSolver {
 
 	for (int i = 1; i < this.lop.getVectors().size(); i++) {
 	    vec = this.lop.getVectors().get(i);
-	    if (vec.getCoordX().toDouble() > 0)
+	    if (vec.getCoordX().toDouble() >= 0)
 		x.append("+");
-	    if (vec.getCoordY().toDouble() > 0)
+	    if (vec.getCoordY().toDouble() >= 0)
 		y.append("+");
-	    if (vec.getCoordZ().toDouble() > 0)
+	    if (vec.getCoordZ().toDouble() >= 0)
 		z.append("+");
 
 	    x.append(vec.getCoordX() + " ");
@@ -224,6 +227,31 @@ public final class LOPSolver {
 	out.println(x.toString());
 	out.println(y.toString());
 	out.println(z.toString());
+
+	LOPSolution sol = this.lop.getSolution();
+
+	out.println();
+	out.println("Lösung: " + sol.getValue());
+
+	switch (sol.getSpecialCase()) {
+	    case LOPSolution.NO_SOLUTION:
+		out.println(Lang.getString("Strings.NoSolution"));
+		break;
+	    case LOPSolution.MORE_THAN_ONE_SOLUTION:
+		out.println(Lang.getString("Strings.MoreSolutions").replace(
+			"{0}", sol.countAreas() + ""));
+		break;
+	    case LOPSolution.UNLIMITED:
+		out.println(Lang.getString("Strings.UnlimitedSol"));
+		break;
+	    case LOPSolution.SIMPLE:
+		out.println(Lang.getString("Strings.Simple"));
+		break;
+	    default:
+		out.println("Error! Wrong special case. ("
+			+ sol.getSpecialCase() + ")");
+		break;
+	}
     }
 
     public boolean save(String file) {
@@ -251,10 +279,10 @@ public final class LOPSolver {
 	Vector3Frac[] vertices = this.hull.getVerticesAsVector3Frac();
 	int[][] faces = this.hull.getFaces();
 
-	Vector3Frac sln, l1, l2, opt_vector = this.lop.getTarget().clone();
+	Vector3Frac sln, l1, l2, l3, opt_vector = this.lop.getTarget().clone();
 
-	boolean max = this.lop.isMaximum();
-	Fractional value_high, value_low, opt = null;
+	boolean max = this.lop.isMaximum(), unlimited = false;
+	Fractional value_high, value_low, opt = null, value_unlimit = null;
 
 	value_high = Fractional.MAX_VALUE;
 	value_low = Fractional.MIN_VALUE;
@@ -273,10 +301,12 @@ public final class LOPSolver {
 
 		opt_vector.setCoordZ(sln.getCoordZ());
 
-		if (opt == null)
-		    opt = sln.getCoordZ();
-
 		if (isPointInTriangle(l1.scale(100), l2.scale(100), opt_vector)) {
+		    if (opt == null) {
+			opt = sln.getCoordZ();
+			sol.addArea(l1, l2);
+		    }
+
 		    if (max && sln.getCoordZ().equals(opt)
 			    && !value_high.equals(Fractional.MAX_VALUE)) {
 			sol.addArea(l1, l2);
@@ -318,40 +348,63 @@ public final class LOPSolver {
 			value_low = sln.getCoordZ();
 		    }
 		}
+	    } else {
+		// Überprüfe ob Zielvektor den Kegelboden durchstößt
+		// Falls ja ist MAX oder MIN unendlich
+		l1 = vertices[face[0]].scale(100);
+		l2 = vertices[face[1]].scale(100);
+		l3 = vertices[face[2]].scale(100);
+
+		sln = this.gauss.gaussElimination(l1, l2, l3, this.lop
+			.getTarget());
+		opt_vector.setCoordZ(sln.getCoordZ());
+
+		if (isPointInTriangle(l1, l2, l3, opt_vector)) {
+		    unlimited = true;
+		    value_unlimit = sln.getCoordZ();
+		}
 	    }
 
-	sln = this.lop.getTarget().clone();
+	if (unlimited && opt != null) {
+	    if (max && opt.compareTo(value_unlimit) < 0)
+		sol.setSpecialCase(LOPSolution.UNLIMITED);
+	    if (!max && opt.compareTo(value_unlimit) > 0)
+		sol.setSpecialCase(LOPSolution.UNLIMITED);
+	}
 
-	if (max)
-	    sln.setCoordZ(value_high);
-	else
-	    sln.setCoordZ(value_low);
-
-	if (sol.countAreas() == 0)
+	if (opt == null)
 	    sol.setSpecialCase(LOPSolution.NO_SOLUTION);
-	if (value_high == Fractional.MAX_VALUE
-		&& value_low != Fractional.MIN_VALUE)
-	    sol.setSpecialCase(LOPSolution.UNLIMITED);
-	if (value_high != Fractional.MAX_VALUE
-		&& value_low == Fractional.MIN_VALUE)
-	    sol.setSpecialCase(LOPSolution.UNLIMITED);
+
 	if (sol.countAreas() > 2)
 	    sol.setSpecialCase(LOPSolution.MORE_THAN_ONE_SOLUTION);
 
-	sol.setValue(sln);
+	// Sonst gibts ne NotAllowedException
+	if (opt == null)
+	    opt = Fractional.MAX_VALUE;
+
+	sol.setValue(opt);
 
 	this.lop.problemSolved();
     }
 
     private boolean isPointInTriangle(Vector3Frac a, Vector3Frac b,
 	    Vector3Frac p) {
+	return isPointInTriangle(Vector3Frac.ZERO, a, b, p);
+    }
+
+    private boolean isPointInTriangle(Vector3Frac a, Vector3Frac b,
+	    Vector3Frac c, Vector3Frac p) {
+
+	Vector3Frac v0 = c.sub(a);
+	Vector3Frac v1 = b.sub(a);
+	Vector3Frac v2 = p.sub(a);
 
 	// Compute dot products
-	float dot00 = a.dot(a);
-	float dot01 = a.dot(b);
-	float dot02 = a.dot(p);
-	float dot11 = b.dot(b);
-	float dot12 = b.dot(p);
+	float dot00 = v0.dot(v0);
+	float dot01 = v0.dot(v1);
+	float dot02 = v0.dot(v2);
+	float dot11 = v1.dot(v1);
+	float dot12 = v1.dot(v2);
 
 	// Compute barycentric coordinates
 	float invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
@@ -364,8 +417,9 @@ public final class LOPSolver {
 	// Check if point is in triangle
 	boolean res = (u >= 0) && (v >= 0) && (u + v <= 1);
 
-	// System.out.println("[ " + a + ", " + b + " ] = " + p + "\t\t\t[ u=" +
-	// u + ", v=" + v + " | " + (res ? "true" : "false") + "]");
+	System.err.println("[ " + a + ", " + b + ", " + c + " ] = " + p
+		+ "\t\t\t[ u=" + u + ", v=" + v + " | "
+		+ (res ? "true" : "false") + "]");
 	return res;
     }
 }
