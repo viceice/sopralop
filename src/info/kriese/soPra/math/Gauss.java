@@ -20,7 +20,7 @@
  * ChangeLog:
  * 
  * 11.10.2007 - Version 0.3
- * - Gauß auf beliebige Ebenen im Raum erweitert (TODO: Peer)
+ * - Gauß auf beliebige Ebenen im Raum erweitert
  * 08.10.2007 - Version 0.2
  * - unnötige Variablen und Methoden entfernt (optimalZ, optimalVectors ...)
  * 27.04.2007 - Version 0.1
@@ -29,6 +29,7 @@
 package info.kriese.soPra.math;
 
 import info.kriese.soPra.math.impl.FractionalFactory;
+import info.kriese.soPra.math.impl.Vector3FracFactory;
 
 /**
  * Klasse zur Berechnung des Loesungsraumes
@@ -113,11 +114,12 @@ public final class Gauss {
 
     public Vector3Frac gaussElimination(Vector3Frac l1, Vector3Frac l2,  
 	    Vector3Frac constant, Vector3Frac target) {
-    	Vector3Frac a = l1.clone();
-    	Vector3Frac b = l2.clone();
+    	Vector3Frac a = renderVectors(l1, l2);
+    	Vector3Frac b = renderVectors(l1, constant);
+    	Vector3Frac c = constant.clone();
     	Vector3Frac z = target.clone();
-    	z.setCoordX(z.getCoordX().sub(constant.getCoordX()));
-    	z.setCoordY(z.getCoordY().sub(constant.getCoordY()));
+    	z.setCoordX(z.getCoordX().sub(c.getCoordX()));
+    	z.setCoordY(z.getCoordY().sub(c.getCoordY()));
 
     	if (a.getCoordX().getNumerator() == 0
     		&& b.getCoordY().getNumerator() == 0) {
@@ -162,9 +164,17 @@ public final class Gauss {
     	}
 
     	z.setCoordZ(((a.getCoordZ().mul(z.getCoordX())).add((b.getCoordZ().mul(z
-    		.getCoordY())))).add(constant.getCoordZ()));
+    		.getCoordY())))).add(c.getCoordZ()));
 
     	return z;
-        }
+    }
+    
+    private Vector3Frac renderVectors(Vector3Frac l1, Vector3Frac l2) {
+    	Vector3Frac newVector = Vector3FracFactory.getInstance();
+    	newVector.setCoordX(l2.getCoordX().sub(l1.getCoordX()));
+    	newVector.setCoordY(l2.getCoordY().sub(l1.getCoordY()));
+    	newVector.setCoordZ(l2.getCoordZ().sub(l1.getCoordZ()));
+    	return newVector;
+    }
 }
 
