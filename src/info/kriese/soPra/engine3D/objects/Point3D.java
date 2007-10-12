@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 12.10.2007 - Version 0.3.1
+ * - BugFix: Fehlerhafte Rotation führte zur Exception, wenn Zielfunktion auf der Z-Achse liegt
  * 02.10.2007 - Version 0.3
  * - Hilfslinien zum Ablesen der Koordinaten hizugefügt
  * 14.09.2007 - Version 0.2
@@ -45,7 +47,7 @@ import com.sun.j3d.utils.geometry.Sphere;
 /**
  * 
  * @author Michael Kriese
- * @version 0.3
+ * @version 0.3.1
  * @since 10.09.2007
  * 
  */
@@ -118,8 +120,9 @@ public class Point3D extends TransformGroup {
 	this.grpY.setTransform(Tools3D.createTransform(trans, rot, scale));
 
 	float len = new Vector3f(pos.x, pos.y, 0.0f).length();
-	rot.z = -Math2.angle(new Vector3d(0.0, 1.0, 0.0), new Vector3d(pos.x,
-		pos.y, 0.0));
+	if (pos.x != 0 && pos.y != 0)
+	    rot.z = -Math2.angle(new Vector3d(0.0, 1.0, 0.0), new Vector3d(
+		    pos.x, pos.y, 0.0));
 	scale = new Vector3d(1.0, len, 1.0);
 	trans = new Vector3f(pos.x / 2.0f, pos.y / 2.0f, pos.z);
 	this.grpZ.setTransform(Tools3D.createTransform(trans, rot, scale));

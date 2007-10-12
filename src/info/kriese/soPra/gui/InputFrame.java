@@ -132,11 +132,11 @@ public final class InputFrame extends JDialog implements ActionListener {
 
 	    if (col == 0)
 		switch (row) {
-		case 0:
-		    return "<html><b>Zielfunktion:</b></html>";
+		    case 0:
+			return "<html><b>Zielfunktion:</b></html>";
 
-		default:
-		    return "<html><b>NB " + row + ":</b></html>";
+		    default:
+			return "<html><b>NB " + row + ":</b></html>";
 		}
 
 	    if (col == num + 1) {
@@ -147,23 +147,25 @@ public final class InputFrame extends JDialog implements ActionListener {
 
 	    if (col == num + 2)
 		switch (row) {
-		case 0:
-		    return InputFrame.this.max ? "max" : "min";
-		case 1:
-		    return InputFrame.this.target.getCoordX().getNumerator();
-		default:
-		    return InputFrame.this.target.getCoordY().getNumerator();
+		    case 0:
+			return InputFrame.this.max ? "max" : "min";
+		    case 1:
+			return InputFrame.this.target.getCoordX()
+				.getNumerator();
+		    default:
+			return InputFrame.this.target.getCoordY()
+				.getNumerator();
 		}
 
 	    Vector3Frac vec = InputFrame.this.vectors.get(col - 1);
 
 	    switch (row) {
-	    case 0:
-		return vec.getCoordZ().getNumerator();
-	    case 1:
-		return vec.getCoordX().getNumerator();
-	    default:
-		return vec.getCoordY().getNumerator();
+		case 0:
+		    return vec.getCoordZ().getNumerator();
+		case 1:
+		    return vec.getCoordX().getNumerator();
+		default:
+		    return vec.getCoordY().getNumerator();
 	    }
 
 	}
@@ -222,28 +224,28 @@ public final class InputFrame extends JDialog implements ActionListener {
 
 	    if (col == num + 2)
 		switch (row) {
-		case 0:
-		    String s = (String) value;
-		    if (s.contains("min"))
-			InputFrame.this.max = false;
-		    else
-			InputFrame.this.max = true;
-		    ;
-		    break;
-		case 1:
-		    try {
-			InputFrame.this.target.getCoordX().setNumerator(
-				Integer.parseInt((String) value));
-		    } catch (NumberFormatException e) {
-		    }
-		    break;
-		default:
-		    try {
-			InputFrame.this.target.getCoordY().setNumerator(
-				Integer.parseInt((String) value));
-		    } catch (NumberFormatException e) {
-		    }
-		    break;
+		    case 0:
+			String s = (String) value;
+			if (s.contains("min"))
+			    InputFrame.this.max = false;
+			else
+			    InputFrame.this.max = true;
+			;
+			break;
+		    case 1:
+			try {
+			    InputFrame.this.target.getCoordX().setNumerator(
+				    Integer.parseInt((String) value));
+			} catch (NumberFormatException e) {
+			}
+			break;
+		    default:
+			try {
+			    InputFrame.this.target.getCoordY().setNumerator(
+				    Integer.parseInt((String) value));
+			} catch (NumberFormatException e) {
+			}
+			break;
 		}
 	    else {
 
@@ -256,15 +258,15 @@ public final class InputFrame extends JDialog implements ActionListener {
 		}
 
 		switch (row) {
-		case 0:
-		    vec.getCoordZ().setNumerator(val);
-		    break;
-		case 1:
-		    vec.getCoordX().setNumerator(val);
-		    break;
-		default:
-		    vec.getCoordY().setNumerator(val);
-		    break;
+		    case 0:
+			vec.getCoordZ().setNumerator(val);
+			break;
+		    case 1:
+			vec.getCoordX().setNumerator(val);
+			break;
+		    default:
+			vec.getCoordY().setNumerator(val);
+			break;
 		}
 	    }
 	    fireTableCellUpdated(row, col);
