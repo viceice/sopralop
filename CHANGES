@@ -1,22 +1,26 @@
 SoPraLOP
 (c)2007 Michael Kriese & Peer Sterner
 
-
+-------------------------------------------------------------------------------
+Version 0.5 - 01.11.2007  (voraussichtlicher Termin)
+-------------------------------------------------------------------------------
+-	TODO:
+	+ Hilfe einbauen
+	+ Nutzerinteraktion
+	+ Lösung des Dualen Problems
+-------------------------------------------------------------------------------
 Version 0.4 - 17.10.2007 (voraussichtlicher Termin)
 -------------------------------------------------------------------------------
  -	Koordinatensystem hat Einheiten
  -	Hilflinien für Minimum / Maximum zum Ablesen der Werte an den
 	Koordinaten-Achsen
  -	Duales Problem kann angezeigt werden
+ - Spezialfälle eines LOP's werden behandelt
+ - Korrekte Skalierung des Koordinatensystems	
  -	BugFix: Fehler beim Speichern behoben, welcher zu fehlerhaftem
 	XML-Code führte
  -	BugFix: Fehler beim Öffnen von Problemen behoben, welcher zu fehler-
 	haftem Laden von Problemen führte
- - Spezialfälle eines LOP's behandeln
-	
- -	TODO:
-	+ Korrekte Skalierung des Koordinatensystems
-	+ Hilfe einbauen
 -------------------------------------------------------------------------------
 Version 0.3 - 24.09.2007
 -------------------------------------------------------------------------------

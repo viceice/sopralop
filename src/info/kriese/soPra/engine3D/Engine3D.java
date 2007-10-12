@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 12.10.2007 - version 0.3.6.1
+ * - BugFix: Fehlerhafte Skalierung führte zur Exception
  * 11.10.2007 - version 0.3.6
  * - Neues Skalierungsverfahren
  * 10.10.2007 - Version 0.3.5
@@ -66,7 +68,6 @@ import info.kriese.soPra.gui.Virtual3DFrame;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPAdapter;
 import info.kriese.soPra.lop.LOPSolution;
-import info.kriese.soPra.math.Fractional;
 import info.kriese.soPra.math.QuickHull;
 import info.kriese.soPra.math.Vector3Frac;
 
@@ -93,7 +94,7 @@ import com.sun.j3d.utils.universe.ViewingPlatform;
  * Stellt Methoden zur Berechnung der 3D-Szene bereit.
  * 
  * @author Michael Kriese
- * @version 0.3.6
+ * @version 0.3.6.1
  * @since 26.04.2007
  */
 public final class Engine3D {
@@ -247,15 +248,12 @@ public final class Engine3D {
     }
 
     private void computeSolution() {
+	int sCase = this.lop.getSolution().getSpecialCase();
 
-	Vector3Frac vec = this.lop.getTarget();
-
-	this.size = (vec.getCoordX().toFloat() > vec.getCoordY().toFloat() ? vec
-		.getCoordX().toFloat()
-		: vec.getCoordY().toFloat());
-
-	this.size = (this.size > this.lop.getSolution().getValue() ? this.size
-		: (float) this.lop.getSolution().getValue()) + 3.0f;
+	if (sCase == LOPSolution.SIMPLE
+		|| sCase == LOPSolution.MORE_THAN_ONE_SOLUTION)
+	    this.size = (this.size > this.lop.getSolution().getValue() + 3.0f ? this.size
+		    : (float) this.lop.getSolution().getValue()) + 3.0f;
 
 	this.intersection.setVisible(false);
 
@@ -271,17 +269,8 @@ public final class Engine3D {
 	// fuege ZielVektor hinzu
 	this.targetLine.compute(this.lop.getTarget().toVector3f(), this.size);
 
-	int sCase = this.lop.getSolution().getSpecialCase();
-
-	if (sCase == LOPSolution.SIMPLE
-		|| sCase == LOPSolution.MORE_THAN_ONE_SOLUTION)
-	    this.intersection.compute(this.lop.getSolution().getVector()
-		    .toVector3f());
-	else {
-	    Vector3Frac tg = this.lop.getTarget().clone();
-	    tg.setCoordZ(Fractional.MAX_VALUE);
-	    this.intersection.compute(tg.toVector3f());
-	}
+	this.intersection.compute(this.lop.getSolution().getVector()
+		.toVector3f());
 
 	resetScene();
     }

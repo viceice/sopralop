@@ -57,7 +57,7 @@ public final class TestView {
 
 	new Engine3D(view, solver.getProblem());
 
-	solver.open(IOUtils.getURL("problems/ray_solution.lop"));
+	solver.open(IOUtils.getURL("problems/no_solution.lop"));
 
 	System.err.flush();
 	System.out.println("Problem: ");

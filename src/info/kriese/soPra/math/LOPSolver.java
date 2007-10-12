@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 12.10.2007 - Version 0.3.7.1
+ * - Optimum wird auch bei Unlimited & NoSolution gesetzt
  * 11.10.2007 - Version 0.3.7
  * - Spezialfallbehandlung überarbeitet, sie war fehlerhaft
  * 09.10.2007 - Version 0.3.6
@@ -78,7 +80,7 @@ import org.xml.sax.SAXParseException;
 
 /**
  * @author Michael Kriese
- * @version 0.3.7
+ * @version 0.3.7.1
  * @since 10.05.2007
  * 
  */
@@ -366,21 +368,24 @@ public final class LOPSolver {
 	    }
 
 	if (unlimited && opt != null) {
-	    if (max && opt.compareTo(value_unlimit) < 0)
+	    if (max && opt.compareTo(value_unlimit) < 0) {
 		sol.setSpecialCase(LOPSolution.UNLIMITED);
-	    if (!max && opt.compareTo(value_unlimit) > 0)
+		opt = Fractional.MAX_VALUE;
+	    }
+
+	    if (!max && opt.compareTo(value_unlimit) > 0) {
 		sol.setSpecialCase(LOPSolution.UNLIMITED);
+		opt = Fractional.MIN_VALUE;
+	    }
 	}
 
-	if (opt == null)
+	if (opt == null) {
 	    sol.setSpecialCase(LOPSolution.NO_SOLUTION);
+	    opt = Fractional.MAX_VALUE;
+	}
 
 	if (sol.countAreas() > 2)
 	    sol.setSpecialCase(LOPSolution.MORE_THAN_ONE_SOLUTION);
-
-	// Sonst gibts ne NotAllowedException
-	if (opt == null)
-	    opt = Fractional.MAX_VALUE;
 
 	sol.setValue(opt);
 
@@ -417,9 +422,9 @@ public final class LOPSolver {
 	// Check if point is in triangle
 	boolean res = (u >= 0) && (v >= 0) && (u + v <= 1);
 
-	System.err.println("[ " + a + ", " + b + ", " + c + " ] = " + p
-		+ "\t\t\t[ u=" + u + ", v=" + v + " | "
-		+ (res ? "true" : "false") + "]");
+	// System.err.println("[ " + a + ", " + b + ", " + c + " ] = " + p
+	// + "\t\t\t[ u=" + u + ", v=" + v + " | "
+	// + (res ? "true" : "false") + "]");
 	return res;
     }
 }
