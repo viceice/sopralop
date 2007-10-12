@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 12.10.2007 - Version 0.3.3
+ * - Startwerte geändert
  * 03.10.2007 - Version 0.3.2
  * - LOPListener gegen LOPAdapter getauscht
  * 11.09.2007 - Version 0.3.1
@@ -43,6 +45,7 @@ import info.kriese.soPra.io.impl.SettingsFactory;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPAdapter;
 import info.kriese.soPra.math.Vector3Frac;
+import info.kriese.soPra.math.impl.FractionalFactory;
 import info.kriese.soPra.math.impl.Vector3FracFactory;
 
 import java.awt.BorderLayout;
@@ -71,7 +74,7 @@ import javax.swing.table.TableColumn;
  * 
  * @author Peer Sterner
  * @since 13.05.2007
- * @version 0.3.2
+ * @version 0.3.3
  */
 public final class InputFrame extends JDialog implements ActionListener {
 
@@ -99,10 +102,13 @@ public final class InputFrame extends JDialog implements ActionListener {
 	public void addColumn() {
 	    int num = InputFrame.this.vectors.size();
 
+	    if (num == LOP.MAX_VECTORS)
+		return;
+
 	    InputFrame.this.vectors.add(Vector3FracFactory.getInstance());
 	    num++;
-	    this.columnNames.insertElementAt(
-		    "<html><b>x" + num + "</b></html>", num);
+	    this.columnNames.insertElementAt("<html><b>x<sub>" + num
+		    + "</sub></b></html>", num);
 	    fireTableStructureChanged();
 	    pullDownColumn(InputFrame.this.table, InputFrame.this.table
 		    .getColumnModel().getColumn(
@@ -387,11 +393,19 @@ public final class InputFrame extends JDialog implements ActionListener {
 	while (this.vectors.size() > LOP.MIN_VECTORS)
 	    this.model.removeColumn();
 
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < LOP.MIN_VECTORS; i++) {
 	    Vector3Frac vec = this.vectors.get(i);
-	    vec.getCoordX().setNumerator(0);
-	    vec.getCoordY().setNumerator(0);
-	    vec.getCoordZ().setNumerator(0);
+	    switch (i % 3) {
+		case 0:
+		    vec.setCoordX(FractionalFactory.getInstance(1));
+		    break;
+		case 1:
+		    vec.setCoordY(FractionalFactory.getInstance(1));
+		    break;
+		default:
+		    vec.setCoordZ(FractionalFactory.getInstance(1));
+		    break;
+	    }
 	}
 
 	this.target.getCoordX().setNumerator(0);

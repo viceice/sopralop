@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 12.10.2007 - Version 0.4.2
+ * - LOP wird schon beim Start gelöst
  * 03.10.2007 - Version 0.4.1
  * - Neue Menüpunkte hinzugefügt (DualProblem, Beispiele)
  * 11.09.2007 - Version 0.4
@@ -73,7 +75,7 @@ import org.xhtmlrenderer.simple.XHTMLPanel;
 
 /**
  * @author Michael Kriese
- * @version 0.4.1
+ * @version 0.4.2
  * @since 12.05.2007
  * 
  */
@@ -135,14 +137,15 @@ public final class MainFrame extends JFrame {
 	this.visual = new Visual3DFrame(this);
 
 	XHTMLPanel info = new XHTMLPanel();
-	// info.setDocument(lop.getDocument());
 
 	JScrollPane scroll = new JScrollPane(info);
 	add(scroll, BorderLayout.CENTER);
 
-	// Referenzen auf diese Klassen werden nicht benoetigt
+	// Referenzen auf diese Objekte werden nicht benötigt
 	new HTMLGenerator(this.lop.getProblem(), info);
 	new Engine3D(this.visual, this.lop.getProblem());
+
+	this.lop.solve();
 
 	this.fc = new JFileChooser();
 	this.fc.addChoosableFileFilter(new FileFilter() {
