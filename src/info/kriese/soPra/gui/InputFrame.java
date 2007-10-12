@@ -394,7 +394,7 @@ public final class InputFrame extends JDialog implements ActionListener {
 	    this.model.removeColumn();
 
 	for (int i = 0; i < LOP.MIN_VECTORS; i++) {
-	    Vector3Frac vec = this.vectors.get(i);
+	    Vector3Frac vec = Vector3Frac.ZERO.clone();
 	    switch (i % 3) {
 		case 0:
 		    vec.setCoordX(FractionalFactory.getInstance(1));
@@ -406,6 +406,7 @@ public final class InputFrame extends JDialog implements ActionListener {
 		    vec.setCoordZ(FractionalFactory.getInstance(1));
 		    break;
 	    }
+	    this.vectors.set(i, vec);
 	}
 
 	this.target.getCoordX().setNumerator(0);
