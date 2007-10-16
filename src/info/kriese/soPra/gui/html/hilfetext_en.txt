@@ -1,0 +1,98 @@
++++++++++++
++Menü File+
++++++++++++
+
+Open File:
+-------------
+Option for loading a formerly saved LOP. The files should carry the suffix ".lop" and have to be saved as XML.
+
+Save File:
+----------------
+Option for saving an built/edited LOP for later use. The files should carry the suffix ".lop" and will be saved as XML.
+
+Save File as:
+----------------------
+Option for saving an built/edited LOP for later use with the possibility to give an alternative filename.
+
+
+Examples:
+----------
+Here you can find and edit a bunch of predefined, special cases of LOP's.
+* Special cases:
+- LOP has no solution
+- Solution of the LOP is a point on an edge
+- Solution of the LOP is a Line between two edges
+- Solution of the LOP is a ray
+- LOP has a maximum, but is unlimited
+- LOP has a minimum, but is unlimited
+
+Quit:
+--------
+Quit the Application
+
++++++++++++
++Menü Edit+
++++++++++++
+
+Edit Data:
+-----------------
+Gives the possibility to edit existing data or to create a new LOP (see also menu "Edit Data")
+
+Show Scene:
+-------------
+Shows the current LOP in the 2nd geometrical Interpretation within a 3D-view. Here you can see the convex cone who represents the solution area, also the ray representing the base of the solution.
+
+Show Solution:
+--------------
+Shows the computed Solution of the LOP within the 3D-view. The solution will be marked with a spot, and help lines and a coordinate system will be shown.
+
+Show Dual Problem:
+----------------------
+Shows the Dual Problem to the actual edited LOP.
+
+
++++++++++++
++Menü Help+
++++++++++++
+
+About:
+------
+Shows informations about the actual software.
+
+Help:
+------
+Shows this Help text.
+
+
++++++++++++
++Edit Data+
++++++++++++
+
+Here you can edit the data for an LOP in 2nd geometric interpretation.
+There is an minimum of three variables, due to the fact that LOP with 2 variables are better solved in 1st geometric interpretation or by a simple linear algebraic equation.
+The arrays of the table have to be filled with the factors of the x(i) of target function and auxiliary conditions.
+Variables who are not present in the target function or in one of the auxiliary conditions have the factor zero.
+The operands (not the one of the target function) can be chosen by a pulldown menu; the choice of minimizing or maximizing the LOP has to be entered as text (short forms "min" or "max" meet the requirements).
+This point of the menu can be called at every stage of editing a LOP.
+
+Add Var.:
+---------
+Here you can add arrays for additional variables (up to 10 columns maximum). The arrays will be added as a column with the index of the next higher x(i) before the column of the operands.
+
+Delete Var.:
+------------
+Here you can remove arrays of variables. With every use of the button the column with the highest index x(i) will be deleted. The other arrays will be unaffected. The first three columns can not be removed
+
+Clear Table:
+------------
+The whole content of the table will be deleted. All factors will be reset to zero, the operands will be set to "=" and the number of variables will be reduced to three.
+PAY ATTENTION: This step can not be reverted! All unsaved data will be lost! 
+
+Quit:
+-----
+With this step the edited data will be applied to the actual LOP, and the input window will be closed.
+PAY ATTENTION: As long as there are invalid data within one of the arrays (border of the array is red) the window can not be closed, and the data will not be applied to the LOP!
+
+Help: (noch einzubauen!)
+------
+Shows this Help text.

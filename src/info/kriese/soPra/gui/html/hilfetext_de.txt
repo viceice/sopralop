@@ -44,7 +44,7 @@ Zeigt das LOP in der 2. geometrischen Interpretation in einer 3D-Ansicht. Dabei 
 
 Lösung zeigen:
 --------------
-Zeigt die berechnete Lösung des LOP in der 3D-Ansicht an Dabei wird der Lösungspunkt und Hilfslinien sowie das Koordinatensystem des LOP eingeblendet.
+Zeigt die berechnete Lösung des LOP in der 3D-Ansicht an. Dabei wird der Lösungspunkt und Hilfslinien sowie das Koordinatensystem des LOP eingeblendet.
 
 Duales Problem zeigen:
 ----------------------
@@ -72,12 +72,12 @@ Hier können die Daten zu einem LOP in der 2. geometrischen Interpretation bearb
 Als Minimum sind hier drei Variablen vorgesehen, da LOP mit zwei Variablen und zwei Nebenbedingungen leichter in der 1. geometrischen Interpretation bzw. über ein einfaches Gleichungssystem gelöst werden können.
 In die Felder der Tabelle werden die Koeffizienten der x(i) der Zielfunktion und der Nebenbedingungen eingegeben.
 Variablen, die in der Ziel- oder Nebenfunktion nicht vertreten sind, werden mit dem Koeffizienten Null angegeben.
-Die Operatoren (außer in der Zielfunktion) werden über PullDown-Menüs ausgewählt; die Auswahl, ob das Problem zu minimieren oder zu maximieren ist, muß als Text (die Kurzform "min" oder "max" genügt) eingegeben werden.
+Die Operanden (außer in der Zielfunktion) werden über PullDown-Menüs ausgewählt; die Auswahl, ob das Problem zu minimieren oder zu maximieren ist, muß als Text (die Kurzform "min" oder "max" genügt) eingegeben werden.
 Dieser Menüpunkt kann auch im Verlauf der Bearbeitung eines LOP jederzeit aufgerufen werden.
 
 Add Var.:
 ---------
-Hier können Felder für zusätzliche Variablen (insgesamt maximal 10 Spalten) angelegt werden. Die Felder werden als Spalte mit dem Index des nächsthöheren x(i) vor den Operatoren eingefügt. 
+Hier können Felder für zusätzliche Variablen (insgesamt maximal 10 Spalten) angelegt werden. Die Felder werden als Spalte mit dem Index des nächsthöheren x(i) vor den Operanden eingefügt. 
 
 Delete Var.:
 ------------
@@ -85,7 +85,7 @@ Hier können Variablenfelder entfernt werden. Gelöscht wird bei jeder Betätigu
 
 Clear Table:
 ------------
-Hiermit wird der Inhalt der gesamten Tabelle gelöscht. Alle Koeffizienten werden auf Null gesetzt, die Operatoren werden auf "=" gesetzt, und die Anzahl der Variablen wird auf drei (s.o.) reduziert. 
+Hiermit wird der Inhalt der gesamten Tabelle gelöscht. Alle Koeffizienten werden auf Null gesetzt, die Operanden werden auf "=" gesetzt, und die Anzahl der Variablen wird auf drei (s.o.) reduziert. 
 ACHTUNG: Dieser Schritt kann nicht rückgängig gemacht werden! Ungesicherte Daten sind damit verloren!
 
 Quit:
