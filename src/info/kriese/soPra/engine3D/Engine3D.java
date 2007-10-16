@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 16.10.2007 - Version 0.3.6.2
+ * - F6 zeigt Lösung an
  * 12.10.2007 - version 0.3.6.1
  * - BugFix: Fehlerhafte Skalierung führte zur Exception
  * 11.10.2007 - version 0.3.6
@@ -94,7 +96,7 @@ import com.sun.j3d.utils.universe.ViewingPlatform;
  * Stellt Methoden zur Berechnung der 3D-Szene bereit.
  * 
  * @author Michael Kriese
- * @version 0.3.6.1
+ * @version 0.3.6.2
  * @since 26.04.2007
  */
 public final class Engine3D {
@@ -133,6 +135,8 @@ public final class Engine3D {
 	    public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_F5)
 		    resetScene();
+		else if (e.getKeyCode() == KeyEvent.VK_F6)
+		    Engine3D.this.lop.showSolution();
 	    }
 	});
 

@@ -19,6 +19,7 @@ Version 0.4 - 17.10.2007
  - Spezialfälle eines LOP's werden behandelt
  - Weitere Beispiel LOP's hinzugefügt
  - Korrekte Skalierung des Koordinatensystems	
+ - Mit <F6> lässt sich im Visualisierungsfenster die Lösung anzeigen
  -	BugFix: Fehler beim Speichern behoben, welcher zu fehlerhaftem
 	XML-Code führte
  -	BugFix: Fehler beim Öffnen von Problemen behoben, welcher zu fehler-
