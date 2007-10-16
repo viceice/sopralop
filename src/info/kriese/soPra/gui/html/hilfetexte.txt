@@ -1,0 +1,98 @@
+++++++++++++
++Menü Datei+
+++++++++++++
+
+Datei Öffnen:
+-------------
+Ermöglicht das Laden eines zuvor gespeicherten LOP. Die LOP's sollten die Dateiendung ".lop" tragen und müssen im XML-Format gespeichert sein.
+
+Datei speichern:
+----------------
+Ermöglicht das Speichern eines angelegten/bearbeiteten LOP zur weiteren Bearbeitung. Als Dateiendung ist ".lop" vorgesehen, die Daten werden in der Datei im XML-Format abgelegt.
+
+Datei speichern unter:
+----------------------
+Ermöglicht das Speichern eines angelegten/bearbeiteten LOP unter Angabe eines Dateinamens.
+
+
+Beispiele:
+----------
+Hier können vordefinierte, spezielle Fälle von LOP's aufgerufen und bearbeitet werden.
+* Betrachtete Fälle:
+- LOP hat keine Lösung
+- Lösung des LOP streift eine Kante des Kegels
+- LOP hat als Lösung eine Linie
+- LOP hat als Lösung einen Strahl
+- LOP hat ein Maximum, aber ist nach unten unbeschränkt
+- LOP hat ein Minimum, aber ist nach oben unbeschränkt
+
+Beenden:
+--------
+Beendet das Programm
+
++++++++++++++++++
++Menü Bearbeiten+
++++++++++++++++++
+
+Daten bearbeiten:
+-----------------
+Ermöglicht das Bearbeiten vorhandener Daten oder auch das Anlegen eines neuen LOP (siehe Menü "Daten Bearbeiten")
+
+Szene zeigen:
+-------------
+Zeigt das LOP in der 2. geometrischen Interpretation in einer 3D-Ansicht. Dabei wird sowohl der konvexe Kegel angezeigt, der den Lösungsraum aufspannt, als auch der Strahl, der den Lösungsbereich repräsentiert.
+
+Lösung zeigen:
+--------------
+Zeigt die berechnete Lösung des LOP in der 3D-Ansicht an Dabei wird der Lösungspunkt und Hilfslinien sowie das Koordinatensystem des LOP eingeblendet.
+
+Duales Problem zeigen:
+----------------------
+Zeigt das Duale Problem zum aktuell bearbeiteten LOP an.
+
+
+++++++++++++
++Menü Hilfe+
+++++++++++++
+
+About:
+------
+Zeigt Informationen über die verwendete Software an.
+
+Hilfe:
+------
+Zeigt diese Hilfe an.
+
+
+++++++++++++++++++
++Daten bearbeiten+
+++++++++++++++++++
+
+Hier können die Daten zu einem LOP in der 2. geometrischen Interpretation bearbeitet werden.
+Als Minimum sind hier drei Variablen vorgesehen, da LOP mit zwei Variablen und zwei Nebenbedingungen leichter in der 1. geometrischen Interpretation bzw. über ein einfaches Gleichungssystem gelöst werden können.
+In die Felder der Tabelle werden die Koeffizienten der x(i) der Zielfunktion und der Nebenbedingungen eingegeben.
+Variablen, die in der Ziel- oder Nebenfunktion nicht vertreten sind, werden mit dem Koeffizienten Null angegeben.
+Die Operatoren (außer in der Zielfunktion) werden über PullDown-Menüs ausgewählt; die Auswahl, ob das Problem zu minimieren oder zu maximieren ist, muß als Text (die Kurzform "min" oder "max" genügt) eingegeben werden.
+Dieser Menüpunkt kann auch im Verlauf der Bearbeitung eines LOP jederzeit aufgerufen werden.
+
+Add Var.:
+---------
+Hier können Felder für zusätzliche Variablen (insgesamt maximal 10 Spalten) angelegt werden. Die Felder werden als Spalte mit dem Index des nächsthöheren x(i) vor den Operatoren eingefügt. 
+
+Delete Var.:
+------------
+Hier können Variablenfelder entfernt werden. Gelöscht wird bei jeder Betätigung des Button jeweils die Spalte mit dem höchsten Index x(i). Die anderen Felder bleiben von der Anderung unberührt. Die ersten drei Spalten können nicht entfernt werden.
+
+Clear Table:
+------------
+Hiermit wird der Inhalt der gesamten Tabelle gelöscht. Alle Koeffizienten werden auf Null gesetzt, die Operatoren werden auf "=" gesetzt, und die Anzahl der Variablen wird auf drei (s.o.) reduziert. 
+ACHTUNG: Dieser Schritt kann nicht rückgängig gemacht werden! Ungesicherte Daten sind damit verloren!
+
+Quit:
+-----
+Hiermit werden die eingegeben Daten in das LOP übernommen und das Eingabefenster geschlossen. 
+ACHTUNG: Solange in den Feldern ungültige Daten stehen (Rahmen des Feldes ist rot markiert), kann das Fenster nicht geschlossen werden, und die Daten werden nicht übernommen!
+
+Hilfe: (noch einzubauen!)
+------
+Zeigt diese Hilfe an.
