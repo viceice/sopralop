@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 16.10.2007 - Version 0.3.7.2
+ * - Methode solve() überarbeitet, Gausselimination vereinheitlicht
  * 12.10.2007 - Version 0.3.7.1
  * - Optimum wird auch bei Unlimited & NoSolution gesetzt
  * 11.10.2007 - Version 0.3.7
@@ -60,6 +62,7 @@ import info.kriese.soPra.io.IOUtils;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPSolution;
 import info.kriese.soPra.lop.impl.LOPFactory;
+import info.kriese.soPra.math.impl.Vector3FracFactory;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -298,8 +301,9 @@ public final class LOPSolver {
 			: vertices[face[0]];
 		l2 = vertices[face[2]].equals(Vector3Frac.ZERO) ? vertices[face[1]]
 			: vertices[face[2]];
+		l3 = Vector3FracFactory.getInstance();
 
-		sln = this.gauss.gaussElimination(l1, l2, this.lop.getTarget());
+		sln = this.gauss.gaussElimination(l1, l2, l3, this.lop.getTarget());
 
 		opt_vector.setCoordZ(sln.getCoordZ());
 

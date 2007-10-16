@@ -21,6 +21,8 @@ package info.kriese.soPra.test;
  * 
  * ChangeLog:
  * 
+ * 16.10.2007 - Version 0.1.1
+ * - Aufruf der Gauss-Elimination angepasst
  * 02.05.2007 - Version 0.1
  * - Datei hinzugefuegt
  */
@@ -41,11 +43,12 @@ public class TestGauss {
     public static void main(String[] args) {
 	Vector3Frac l1 = Vector3FracFactory.getInstance(2, 7, 5);
 	Vector3Frac l2 = Vector3FracFactory.getInstance(0, 4, 6);
+	Vector3Frac l3 = Vector3FracFactory.getInstance();
 	Vector3Frac target = Vector3FracFactory.getInstance(1, 5, 0);
 
 	Gauss g = new Gauss();
 
-	Vector3Frac s = g.gaussElimination(l1, l2, target);
+	Vector3Frac s = g.gaussElimination(l1, l2, l3, target);
 
 	System.out.println("x1= " + s.getCoordX() + ", x2= " + s.getCoordY()
 		+ ", z= " + s.getCoordZ());

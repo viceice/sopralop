@@ -19,8 +19,10 @@
  * 
  * ChangeLog:
  * 
+ * 16.10.2007 - Version 0.3.1
+ * - Gauss überarbeitet, keine Überladung mehr
  * 11.10.2007 - Version 0.3
- * - Gauß auf beliebige Ebenen im Raum erweitert
+ * - Gauss auf beliebige Ebenen im Raum erweitert
  * 08.10.2007 - Version 0.2
  * - unnötige Variablen und Methoden entfernt (optimalZ, optimalVectors ...)
  * 27.04.2007 - Version 0.1
@@ -51,67 +53,15 @@ public final class Gauss {
      * 
      * @param l1 -
      *                Vektor l1 zur Berechnung
-     * @param l1 -
+     * @param l2 -
      *                Vektor l2 zur Berechnung
+     * @param constant -
+     *                Vektor zur Hebung bei Verschiebung aus dem Ursprung
      * @param target -
      *                rechte Seite der Nebenbedingungen
      * 
      * @return - neuen Vektor z mit z.X = x1, z.Y = x2 und z.Z = z
      */
-    public Vector3Frac gaussElimination(Vector3Frac l1, Vector3Frac l2, Vector3Frac target) {
-
-	Vector3Frac a = l1.clone();
-	Vector3Frac b = l2.clone();
-	Vector3Frac z = target.clone();
-
-	if (a.getCoordX().getNumerator() == 0
-		&& b.getCoordY().getNumerator() == 0) {
-	    z.setCoordX(z.getCoordX().div(b.getCoordX()));
-	    z.setCoordY(z.getCoordY().div(a.getCoordY()));
-	    Fractional temp = z.getCoordX();
-	    z.setCoordX(z.getCoordY());
-	    z.setCoordY(temp);
-	} else if (a.getCoordY().getNumerator() == 0
-		&& b.getCoordX().getNumerator() == 0) {
-	    z.setCoordX(z.getCoordX().div(a.getCoordX()));
-	    z.setCoordY(z.getCoordY().div(b.getCoordY()));
-	} else if (a.getCoordX().getNumerator() == 0) {
-	    z.setCoordX(z.getCoordX().div(b.getCoordX()));
-	    z.setCoordY((z.getCoordY().sub(b.getCoordY().mul(z.getCoordX())))
-		    .div(a.getCoordY()));
-	    Fractional temp = z.getCoordX();
-	    z.setCoordX(z.getCoordY());
-	    z.setCoordY(temp);
-	} else if (a.getCoordY().getNumerator() == 0) {
-	    z.setCoordY(z.getCoordY().div(b.getCoordY()));
-	    z.setCoordX((z.getCoordX().sub(b.getCoordX().mul(z.getCoordY())))
-		    .div(a.getCoordX()));
-	} else if (b.getCoordX().getNumerator() == 0) {
-	    z.setCoordX(z.getCoordX().div(a.getCoordX()));
-	    z.setCoordY((z.getCoordY().sub(a.getCoordY().mul(z.getCoordX())))
-		    .div(b.getCoordY()));
-	} else if (b.getCoordY().getNumerator() == 0) {
-	    z.setCoordY(z.getCoordY().div(a.getCoordY()));
-	    z.setCoordX((z.getCoordX().sub(a.getCoordX().mul(z.getCoordY())))
-		    .div(b.getCoordX()));
-	    Fractional temp = z.getCoordX();
-	    z.setCoordX(z.getCoordY());
-	    z.setCoordY(temp);
-	} else {
-	    Fractional factor = this.zero.sub(a.getCoordY().div(a.getCoordX()));
-	    b.setCoordY(b.getCoordY().add(factor.mul(b.getCoordX())));
-	    z.setCoordY((z.getCoordY().add(factor.mul(z.getCoordX()))).div(b
-		    .getCoordY()));
-	    z.setCoordX((z.getCoordX().sub(b.getCoordX().mul(z.getCoordY())))
-		    .div(a.getCoordX()));
-	}
-
-	z.setCoordZ((a.getCoordZ().mul(z.getCoordX())).add((b.getCoordZ().mul(z
-		.getCoordY()))));
-
-	return z;
-    }
-
     public Vector3Frac gaussElimination(Vector3Frac l1, Vector3Frac l2,  
 	    Vector3Frac constant, Vector3Frac target) {
     	Vector3Frac a = renderVectors(l1, l2);
