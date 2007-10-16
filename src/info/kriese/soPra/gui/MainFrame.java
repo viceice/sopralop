@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 16.10.2007 - Version 0.4.3
+ * - Für neue Beispiel LOP's erweitert, werden komplett aus Sprach-Datei geladen
  * 12.10.2007 - Version 0.4.2
  * - LOP wird schon beim Start gelöst
  * 03.10.2007 - Version 0.4.1
@@ -49,6 +51,7 @@ package info.kriese.soPra.gui;
 
 import info.kriese.soPra.engine3D.Engine3D;
 import info.kriese.soPra.gui.html.HTMLGenerator;
+import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.io.IOUtils;
 import info.kriese.soPra.io.Settings;
 import info.kriese.soPra.io.impl.SettingsFactory;
@@ -75,7 +78,7 @@ import org.xhtmlrenderer.simple.XHTMLPanel;
 
 /**
  * @author Michael Kriese
- * @version 0.4.2
+ * @version 0.4.3
  * @since 12.05.2007
  * 
  */
@@ -203,18 +206,10 @@ public final class MainFrame extends JFrame {
 	} else if (cmd.equals("Menu.Help.About")) {
 	    this.about.setLocationRelativeTo(this);
 	    this.about.setVisible(true);
-	} else if (cmd.equals("Menu.File.Samples.S01")) {
+	} else if (cmd.startsWith("Menu.File.Samples")) {
 	    this.file = null;
-	    this.lop.open(IOUtils.getURL("problems/s1.lop"));
-	} else if (cmd.equals("Menu.File.Samples.S02")) {
-	    this.file = null;
-	    this.lop.open(IOUtils.getURL("problems/s2.lop"));
-	} else if (cmd.equals("Menu.File.Samples.S03")) {
-	    this.file = null;
-	    this.lop.open(IOUtils.getURL("problems/s3.lop"));
-	} else if (cmd.equals("Menu.File.Samples.S04")) {
-	    this.file = null;
-	    this.lop.open(IOUtils.getURL("problems/s4.lop"));
+	    this.lop.open(IOUtils.getURL("problems/"
+		    + Lang.getString(cmd + ".File") + ".lop"));
 	}
     }
 
@@ -231,8 +226,7 @@ public final class MainFrame extends JFrame {
 		this.lop.open(file.toURI().toURL());
 	    } catch (MalformedURLException e) {
 	    }
-	} else
-	    System.out.println("Fehler beim Laden!");
+	}
     }
 
     /**
@@ -273,10 +267,11 @@ public final class MainFrame extends JFrame {
 	menu.add(MenuMaker.getMenuItem("Menu.File.SaveAs", ac));
 	menu.addSeparator();
 	submenu = MenuMaker.getMenu("Menu.File.Samples");
-	submenu.add(MenuMaker.getMenuItem("Menu.File.Samples.S01", ac));
-	submenu.add(MenuMaker.getMenuItem("Menu.File.Samples.S02", ac));
-	submenu.add(MenuMaker.getMenuItem("Menu.File.Samples.S03", ac));
-	submenu.add(MenuMaker.getMenuItem("Menu.File.Samples.S04", ac));
+
+	for (int i = 1; i <= Lang.getInt("Menu.File.Samples.Count"); i++)
+	    submenu.add(MenuMaker.getMenuItem("Menu.File.Samples.S"
+		    + (i < 10 ? "0" + i : i), ac));
+
 	menu.add(submenu);
 	menu.addSeparator();
 	menu.add(MenuMaker.getMenuItem("Menu.File.Exit", ac));

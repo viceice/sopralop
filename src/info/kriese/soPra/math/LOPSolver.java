@@ -20,6 +20,7 @@
  * ChangeLog:
  * 
  * 16.10.2007 - Version 0.3.7.2
+ * - NullPointer behoben, falls zu öffnendes LOP nicht existiert
  * - Methode solve() überarbeitet, Gausselimination vereinheitlicht
  * 12.10.2007 - Version 0.3.7.1
  * - Optimum wird auch bei Unlimited & NoSolution gesetzt
@@ -62,7 +63,6 @@ import info.kriese.soPra.io.IOUtils;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPSolution;
 import info.kriese.soPra.lop.impl.LOPFactory;
-import info.kriese.soPra.math.impl.Vector3FracFactory;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -83,7 +83,7 @@ import org.xml.sax.SAXParseException;
 
 /**
  * @author Michael Kriese
- * @version 0.3.7.1
+ * @version 0.3.7.2
  * @since 10.05.2007
  * 
  */
@@ -107,6 +107,8 @@ public final class LOPSolver {
     }
 
     public boolean open(URL file) {
+	if (file == null)
+	    return false;
 	try {
 	    Node n = null;
 	    NamedNodeMap att = null;
@@ -301,9 +303,10 @@ public final class LOPSolver {
 			: vertices[face[0]];
 		l2 = vertices[face[2]].equals(Vector3Frac.ZERO) ? vertices[face[1]]
 			: vertices[face[2]];
-		l3 = Vector3FracFactory.getInstance();
+		l3 = Vector3Frac.ZERO;
 
-		sln = this.gauss.gaussElimination(l1, l2, l3, this.lop.getTarget());
+		sln = this.gauss.gaussElimination(l1, l2, l3, this.lop
+			.getTarget());
 
 		opt_vector.setCoordZ(sln.getCoordZ());
 

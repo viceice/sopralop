@@ -8,19 +8,22 @@ Version 0.5 - 01.11.2007  (voraussichtlicher Termin)
 	+ Hilfe einbauen
 	+ Nutzerinteraktion
 	+ Lösung des Dualen Problems
+	+ Restliche Spezialfälle behandeln
 -------------------------------------------------------------------------------
-Version 0.4 - 17.10.2007 (voraussichtlicher Termin)
+Version 0.4 - 17.10.2007
 -------------------------------------------------------------------------------
  -	Koordinatensystem hat Einheiten
  -	Hilflinien für Minimum / Maximum zum Ablesen der Werte an den
 	Koordinaten-Achsen
  -	Duales Problem kann angezeigt werden
  - Spezialfälle eines LOP's werden behandelt
+ - Weitere Beispiel LOP's hinzugefügt
  - Korrekte Skalierung des Koordinatensystems	
  -	BugFix: Fehler beim Speichern behoben, welcher zu fehlerhaftem
 	XML-Code führte
  -	BugFix: Fehler beim Öffnen von Problemen behoben, welcher zu fehler-
 	haftem Laden von Problemen führte
+ - BugFix: NullPointer behoben, falls LOP-Datei nicht existiert
 -------------------------------------------------------------------------------
 Version 0.3 - 24.09.2007
 -------------------------------------------------------------------------------

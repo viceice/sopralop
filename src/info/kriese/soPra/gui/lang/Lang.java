@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 16.10.2007 - Version 0.3
+ * - Methode getInt hinzugefügt
  * 09.10.2007 - Version 0.2.1
  * - Bundle Name geändert (durch verschieben in neues Package)
  * 11.09.2007 - Version 0.2
@@ -36,7 +38,7 @@ import java.util.ResourceBundle;
 /**
  * 
  * @author Michael Kriese
- * @version 0.2.1
+ * @version 0.3
  * @since 29.07.2007
  * 
  */
@@ -46,6 +48,14 @@ public final class Lang {
 
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle
 	    .getBundle(BUNDLE_NAME, Locale.getDefault());
+
+    public static int getInt(String key) {
+	try {
+	    return Integer.parseInt(getString(key));
+	} catch (NumberFormatException e) {
+	    return 0;
+	}
+    }
 
     public static String getString(String key) {
 	try {

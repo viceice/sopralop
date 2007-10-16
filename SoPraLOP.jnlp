@@ -10,7 +10,7 @@
 		<description>[title]</description>
 		<description kind="short">[desc]</description>
 		<icon href="images/logo.gif" />
-		<icon kind="splash" href="images/splash.png" />
+		<icon kind="splash" href="[codebase]splash.png" />
 		<offline-allowed />
 		<shortcut online="false">
 			<desktop />

@@ -64,7 +64,7 @@
 	<target name="webstart" depends="jar">
 		<mkdir dir="${dist.dir}" />
 		<signjar signedjar="${dist.dir}/${ant.project.name}.jar" jar="${jar.file}" alias="SoPra" storepass="${password}" />
-		<copy tofile="${dist.dir}/${ant.project.name}.jnlp" file="${basedir}/${ant.project.name}.jnlp" overwrite="true"/>
+		<copy tofile="${dist.dir}/${ant.project.name}.jnlp" file="${basedir}/${ant.project.name}.jnlp" overwrite="true" />
 
 		<replace file="${dist.dir}/${ant.project.name}.jnlp" propertyfile="${src.dir}/info/kriese/soPra/sopra.properties">
 			<replacefilter token="[codebase]" value="${codebase}" />
@@ -80,6 +80,7 @@
 			<fileset dir="${basedir}/lib" excludes="j3dcore.jar j3dutils.jar vecmath.jar">
 				<exclude name="**/.svn/**" />
 			</fileset>
+			<fileset file="${basedir}/splash.png" />
 		</copy>
 	</target>
 
@@ -109,6 +110,7 @@
 				<include name="lib/*.jar" />
 				<include name="COPYING" />
 				<include name="CHANGES" />
+				<include name="splash.png" />
 				<exclude name="**/.svn/**" />
 			</fileset>
 			<fileset file="${jar.file}" />
