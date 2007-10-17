@@ -17,7 +17,7 @@ Option for saving an built/edited LOP for later use with the possibility to give
 
 Examples:
 ----------
-Here you can find and edit a bunch of predefined, special cases of LOP's.
+Here you can find and edit a bunch of predefined special cases of LOP's.
 * Special cases:
 - LOP has no solution
 - Solution of the LOP is a point on an edge
@@ -28,7 +28,7 @@ Here you can find and edit a bunch of predefined, special cases of LOP's.
 
 Quit:
 --------
-Quit the Application
+Quits the Application.
 
 +++++++++++
 +Menü Edit+
