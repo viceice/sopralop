@@ -54,6 +54,7 @@
 				<include name="**/*.gif" />
 				<include name="**/*.jpg" />
 				<include name="**/*.bmp" />
+				<include name="**/*.png" />
 				<include name="**/*.html" />
 				<include name="**/*.css" />
 				<include name="**/*.lop" />
