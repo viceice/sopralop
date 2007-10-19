@@ -19,6 +19,11 @@
  * 
  * ChangeLog:
  * 
+ * 19.10.2007 - Version 0.4
+ * - In InputDialog umbenannt
+ * - Menü neu designed (Icons hinzugefügt, Multisprachfähigkeit)
+ * - Neuer Menüpunkt "Werte zurücksetzen"
+ * - Menüpunkt "Quit" in speichern geändert
  * 12.10.2007 - Version 0.3.3
  * - Startwerte geändert
  * 03.10.2007 - Version 0.3.2
@@ -41,6 +46,7 @@
 
 package info.kriese.soPra.gui;
 
+import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.io.impl.SettingsFactory;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPAdapter;
@@ -57,7 +63,6 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.DefaultCellEditor;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -74,9 +79,9 @@ import javax.swing.table.TableColumn;
  * 
  * @author Peer Sterner
  * @since 13.05.2007
- * @version 0.3.3
+ * @version 0.4
  */
-public final class InputFrame extends JDialog implements ActionListener {
+public final class InputDialog extends JDialog implements ActionListener {
 
     /**
      * Modell für die Eingabeklasse. Beschreibt die zu erstellende Tabelle
@@ -92,7 +97,7 @@ public final class InputFrame extends JDialog implements ActionListener {
 
 	public InputTableModel() {
 	    this.columnNames = new Vector<String>();
-	    setColumnCount(InputFrame.this.vectors.size());
+	    setColumnCount(InputDialog.this.vectors.size());
 	}
 
 	/**
@@ -100,19 +105,19 @@ public final class InputFrame extends JDialog implements ActionListener {
 	 * 
 	 */
 	public void addColumn() {
-	    int num = InputFrame.this.vectors.size();
+	    int num = InputDialog.this.vectors.size();
 
 	    if (num == LOP.MAX_VECTORS)
 		return;
 
-	    InputFrame.this.vectors.add(Vector3FracFactory.getInstance());
+	    InputDialog.this.vectors.add(Vector3FracFactory.getInstance());
 	    num++;
 	    this.columnNames.insertElementAt("<html><b>x<sub>" + num
 		    + "</sub></b></html>", num);
 	    fireTableStructureChanged();
-	    pullDownColumn(InputFrame.this.table, InputFrame.this.table
+	    pullDownColumn(InputDialog.this.table, InputDialog.this.table
 		    .getColumnModel().getColumn(
-			    InputFrame.this.table.getColumnCount() - 2));
+			    InputDialog.this.table.getColumnCount() - 2));
 	}
 
 	@Override
@@ -134,12 +139,14 @@ public final class InputFrame extends JDialog implements ActionListener {
 	}
 
 	public Object getValueAt(int row, int col) {
-	    int num = InputFrame.this.vectors.size();
+	    int num = InputDialog.this.vectors.size();
 
 	    if (col == 0)
 		switch (row) {
 		    case 0:
-			return "<html><b>Zielfunktion:</b></html>";
+			return "<html><b>"
+				+ Lang.getString("String.TargetFunction")
+				+ ":</b></html>";
 
 		    default:
 			return "<html><b>NB " + row + ":</b></html>";
@@ -148,22 +155,22 @@ public final class InputFrame extends JDialog implements ActionListener {
 	    if (col == num + 1) {
 		if (row == 0)
 		    return "=";
-		return InputFrame.this.operators[row - 1];
+		return InputDialog.this.operators[row - 1];
 	    }
 
 	    if (col == num + 2)
 		switch (row) {
 		    case 0:
-			return InputFrame.this.max ? "max" : "min";
+			return InputDialog.this.max ? "max" : "min";
 		    case 1:
-			return InputFrame.this.target.getCoordX()
+			return InputDialog.this.target.getCoordX()
 				.getNumerator();
 		    default:
-			return InputFrame.this.target.getCoordY()
+			return InputDialog.this.target.getCoordY()
 				.getNumerator();
 		}
 
-	    Vector3Frac vec = InputFrame.this.vectors.get(col - 1);
+	    Vector3Frac vec = InputDialog.this.vectors.get(col - 1);
 
 	    switch (row) {
 		case 0:
@@ -183,7 +190,7 @@ public final class InputFrame extends JDialog implements ActionListener {
 	@Override
 	public boolean isCellEditable(int row, int col) {
 	    if ((col < 1)
-		    || ((row == 0) && (col == InputFrame.this.vectors.size() + 1)))
+		    || ((row == 0) && (col == InputDialog.this.vectors.size() + 1)))
 		return false;
 	    else
 		return true;
@@ -195,16 +202,16 @@ public final class InputFrame extends JDialog implements ActionListener {
 	 * bei 2 Variablen wird keine weitere entfernt
 	 */
 	public void removeColumn() {
-	    int num = InputFrame.this.vectors.size();
+	    int num = InputDialog.this.vectors.size();
 
 	    if (num > LOP.MIN_VECTORS) {
-		InputFrame.this.vectors.remove(num - 1);
+		InputDialog.this.vectors.remove(num - 1);
 		this.columnNames.remove(num);
 		num--;
 		fireTableStructureChanged();
-		pullDownColumn(InputFrame.this.table, InputFrame.this.table
+		pullDownColumn(InputDialog.this.table, InputDialog.this.table
 			.getColumnModel().getColumn(
-				InputFrame.this.table.getColumnCount() - 2));
+				InputDialog.this.table.getColumnCount() - 2));
 	    }
 	}
 
@@ -221,11 +228,11 @@ public final class InputFrame extends JDialog implements ActionListener {
 
 	@Override
 	public void setValueAt(Object value, int row, int col) {
-	    int num = InputFrame.this.vectors.size();
+	    int num = InputDialog.this.vectors.size();
 
 	    if (col == num + 1) {
 		if (row > 0)
-		    InputFrame.this.operators[row - 1] = (String) value;
+		    InputDialog.this.operators[row - 1] = (String) value;
 	    } else
 
 	    if (col == num + 2)
@@ -233,21 +240,21 @@ public final class InputFrame extends JDialog implements ActionListener {
 		    case 0:
 			String s = (String) value;
 			if (s.contains("min"))
-			    InputFrame.this.max = false;
+			    InputDialog.this.max = false;
 			else
-			    InputFrame.this.max = true;
+			    InputDialog.this.max = true;
 			;
 			break;
 		    case 1:
 			try {
-			    InputFrame.this.target.getCoordX().setNumerator(
+			    InputDialog.this.target.getCoordX().setNumerator(
 				    Integer.parseInt((String) value));
 			} catch (NumberFormatException e) {
 			}
 			break;
 		    default:
 			try {
-			    InputFrame.this.target.getCoordY().setNumerator(
+			    InputDialog.this.target.getCoordY().setNumerator(
 				    Integer.parseInt((String) value));
 			} catch (NumberFormatException e) {
 			}
@@ -255,7 +262,7 @@ public final class InputFrame extends JDialog implements ActionListener {
 		}
 	    else {
 
-		Vector3Frac vec = InputFrame.this.vectors.get(col - 1);
+		Vector3Frac vec = InputDialog.this.vectors.get(col - 1);
 
 		int val = 0;
 		try {
@@ -305,8 +312,8 @@ public final class InputFrame extends JDialog implements ActionListener {
      * Vektordaten aus den uebergebenen Argumenten verwendet
      * 
      */
-    public InputFrame(JFrame owner, LOP lop) {
-	super(owner, "Eingabe - Version "
+    public InputDialog(JFrame owner, LOP lop) {
+	super(owner, Lang.getString("Input.Title") + " - Version "
 		+ SettingsFactory.getInstance().getVersion(), true);
 	this.lop = lop;
 
@@ -320,8 +327,8 @@ public final class InputFrame extends JDialog implements ActionListener {
 	    }
 	});
 
-	setLayout(new BorderLayout(2, 2));
-	setSize(500, 200);
+	setLayout(new BorderLayout());
+	setSize(600, 200);
 
 	this.model = new InputTableModel();
 	this.table = new JTable(this.model);
@@ -343,7 +350,6 @@ public final class InputFrame extends JDialog implements ActionListener {
 	update();
 
 	setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-
     }
 
     /**
@@ -352,19 +358,20 @@ public final class InputFrame extends JDialog implements ActionListener {
      */
     public void actionPerformed(ActionEvent e) {
 	String cmd = e.getActionCommand();
-	if (cmd.equals("Add Var."))
+	if (cmd.equals("Input.Menu.AddVar"))
 	    this.model.addColumn();
-	else if (cmd.equals("Delete Var."))
+	else if (cmd.equals("Input.Menu.DelVar"))
 	    this.model.removeColumn();
-	else if (cmd.equals("Quit")) {
+	else if (cmd.equals("Input.Menu.Save")) {
 	    this.lop.setVectors(this.vectors);
 	    this.lop.setTarget(this.target);
 	    this.lop.setMaximum(this.max);
 	    this.lop.setOperators(this.operators);
 	    this.lop.problemChanged();
-	    setVisible(false);
-	} else if (cmd.equals("Clear Table"))
+	} else if (cmd.equals("Input.Menu.Clear"))
 	    clear();
+	else if (cmd.equals("Input.Menu.Reset"))
+	    update();
     }
 
     /**
@@ -377,8 +384,7 @@ public final class InputFrame extends JDialog implements ActionListener {
 
 	// Set up tool tips for the sport cells.
 	DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-	renderer
-		.setToolTipText("Relationszeichen fuer die Nebenbedingung waehlen!");
+	renderer.setToolTipText(Lang.getString("Input.Relation"));
 	relation.setCellRenderer(renderer);
     }
 
@@ -424,23 +430,16 @@ public final class InputFrame extends JDialog implements ActionListener {
      */
     private void generateEditToolbar() {
 	JToolBar toolbar;
-	toolbar = new JToolBar("AddresFrame.Menu");
-	//
-	JButton btn = new JButton("Add Var.");
-	btn.addActionListener(this);
-	toolbar.add(btn);
+	toolbar = new JToolBar("Input.Menu");
+	toolbar.setFloatable(false);
 
-	btn = new JButton("Delete Var.");
-	btn.addActionListener(this);
-	toolbar.add(btn);
-
-	btn = new JButton("Clear Table");
-	btn.addActionListener(this);
-	toolbar.add(btn);
-
-	btn = new JButton("Quit");
-	btn.addActionListener(this);
-	toolbar.add(btn);
+	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.AddVar", this));
+	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.DelVar", this));
+	toolbar.addSeparator();
+	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.Reset", this));
+	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.Clear", this));
+	toolbar.addSeparator();
+	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.Save", this));
 
 	add(toolbar, BorderLayout.PAGE_START);
     }

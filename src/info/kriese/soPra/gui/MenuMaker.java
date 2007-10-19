@@ -40,72 +40,72 @@ import javax.swing.KeyStroke;
  * @author Michael Kriese
  * @version 0.1
  * @since 29.07.2007
- *
+ * 
  */
 public final class MenuMaker {
 
-	private MenuMaker() {
-	}
+    public static ImageIcon getImage(String key) {
+	String imgLocation = Lang.getString(key + ".Image");
+	URL imageURL = MenuMaker.class.getResource(imgLocation);
+	if (imageURL != null)
+	    return new ImageIcon(imageURL, getMenuTitle(key));
+	else
+	    return null;
+    }
 
-	public static JMenuItem getMenuItem(String key, ActionListener ac) {
-		JMenuItem res = new JMenuItem(getMenuTitle(key));
-		res.setMnemonic(getMenuMnemonic(key));
-		res.setAccelerator(getMenuAccelerator(key));
-		res.setActionCommand(key);
-		res.addActionListener(ac);
-		return res;
-	}
+    public static JMenu getMenu(String key) {
+	JMenu res = new JMenu(getMenuTitle(key));
+	res.setMnemonic(getMenuMnemonic(key));
+	res.setIcon(getImage(key));
+	return res;
+    }
 
-	public static JMenu getMenu(String key) {
-		JMenu res = new JMenu(getMenuTitle(key));
-		res.setMnemonic(getMenuMnemonic(key));
-		return res;
-	}
+    public static KeyStroke getMenuAccelerator(String key) {
+	KeyStroke res = KeyStroke.getKeyStroke(Lang.getString(key
+		+ ".Accelerator"));
+	return res;
+    }
 
-	public static KeyStroke getMenuAccelerator(String key) {
-		KeyStroke res = KeyStroke.getKeyStroke(Lang.getString(key
-				+ ".Accelerator"));
-		return res;
-	}
+    public static JMenuItem getMenuItem(String key, ActionListener ac) {
+	JMenuItem res = new JMenuItem(getMenuTitle(key));
+	res.setMnemonic(getMenuMnemonic(key));
+	res.setAccelerator(getMenuAccelerator(key));
+	res.setActionCommand(key);
+	res.setIcon(getImage(key));
+	res.addActionListener(ac);
+	return res;
+    }
 
-	public static int getMenuMnemonic(String key) {
-		KeyStroke res = KeyStroke.getKeyStroke(Lang
-				.getString(key + ".Mnemonic"));
-		if (res != null)
-			return res.getKeyCode();
-		else {			
-			return -1;
-		}
-	}
+    public static int getMenuMnemonic(String key) {
+	KeyStroke res = KeyStroke.getKeyStroke(Lang
+		.getString(key + ".Mnemonic"));
+	if (res != null)
+	    return res.getKeyCode();
+	else
+	    return -1;
+    }
 
-	public static String getMenuTitle(String key) {
-		return Lang.getString(key + ".Title");
-	}
-	
-	public static ImageIcon getImage(String key){
-		String imgLocation = Lang.getString(key + ".Image");
-		URL imageURL = MenuMaker.class.getResource(imgLocation);
-		if (imageURL != null)
-			return new ImageIcon(imageURL, getMenuTitle(key));
-		else
-			return null;
-	}
+    public static String getMenuTitle(String key) {
+	return Lang.getString(key + ".Title");
+    }
 
-	public static JButton getToolBarButton(String key, ActionListener ac) {
-		JButton button = new JButton();
-		button.setFocusable(false);
-		button.setActionCommand(key);
-		button.setToolTipText(getMenuTitle(key));
-		button.addActionListener(ac);
-		ImageIcon icon = getImage(key);
+    public static JButton getToolBarButton(String key, ActionListener ac) {
+	JButton button = new JButton();
+	button.setFocusable(false);
+	button.setActionCommand(key);
+	button.setToolTipText(getMenuTitle(key));
+	button.addActionListener(ac);
+	ImageIcon icon = getImage(key);
 
-		if (icon != null) { // image found
-			button.setIcon(icon);
-		} else { // no image found
-			button.setText(getMenuTitle(key));
-		}
+	if (icon != null)
+	    button.setIcon(icon);
+	else
+	    button.setText(getMenuTitle(key));
 
-		return button;
-	}
+	return button;
+    }
+
+    private MenuMaker() {
+    }
 
 }

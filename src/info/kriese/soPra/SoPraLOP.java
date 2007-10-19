@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 19.10.2007 - Version 0.3
+ * - Funktionalität aus GUI hirhin ausgelagert
  * 14.09.2007 - Version 0.2.1
  * - Property für die RenderEngine hizugefügt (Unter Vista schlechte Performance mit OpenGL)
  * 11.09.2007- Version 0.2
@@ -30,20 +32,97 @@
  */
 package info.kriese.soPra;
 
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileFilter;
+
+import info.kriese.soPra.engine3D.Engine3D;
+import info.kriese.soPra.gui.AboutDialog;
+import info.kriese.soPra.gui.InputDialog;
 import info.kriese.soPra.gui.MainFrame;
+import info.kriese.soPra.gui.SplashDialog;
+import info.kriese.soPra.gui.Visual3DFrame;
+import info.kriese.soPra.gui.html.HTMLGenerator;
+import info.kriese.soPra.gui.lang.Lang;
+import info.kriese.soPra.io.IOUtils;
+import info.kriese.soPra.math.LOPSolver;
 
 /**
  * @author Michael Kriese
- * @version 0.2.1
+ * @version 0.3
  * @since 12.05.2007
  * 
  */
 public final class SoPraLOP {
 
+    private static AboutDialog ABOUT;
+
+    private static JFileChooser FC;
+
+    private static String FILE = null;
+
+    private static InputDialog INPUT;
+
+    private static MainFrame MAIN;
+    private static LOPSolver SOLVER;
+
+    private static Visual3DFrame VISUAL;
+
+    public static void actionPerformed(ActionEvent e) {
+	String cmd = e.getActionCommand();
+
+	if (cmd.equals("Menu.File.Exit"))
+	    System.exit(0);
+	else if (cmd.equals("Menu.File.Open"))
+	    fileOpenClass();
+	else if (cmd.equals("Menu.File.Save"))
+	    fileSaveClass(false);
+	else if (cmd.equals("Menu.File.SaveAs"))
+	    fileSaveClass(true);
+	else if (cmd.equals("Menu.Edit.Data")) {
+	    INPUT.setLocationRelativeTo(MAIN);
+	    INPUT.setVisible(true);
+	    SOLVER.solve();
+	} else if (cmd.equals("Menu.Edit.Show")) {
+	    VISUAL.setLocationRelativeTo(MAIN);
+	    VISUAL.setVisible(true);
+	} else if (cmd.equals("Menu.Edit.ShowSolution")) {
+	    if (SOLVER.getProblem().isSolved())
+		SOLVER.getProblem().showSolution();
+	    else
+		JOptionPane.showMessageDialog(MAIN, "Sie muessen erst"
+			+ " ein Problem oeffnen oder eingeben");
+	} else if (cmd.equals("Menu.Edit.ShowDualProblem")) {
+	    if (SOLVER.getProblem().isSolved())
+		SOLVER.getProblem().showDualProblem();
+	    else
+		JOptionPane.showMessageDialog(MAIN, "Sie muessen erst"
+			+ " ein Problem oeffnen oder eingeben");
+	} else if (cmd.equals("Menu.Edit.ShowPrimalProblem"))
+	    SOLVER.getProblem().showPrimalProblem();
+	else if (cmd.equals("Menu.Help.About")) {
+	    ABOUT.setLocationRelativeTo(MAIN);
+	    ABOUT.setVisible(true);
+	} else if (cmd.startsWith("Menu.File.Samples")) {
+	    FILE = null;
+	    SOLVER.open(IOUtils.getURL("problems/"
+		    + Lang.getString(cmd + ".File") + ".lop"));
+	}
+    }
+
     /**
      * @param args
      */
     public static void main(String[] args) {
+
+	SplashDialog splash = SplashDialog.getInstance();
+
+	splash.setVisible(true);
 
 	System.setProperty("file.encoding", "UTF-8");
 
@@ -55,10 +134,78 @@ public final class SoPraLOP {
 	} else
 	    System.setProperty("j3d.rend", "ogl");
 
-	MainFrame frame = new MainFrame();
-	frame.setLocationRelativeTo(null);
-	frame.setVisible(true);
+	splash.setMessage("Creating solver ...");
+	SOLVER = new LOPSolver();
+
+	splash.setMessage("Creating main window ...");
+	MAIN = new MainFrame(SOLVER.getProblem());
+
+	splash.setMessage("Creating 3D window ...");
+	VISUAL = new Visual3DFrame(MAIN);
+
+	splash.setMessage("Creating about window ...");
+	ABOUT = AboutDialog.getInstance(MAIN);
+	splash.setMessage("Creating input window ...");
+	INPUT = new InputDialog(MAIN, SOLVER.getProblem());
+
+	// Referenzen auf diese Objekte werden nicht benötigt
+	splash.setMessage("Creating HTML generator ...");
+	new HTMLGenerator(SOLVER.getProblem(), MAIN.info);
+	splash.setMessage("Creating 3D engine ...");
+	new Engine3D(VISUAL, SOLVER.getProblem());
+
+	splash.setMessage("Creating file chooser ...");
+	FC = new JFileChooser();
+	FC.addChoosableFileFilter(new FileFilter() {
+	    @Override
+	    public boolean accept(File f) {
+		if (f.isDirectory())
+		    return true;
+		return f.getName().toLowerCase().endsWith(".lop");
+	    }
+
+	    @Override
+	    public String getDescription() {
+		return "Lineares Optimierungsproblem (*.lop)";
+	    }
+	});
+	FC.setMultiSelectionEnabled(false);
+
+	splash.setMessage("Solve LOP ...");
+	SOLVER.solve();
+
+	splash.setMessage("Showing main window ...");
+	MAIN.setVisible(true);
+	splash.setMessage("Closeing splash ...");
+	splash.setVisible(false);
     }
 
-    MainFrame frame;
+    /**
+     * Ladefunktion fuer Daten im xml-Format.
+     * 
+     */
+    private static void fileOpenClass() {
+	if (FC.showOpenDialog(MAIN) == JFileChooser.APPROVE_OPTION) {
+	    FILE = FC.getSelectedFile().getAbsolutePath();
+	    try {
+		SOLVER.open(new URL(FILE));
+	    } catch (MalformedURLException e) {
+	    }
+	}
+    }
+
+    /**
+     * Speicherfunktion fuer Daten im xml-Format
+     * 
+     */
+    private static void fileSaveClass(boolean saveAs) {
+	if (saveAs || FILE == null)
+	    if (FC.showSaveDialog(MAIN) == JFileChooser.APPROVE_OPTION) {
+		FILE = FC.getSelectedFile().getAbsolutePath();
+		if (!FILE.toLowerCase().endsWith(".lop"))
+		    FILE += ".lop";
+	    }
+	if (FILE != null)
+	    SOLVER.save(FILE);
+    }
 }

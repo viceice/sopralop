@@ -4,11 +4,12 @@ SoPraLOP
 -------------------------------------------------------------------------------
 Version 0.5 - 01.11.2007  (voraussichtlicher Termin)
 -------------------------------------------------------------------------------
+- Menüs überarbeitet (Multisprachfähikeit, Icons)
+- Splash-Screen hinzugefügt
 -	TODO:
 	+ Hilfe einbauen
 	+ Nutzerinteraktion
 	+ Lösung des Dualen Problems
-	+ Restliche Spezialfälle behandeln
 -------------------------------------------------------------------------------
 Version 0.4 - 17.10.2007
 -------------------------------------------------------------------------------

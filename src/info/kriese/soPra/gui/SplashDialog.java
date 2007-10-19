@@ -20,8 +20,8 @@
  * ChangeLog:
  * 
  * 19.10.2007 - Version 0.2
- * - Fenster neu designed
- * - Multisprachfähigkeit hinzugefügt
+ * - Kopie von AboutDialog
+ * - In Splash-Fenster umdesigned
  * 11.09.2007 - Version 0.1.2
  *  - Schriftgröße geändert
  * 30.07.2007 - Version 0.1.1
@@ -31,7 +31,6 @@
  */
 package info.kriese.soPra.gui;
 
-import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.io.Settings;
 import info.kriese.soPra.io.impl.SettingsFactory;
 
@@ -45,22 +44,32 @@ import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 
-public class AboutDialog extends JDialog {
+public class SplashDialog extends JDialog {
 
-    private static AboutDialog instance;
+    private static SplashDialog instance;
 
     /** */
     private static final long serialVersionUID = -254806736634900337L;
 
-    public static AboutDialog getInstance(MainFrame owner) {
+    public static SplashDialog getInstance() {
 	if (instance == null)
-	    instance = new AboutDialog(owner);
+	    instance = new SplashDialog();
 	return instance;
     }
 
+    private static Border createMainBorder() {
+	Border inner, outer;
+	outer = BorderFactory.createBevelBorder(BevelBorder.RAISED,
+		Color.LIGHT_GRAY, Color.GRAY, Color.LIGHT_GRAY, Color.GRAY);
+	inner = BorderFactory.createEmptyBorder(20, 20, 10, 20);
+	return BorderFactory.createCompoundBorder(outer, inner);
+    }
+
     protected static ImageIcon createImageIcon(String path) {
-	java.net.URL imgURL = AboutDialog.class.getResource(path);
+	java.net.URL imgURL = SplashDialog.class.getResource(path);
 	if (imgURL != null)
 	    return new ImageIcon(imgURL);
 	else {
@@ -69,33 +78,30 @@ public class AboutDialog extends JDialog {
 	}
     }
 
-    private final JLabel pictureLabel;
+    private final JLabel pictureLabel, msg;
 
     private final Settings props = SettingsFactory.getInstance();
 
     /**
      * 
      * @author Michael Kriese
-     * @since 29.07.2007
+     * @since 19.10.2007
      * @version 0.2
-     * @param owner
-     *                Hauptfenster
      */
-    private AboutDialog(MainFrame owner) {
-	super(owner, true);
-	setTitle(Lang.getString("About.Title") + " " + this.props.getName());
-	setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
-	setLocationRelativeTo(owner);
+    private SplashDialog() {
+	setTitle("Splash " + this.props.getName());
+	setUndecorated(true);
+	setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 
 	JPanel pn = new JPanel();
-	pn.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
+	pn.setBorder(createMainBorder());
 	pn.setBackground(new Color(0, 128, 0));
 	pn.setLayout(new BorderLayout());
-	add(pn);
 
 	this.pictureLabel = new JLabel();
 	this.pictureLabel.setPreferredSize(new Dimension(200, 200));
 	updatePicture();
+
 	pn.add(this.pictureLabel, BorderLayout.CENTER);
 
 	JLabel info = new JLabel(
@@ -108,10 +114,21 @@ public class AboutDialog extends JDialog {
 			+ this.props.getWeb() + "</center></font></html>");
 
 	info.setPreferredSize(new Dimension(250, 200));
-	info.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+	info.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
 	pn.add(info, BorderLayout.EAST);
 
+	this.msg = new JLabel();
+	this.msg.setForeground(Color.WHITE);
+	this.msg.setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20));
+	this.msg.setPreferredSize(new Dimension(450, 50));
+	pn.add(this.msg, BorderLayout.SOUTH);
+	add(pn);
 	pack();
+	setLocationRelativeTo(null);
+    }
+
+    public void setMessage(String msg) {
+	this.msg.setText(msg);
     }
 
     protected void updatePicture() {

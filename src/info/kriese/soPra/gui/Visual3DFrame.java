@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 19.10.2007 - Version 0.2.4
+ * - Icon in Fenster-Deko gesetzt
+ * - Multisprachfähigkeit hinzugefügt
  * 17.09.2007 - Version 0.2.3
  * - Falls owner = null Programm beenden, sonst verstecken
  * 11.09.2007 - Version 0.2.2
@@ -34,6 +37,7 @@
  */
 package info.kriese.soPra.gui;
 
+import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.io.impl.SettingsFactory;
 
 import java.awt.BorderLayout;
@@ -42,12 +46,13 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 import javax.media.j3d.Canvas3D;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 /**
  * @author Michael Kriese
- * @version 0.2.3
+ * @version 0.2.4
  * @since 11.05.2007
  * 
  */
@@ -65,7 +70,7 @@ public final class Visual3DFrame extends JFrame implements Virtual3DFrame {
     private final JPanel pn;
 
     public Visual3DFrame(JFrame owner) {
-	super("Java 3D Visualisierung - Version "
+	super(Lang.getString("Visual.Title") + " - Version "
 		+ SettingsFactory.getInstance().getVersion());
 
 	if (owner == null) {
@@ -80,6 +85,10 @@ public final class Visual3DFrame extends JFrame implements Virtual3DFrame {
 	setLayout(new BorderLayout());
 	setExtendedState(JFrame.MAXIMIZED_BOTH);
 	setSize(new Dimension(600, 500));
+
+	ImageIcon ico = MenuMaker.getImage("MainFrame");
+	if (ico != null)
+	    setIconImage(ico.getImage());
 
 	this.pn = new JPanel();
 	this.pn.setLayout(new BorderLayout());

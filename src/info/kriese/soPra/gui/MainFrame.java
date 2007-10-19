@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 19.10.2007 - Version 0.5
+ * - Funktionalität aus GUI ausgelagert
+ * - Menu Icons hinzugefügt
  * 16.10.2007 - Version 0.4.3
  * - Für neue Beispiel LOP's erweitert, werden komplett aus Sprach-Datei geladen
  * 12.10.2007 - Version 0.4.2
@@ -49,36 +52,31 @@
  */
 package info.kriese.soPra.gui;
 
-import info.kriese.soPra.engine3D.Engine3D;
-import info.kriese.soPra.gui.html.HTMLGenerator;
+import info.kriese.soPra.SoPraLOP;
 import info.kriese.soPra.gui.lang.Lang;
-import info.kriese.soPra.io.IOUtils;
 import info.kriese.soPra.io.Settings;
 import info.kriese.soPra.io.impl.SettingsFactory;
-import info.kriese.soPra.math.LOPSolver;
+import info.kriese.soPra.lop.LOP;
+import info.kriese.soPra.lop.LOPAdapter;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.io.File;
-import java.net.MalformedURLException;
 
-import javax.swing.JFileChooser;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
-import javax.swing.filechooser.FileFilter;
 
 import org.xhtmlrenderer.simple.XHTMLPanel;
 
 /**
  * @author Michael Kriese
- * @version 0.4.3
+ * @version 0.5
  * @since 12.05.2007
  * 
  */
@@ -91,29 +89,37 @@ public final class MainFrame extends JFrame {
 
     private static int WIDTH = 600;
 
-    private final AboutDialog about;
-
-    private final InputFrame data;
+    public XHTMLPanel info;
 
     private JMenu edit;
-
-    private final JFileChooser fc;
-
-    private String file = null;
-
-    private final LOPSolver lop;
 
     private JMenuItem primale, duale;
 
     private final Settings PROPS = SettingsFactory.getInstance();
 
-    private final Visual3DFrame visual;
-
-    public MainFrame() {
+    public MainFrame(LOP lop) {
 	setTitle(this.PROPS.getName() + " - Version " + this.PROPS.getVersion());
 	setSize(600, 500);
 	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	setLayout(new BorderLayout());
+	setLocationRelativeTo(null);
+	ImageIcon ico = MenuMaker.getImage("MainFrame");
+	if (ico != null)
+	    setIconImage(ico.getImage());
+
+	lop.addProblemListener(new LOPAdapter() {
+	    @Override
+	    public void showDualProblem(LOP lop) {
+		MainFrame.this.edit.remove(MainFrame.this.duale);
+		MainFrame.this.edit.add(MainFrame.this.primale);
+	    }
+
+	    @Override
+	    public void showPrimalProblem(LOP lop) {
+		MainFrame.this.edit.remove(MainFrame.this.primale);
+		MainFrame.this.edit.add(MainFrame.this.duale);
+	    }
+	});
 
 	addComponentListener(new ComponentAdapter() {
 
@@ -131,127 +137,16 @@ public final class MainFrame extends JFrame {
 
 	generateMainMenu();
 
-	this.lop = new LOPSolver();
+	this.info = new XHTMLPanel();
 
-	this.data = new InputFrame(this, this.lop.getProblem());
-
-	this.about = AboutDialog.getInstance(this);
-
-	this.visual = new Visual3DFrame(this);
-
-	XHTMLPanel info = new XHTMLPanel();
-
-	JScrollPane scroll = new JScrollPane(info);
+	JScrollPane scroll = new JScrollPane(this.info);
 	add(scroll, BorderLayout.CENTER);
-
-	// Referenzen auf diese Objekte werden nicht benötigt
-	new HTMLGenerator(this.lop.getProblem(), info);
-	new Engine3D(this.visual, this.lop.getProblem());
-
-	this.lop.solve();
-
-	this.fc = new JFileChooser();
-	this.fc.addChoosableFileFilter(new FileFilter() {
-	    @Override
-	    public boolean accept(File f) {
-		if (f.isDirectory())
-		    return true;
-		return f.getName().toLowerCase().endsWith(".lop");
-	    }
-
-	    @Override
-	    public String getDescription() {
-		return "Lineares Optimierungsproblem (*.lop)";
-	    }
-	});
-	this.fc.setMultiSelectionEnabled(false);
-    }
-
-    private void actionPerformed(ActionEvent e) {
-	String cmd = e.getActionCommand();
-
-	if (cmd.equals("Menu.File.Exit"))
-	    System.exit(0);
-	else if (cmd.equals("Menu.File.Open"))
-	    fileOpenClass();
-	else if (cmd.equals("Menu.File.Save"))
-	    fileSaveClass(false);
-	else if (cmd.equals("Menu.File.SaveAs"))
-	    fileSaveClass(true);
-	else if (cmd.equals("Menu.Edit.Data")) {
-	    this.data.setLocationRelativeTo(this);
-	    this.data.setVisible(true);
-	    this.lop.solve();
-	} else if (cmd.equals("Menu.Edit.Show")) {
-	    this.visual.setLocationRelativeTo(this);
-	    this.visual.setVisible(true);
-	} else if (cmd.equals("Menu.Edit.ShowSolution")) {
-	    if (this.lop.getProblem().isSolved())
-		this.lop.getProblem().showSolution();
-	    else
-		JOptionPane.showMessageDialog(this, "Sie muessen erst"
-			+ " ein Problem oeffnen oder eingeben");
-	} else if (cmd.equals("Menu.Edit.ShowDualProblem")) {
-	    if (this.lop.getProblem().isSolved()) {
-		this.lop.getProblem().showDualProblem();
-		this.edit.remove(this.duale);
-		this.edit.add(this.primale);
-	    } else
-		JOptionPane.showMessageDialog(this, "Sie muessen erst"
-			+ " ein Problem oeffnen oder eingeben");
-	} else if (cmd.equals("Menu.Edit.ShowPrimalProblem")) {
-	    this.lop.getProblem().showPrimalProblem();
-	    this.edit.remove(this.primale);
-	    this.edit.add(this.duale);
-	} else if (cmd.equals("Menu.Help.About")) {
-	    this.about.setLocationRelativeTo(this);
-	    this.about.setVisible(true);
-	} else if (cmd.startsWith("Menu.File.Samples")) {
-	    this.file = null;
-	    this.lop.open(IOUtils.getURL("problems/"
-		    + Lang.getString(cmd + ".File") + ".lop"));
-	}
-    }
-
-    /**
-     * Ladefunktion fuer Daten im xml-Format.
-     * 
-     */
-    private void fileOpenClass() {
-	int returnVal = this.fc.showOpenDialog(this);
-	if (returnVal == JFileChooser.APPROVE_OPTION) {
-	    File file = this.fc.getSelectedFile();
-	    this.file = file.getAbsolutePath();
-	    try {
-		this.lop.open(file.toURI().toURL());
-	    } catch (MalformedURLException e) {
-	    }
-	}
-    }
-
-    /**
-     * Speicherfunktion fuer Daten im xml-Format
-     * 
-     */
-    private void fileSaveClass(boolean saveAs) {
-	if (saveAs || this.file == null) {
-	    int returnVal = this.fc.showSaveDialog(this);
-
-	    if (returnVal == JFileChooser.APPROVE_OPTION) {
-		File tmp = this.fc.getSelectedFile();
-		this.file = tmp.getAbsolutePath();
-		if (!this.file.toLowerCase().endsWith(".lop"))
-		    this.file += ".lop";
-	    }
-	}
-	if (this.file != null)
-	    this.lop.save(this.file);
     }
 
     private void generateMainMenu() {
 	ActionListener ac = new ActionListener() {
 	    public void actionPerformed(ActionEvent e) {
-		MainFrame.this.actionPerformed(e);
+		SoPraLOP.actionPerformed(e);
 	    }
 	};
 	JMenuBar menubar;
