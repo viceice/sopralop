@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 23.10.2007 - Version 0.4
+ * - An neuen Quickhull-Algorithmus angepasst
  * 16.10.2007 - Version 0.3.7.2
  * - NullPointer behoben, falls zu öffnendes LOP nicht existiert
  * - Methode solve() überarbeitet, Gausselimination vereinheitlicht
@@ -63,6 +65,7 @@ import info.kriese.soPra.io.IOUtils;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPSolution;
 import info.kriese.soPra.lop.impl.LOPFactory;
+import info.kriese.soPra.math.quickhull.QuickHull;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -83,7 +86,7 @@ import org.xml.sax.SAXParseException;
 
 /**
  * @author Michael Kriese
- * @version 0.3.7.2
+ * @version 0.4
  * @since 10.05.2007
  * 
  */
@@ -283,10 +286,7 @@ public final class LOPSolver {
 
 	this.hull.build(this.lop.getVectors());
 
-	Vector3Frac[] vertices = this.hull.getVerticesAsVector3Frac();
-	int[][] faces = this.hull.getFaces();
-
-	Vector3Frac sln, l1, l2, l3, opt_vector = this.lop.getTarget().clone();
+	Vector3Frac sln, opt_vector = this.lop.getTarget().clone();
 
 	boolean max = this.lop.isMaximum(), unlimited = false;
 	Fractional value_high, value_low, opt = null, value_unlimit = null;
@@ -294,49 +294,41 @@ public final class LOPSolver {
 	value_high = Fractional.MAX_VALUE;
 	value_low = Fractional.MIN_VALUE;
 
-	for (int[] face : faces)
-	    if (vertices[face[0]].equals(Vector3Frac.ZERO)
-		    || vertices[face[1]].equals(Vector3Frac.ZERO)
-		    || vertices[face[2]].equals(Vector3Frac.ZERO)) {
+	for (Vertex vertex : this.hull.getVerticesList())
+	    if (vertex.p1.equals(Vector3Frac.ZERO)) {
 
-		l1 = vertices[face[0]].equals(Vector3Frac.ZERO) ? vertices[face[1]]
-			: vertices[face[0]];
-		l2 = vertices[face[2]].equals(Vector3Frac.ZERO) ? vertices[face[1]]
-			: vertices[face[2]];
-		l3 = Vector3Frac.ZERO;
-
-		sln = this.gauss.gaussElimination(l1, l2, l3, this.lop
-			.getTarget());
+		sln = this.gauss.gaussElimination(vertex.p2, vertex.p3,
+			vertex.p1, this.lop.getTarget());
 
 		opt_vector.setCoordZ(sln.getCoordZ());
 
-		if (isPointInTriangle(l1.scale(100), l2.scale(100), opt_vector)) {
+		if (vertex.isPointInVertex(opt_vector, 100)) {
 		    if (opt == null) {
 			opt = sln.getCoordZ();
-			sol.addArea(l1, l2);
+			sol.addArea(vertex.p2, vertex.p3);
 		    }
 
 		    if (max && sln.getCoordZ().equals(opt)
 			    && !value_high.equals(Fractional.MAX_VALUE)) {
-			sol.addArea(l1, l2);
+			sol.addArea(vertex.p2, vertex.p3);
 			break;
 		    }
 		    if (!max && sln.getCoordZ().equals(opt)
 			    && !value_low.equals(Fractional.MIN_VALUE)) {
-			sol.addArea(l1, l2);
+			sol.addArea(vertex.p2, vertex.p3);
 			break;
 		    }
 		    if (sln.getCoordZ().compareTo(value_high) < 0) {
 			if (!max) {
 			    sol.clearAreas();
-			    sol.addArea(l1, l2);
+			    sol.addArea(vertex.p2, vertex.p3);
 			}
 			value_low = sln.getCoordZ();
 		    }
 		    if (sln.getCoordZ().compareTo(value_low) > 0) {
 			if (max) {
 			    sol.clearAreas();
-			    sol.addArea(l1, l2);
+			    sol.addArea(vertex.p2, vertex.p3);
 			}
 			value_high = sln.getCoordZ();
 		    }
@@ -344,7 +336,7 @@ public final class LOPSolver {
 			if (max) {
 			    opt = sln.getCoordZ();
 			    sol.clearAreas();
-			    sol.addArea(l1, l2);
+			    sol.addArea(vertex.p2, vertex.p3);
 			}
 			value_high = sln.getCoordZ();
 		    }
@@ -352,7 +344,7 @@ public final class LOPSolver {
 			if (!max) {
 			    opt = sln.getCoordZ();
 			    sol.clearAreas();
-			    sol.addArea(l1, l2);
+			    sol.addArea(vertex.p2, vertex.p3);
 			}
 			value_low = sln.getCoordZ();
 		    }
@@ -360,15 +352,12 @@ public final class LOPSolver {
 	    } else {
 		// Überprüfe ob Zielvektor den Kegelboden durchstößt
 		// Falls ja ist MAX oder MIN unendlich
-		l1 = vertices[face[0]].scale(100);
-		l2 = vertices[face[1]].scale(100);
-		l3 = vertices[face[2]].scale(100);
 
-		sln = this.gauss.gaussElimination(l1, l2, l3, this.lop
-			.getTarget());
+		sln = this.gauss.gaussElimination(vertex.p1, vertex.p2,
+			vertex.p3, this.lop.getTarget());
 		opt_vector.setCoordZ(sln.getCoordZ());
 
-		if (isPointInTriangle(l1, l2, l3, opt_vector)) {
+		if (vertex.isPointInVertex(opt_vector)) {
 		    unlimited = true;
 		    value_unlimit = sln.getCoordZ();
 		}
@@ -397,41 +386,5 @@ public final class LOPSolver {
 	sol.setValue(opt);
 
 	this.lop.problemSolved();
-    }
-
-    private boolean isPointInTriangle(Vector3Frac a, Vector3Frac b,
-	    Vector3Frac p) {
-	return isPointInTriangle(Vector3Frac.ZERO, a, b, p);
-    }
-
-    private boolean isPointInTriangle(Vector3Frac a, Vector3Frac b,
-	    Vector3Frac c, Vector3Frac p) {
-
-	Vector3Frac v0 = c.sub(a);
-	Vector3Frac v1 = b.sub(a);
-	Vector3Frac v2 = p.sub(a);
-
-	// Compute dot products
-	float dot00 = v0.dot(v0);
-	float dot01 = v0.dot(v1);
-	float dot02 = v0.dot(v2);
-	float dot11 = v1.dot(v1);
-	float dot12 = v1.dot(v2);
-
-	// Compute barycentric coordinates
-	float invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
-	float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
-	float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
-
-	u = Math2.round(u);
-	v = Math2.round(v);
-
-	// Check if point is in triangle
-	boolean res = (u >= 0) && (v >= 0) && (u + v <= 1);
-
-	// System.err.println("[ " + a + ", " + b + ", " + c + " ] = " + p
-	// + "\t\t\t[ u=" + u + ", v=" + v + " | "
-	// + (res ? "true" : "false") + "]");
-	return res;
     }
 }

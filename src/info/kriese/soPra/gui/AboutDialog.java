@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 23.10.2007 - Version 0.2.1
+ * - An neues Logo angepasst
  * 19.10.2007 - Version 0.2
  * - Fenster neu designed
  * - Multisprachfähigkeit hinzugefügt
@@ -46,6 +48,14 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+/**
+ * 
+ * 
+ * @author Michael Kriese
+ * @version 0.2.1
+ * @since 29.07.2007
+ * 
+ */
 public class AboutDialog extends JDialog {
 
     private static AboutDialog instance;

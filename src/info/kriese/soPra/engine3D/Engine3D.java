@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 23.10.2007 - Version 0.4
+ * - An neuen Quickhull-Algorithmus angepasst
  * 16.10.2007 - Version 0.3.6.2
  * - F6 zeigt Lösung an
  * 12.10.2007 - version 0.3.6.1
@@ -70,8 +72,8 @@ import info.kriese.soPra.gui.Virtual3DFrame;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPAdapter;
 import info.kriese.soPra.lop.LOPSolution;
-import info.kriese.soPra.math.QuickHull;
 import info.kriese.soPra.math.Vector3Frac;
+import info.kriese.soPra.math.quickhull.QuickHull;
 
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
@@ -96,7 +98,7 @@ import com.sun.j3d.utils.universe.ViewingPlatform;
  * Stellt Methoden zur Berechnung der 3D-Szene bereit.
  * 
  * @author Michael Kriese
- * @version 0.3.6.2
+ * @version 0.4
  * @since 26.04.2007
  */
 public final class Engine3D {
@@ -242,8 +244,7 @@ public final class Engine3D {
 	this.coordsPlane.compute(this.size);
 
 	// fuege Kegel hinzu
-	this.cone.compute(this.hull.getVertices(), this.hull.getFaces(),
-		this.size);
+	this.cone.compute(this.hull.getVerticesList(), this.size);
 
 	// fuege ZielVektor hinzu
 	this.targetLine.compute(this.lop.getTarget().toVector3f(), this.size);
@@ -267,8 +268,7 @@ public final class Engine3D {
 	this.coordsPlane.compute(this.size);
 
 	// fuege Kegel hinzu
-	this.cone.compute(this.hull.getVertices(), this.hull.getFaces(),
-		this.size);
+	this.cone.compute(this.hull.getVerticesList(), this.size);
 
 	// fuege ZielVektor hinzu
 	this.targetLine.compute(this.lop.getTarget().toVector3f(), this.size);

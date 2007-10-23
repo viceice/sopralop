@@ -19,39 +19,30 @@
  * 
  * ChangeLog:
  * 
- * 23.10.2007 - Version 0.1.2
- * - solve entfert,  wird jetzt implizit aufgerufen
- * 02.10.2007 - Version 0.1.1
- * - Einige Infos aus den Settings laden
- * 15.09.2007 - Version 0.1
+ * 23.10.2007 - Version 0.1
  *  - Datei hinzugefuegt
  */
-package info.kriese.soPra.test;
+package info.kriese.soPra.math.quickhull;
 
-import info.kriese.soPra.io.IOUtils;
-import info.kriese.soPra.io.impl.SettingsFactory;
-import info.kriese.soPra.math.LOPSolver;
+import info.kriese.soPra.math.Vector3Frac;
+import ca.ubc.cs.spider.lloyed.quickhull3d.Point3d;
 
 /**
  * 
+ * 
  * @author Michael Kriese
- * @version 0.1.2
- * @since 15.09.2007
+ * @version 0.1
+ * @since 23.10.2007
  * 
  */
-public final class TestSolve {
+class Point3DWrapper extends Point3d {
 
-    public static void main(String[] args) {
-	LOPSolver solver = new LOPSolver();
+    public Point3DWrapper() {
+	set(0.0, 0.0, 0.0);
+    }
 
-	System.out.println("SoPraLOP Test - Version "
-		+ SettingsFactory.getInstance().getVersion());
-	System.out.println("\t(c) 2007 "
-		+ SettingsFactory.getInstance().getAuthor());
-	System.out.println();
-	solver.open(IOUtils.getURL("problems/unlimited_high2.lop"));
-	System.out.println();
-	System.out.println("Problem: ");
-	solver.print(System.out);
+    public Point3DWrapper(Vector3Frac frac) {
+	set(frac.getCoordX().toDouble(), frac.getCoordY().toDouble(), frac
+		.getCoordZ().toDouble());
     }
 }

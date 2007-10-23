@@ -6,6 +6,9 @@ Version 0.5 - 01.11.2007  (voraussichtlicher Termin)
 -------------------------------------------------------------------------------
 - Menüs überarbeitet (Multisprachfähikeit, Icons)
 - Splash-Screen hinzugefügt
+- Logo mit höherer Auflösung hinzugefügt
+- Quickhull-Algorithmus überarbeitet, Vektoren, welche in einer Ebene
+   liegen, werden nicht mehr gefiltert
 -	TODO:
 	+ Hilfe einbauen
 	+ Nutzerinteraktion

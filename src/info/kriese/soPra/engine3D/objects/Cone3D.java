@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 23.10.2007 - Version 0.4
+ * - An neuen Quickhull-Algorithmus angepasst
  * 14.09.2007 - Version 0.3
  * - Instanz kann direkt zum SceneGraph hizugefügt werden
  * - Änderung bei Skalierung
@@ -33,6 +35,9 @@
 package info.kriese.soPra.engine3D.objects;
 
 import info.kriese.soPra.engine3D.Tools3D;
+import info.kriese.soPra.math.Math2;
+import info.kriese.soPra.math.Vector3Frac;
+import info.kriese.soPra.math.Vertex;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,16 +57,15 @@ import com.sun.j3d.utils.geometry.GeometryInfo;
  * Erstellt aus den Vektoren des LOP's einen konvexen Kegel im Raum.
  * 
  * @author Michael Kriese
- * @version 0.3
+ * @version 0.4
  * @since 12.05.2007
  * 
  */
 public class Cone3D extends TransformGroup {
 
-    private int[][] faces;
-
     private Shape3D front, back, lines;
 
+    private int[] indices;
     private Point3f[] vertices;
 
     public Cone3D() {
@@ -71,12 +75,44 @@ public class Cone3D extends TransformGroup {
 	initLines();
     }
 
-    public void compute(Point3f[] vertices, int[][] faces, float size) {
-	this.vertices = vertices;
-	this.faces = faces;
+    public void compute(List<Vertex> vertices, float size) {
+	List<Integer> tidx = new ArrayList<Integer>();
+	List<Point3f> tvtx = new ArrayList<Point3f>();
+	Point3f p2, p3;
+	int idx;
 
-	for (Point3f p : vertices)
-	    p.scale(size);
+	tvtx.add(new Point3f());
+
+	for (Vertex v : vertices) {
+	    if (!v.p1.equals(Vector3Frac.ZERO))
+		continue;
+
+	    p2 = Math2.normalizeScale(v.p2.toPoint3f(), size);
+	    p3 = Math2.normalizeScale(v.p3.toPoint3f(), size);
+	    tidx.add(0);
+
+	    idx = tvtx.indexOf(p2);
+	    if (idx == -1) {
+		tvtx.add(p2);
+		idx = tvtx.indexOf(p2);
+	    }
+	    tidx.add(idx);
+
+	    idx = tvtx.indexOf(p3);
+	    if (idx == -1) {
+		tvtx.add(p3);
+		idx = tvtx.indexOf(p3);
+	    }
+	    tidx.add(idx);
+	}
+
+	this.indices = new int[tidx.size()];
+	for (int i = 0; i < this.indices.length; i++)
+	    this.indices[i] = tidx.get(i);
+
+	this.vertices = new Point3f[tvtx.size()];
+	for (int i = 0; i < this.vertices.length; i++)
+	    this.vertices[i] = tvtx.get(i);
 
 	computeFront();
 	computeBack();
@@ -86,26 +122,8 @@ public class Cone3D extends TransformGroup {
     private void computeBack() {
 	GeometryInfo gInfo = new GeometryInfo(GeometryInfo.TRIANGLE_ARRAY);
 
-	int[] indices;
-
-	List<Integer> tmp = new ArrayList<Integer>();
-	int zero = this.vertices.length - 1;
-
-	for (int[] face : this.faces) {
-	    if (face[0] != zero && face[1] != zero && face[2] != zero)
-		continue;
-	    tmp.add(face[0]);
-	    tmp.add(face[1]);
-	    tmp.add(face[2]);
-	}
-
-	indices = new int[tmp.size()];
-
-	for (int i = 0; i < tmp.size(); i++)
-	    indices[i] = tmp.get(i);
-
 	gInfo.setCoordinates(this.vertices);
-	gInfo.setCoordinateIndices(indices);
+	gInfo.setCoordinateIndices(this.indices);
 	gInfo.compact();
 
 	Tools3D.generateNormal(gInfo);
@@ -118,26 +136,16 @@ public class Cone3D extends TransformGroup {
     private void computeFront() {
 	GeometryInfo gInfo = new GeometryInfo(GeometryInfo.TRIANGLE_ARRAY);
 
-	int[] indices;
+	int[] nidx = new int[this.indices.length];
 
-	List<Integer> tmp = new ArrayList<Integer>();
-	int zero = this.vertices.length - 1;
-
-	for (int[] face : this.faces) {
-	    if (face[0] != zero && face[1] != zero && face[2] != zero)
-		continue;
-	    tmp.add(face[2]);
-	    tmp.add(face[1]);
-	    tmp.add(face[0]);
+	for (int i = 0; i < nidx.length; i += 3) {
+	    nidx[i] = this.indices[i + 2];
+	    nidx[i + 1] = this.indices[i + 1];
+	    nidx[i + 2] = this.indices[i];
 	}
 
-	indices = new int[tmp.size()];
-
-	for (int i = 0; i < tmp.size(); i++)
-	    indices[i] = tmp.get(i);
-
 	gInfo.setCoordinates(this.vertices);
-	gInfo.setCoordinateIndices(indices);
+	gInfo.setCoordinateIndices(nidx);
 	gInfo.compact();
 
 	Tools3D.generateNormal(gInfo);
@@ -154,9 +162,11 @@ public class Cone3D extends TransformGroup {
 	Point3f[] coords = new Point3f[lines * 2];
 	int pos = 0;
 
-	for (int i = 0; i < lines; i++) {
-	    coords[pos * 2] = new Point3f(0.0f, 0.0f, 0.0f);
-	    coords[pos * 2 + 1] = this.vertices[i];
+	for (Point3f pt : this.vertices) {
+	    if (pt.x == 0 && pt.y == 0 && pt.z == 0)
+		continue;
+	    coords[pos * 2] = new Point3f();
+	    coords[pos * 2 + 1] = pt;
 	    lineArray.setColor(pos * 2, Tools3D.YELLOW);
 	    lineArray.setColor(pos * 2 + 1, Tools3D.YELLOW);
 	    pos++;
