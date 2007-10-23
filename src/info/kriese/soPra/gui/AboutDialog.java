@@ -116,7 +116,7 @@ public class AboutDialog extends JDialog {
 
     protected void updatePicture() {
 	// Get the icon corresponding to the image.
-	ImageIcon icon = createImageIcon("images/logo.gif");
+	ImageIcon icon = createImageIcon("images/logo.png");
 	Image im = icon.getImage();
 	im = im.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
 
