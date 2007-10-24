@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 24.10.2007 - Version 0.4
+ * - Struktur für neuen ActionHandler geändert
  * 10.10.2007 - Version 0.3.1
  * - Spezialfälle werden beachtet
  * 03.10.2007 - Version 0.3
@@ -48,6 +50,9 @@ import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JComponent;
+import javax.swing.JScrollPane;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -59,7 +64,7 @@ import org.xhtmlrenderer.simple.XHTMLPanel;
 /**
  * 
  * @author Michael Kriese
- * @version 0.3.1
+ * @version 0.4
  * @since 23.08.2007
  * 
  */
@@ -72,6 +77,8 @@ public final class HTMLGenerator {
 	    return "<=";
     }
 
+    private final JScrollPane content;
+
     private final Document doc;
 
     private final XHTMLPanel info;
@@ -80,15 +87,17 @@ public final class HTMLGenerator {
 
     private Element problem, solution, solution_box;
 
-    public HTMLGenerator(LOP lop, XHTMLPanel info) {
+    public HTMLGenerator(LOP lop) {
 	this.lop = lop;
-	this.info = info;
+	this.info = new XHTMLPanel();
+
+	this.content = new JScrollPane(this.info);
 
 	this.doc = IOUtils.getDocumentTemplate();
 
-	info.setDocument(this.doc, IOUtils.BASE_URL.toString());
+	this.info.setDocument(this.doc, IOUtils.BASE_URL.toString());
 
-	info.addComponentListener(new ComponentAdapter() {
+	this.info.addComponentListener(new ComponentAdapter() {
 
 	    @Override
 	    public void componentResized(ComponentEvent e) {
@@ -141,6 +150,10 @@ public final class HTMLGenerator {
 	    }
 	});
 	updateProblem();
+    }
+
+    public JComponent getPanel() {
+	return this.content;
     }
 
     private Element createNode(String name) {

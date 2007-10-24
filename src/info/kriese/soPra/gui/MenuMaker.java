@@ -18,7 +18,9 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * 
  * ChangeLog:
- *
+ * 
+ * 24.10.2007 - Version 0.2
+ * - An neuen ActionHandler angepasst
  * 29.07.2007 - Version 0.1
  * - Datei hinzugefuegt
  */
@@ -26,7 +28,6 @@ package info.kriese.soPra.gui;
 
 import info.kriese.soPra.gui.lang.Lang;
 
-import java.awt.event.ActionListener;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
@@ -38,7 +39,7 @@ import javax.swing.KeyStroke;
 /**
  * 
  * @author Michael Kriese
- * @version 0.1
+ * @version 0.2
  * @since 29.07.2007
  * 
  */
@@ -66,13 +67,13 @@ public final class MenuMaker {
 	return res;
     }
 
-    public static JMenuItem getMenuItem(String key, ActionListener ac) {
+    public static JMenuItem getMenuItem(String key, ActionHandler ac) {
 	JMenuItem res = new JMenuItem(getMenuTitle(key));
 	res.setMnemonic(getMenuMnemonic(key));
 	res.setAccelerator(getMenuAccelerator(key));
 	res.setActionCommand(key);
 	res.setIcon(getImage(key));
-	res.addActionListener(ac);
+	ac.add(res);
 	return res;
     }
 
@@ -89,12 +90,12 @@ public final class MenuMaker {
 	return Lang.getString(key + ".Title");
     }
 
-    public static JButton getToolBarButton(String key, ActionListener ac) {
+    public static JButton getToolBarButton(String key, ActionHandler ac) {
 	JButton button = new JButton();
 	button.setFocusable(false);
 	button.setActionCommand(key);
 	button.setToolTipText(getMenuTitle(key));
-	button.addActionListener(ac);
+	ac.add(button);
 	ImageIcon icon = getImage(key);
 
 	if (icon != null)

@@ -9,6 +9,9 @@ Version 0.5 - 01.11.2007  (voraussichtlicher Termin)
 - Logo mit höherer Auflösung hinzugefügt
 - Quickhull-Algorithmus überarbeitet, Vektoren, welche in einer Ebene
    liegen, werden nicht mehr gefiltert
+ - Eingabefenster in Hauptfenster integriert
+ - Multisprachfähigkeit verbessert
+ - BugFix: 2 Lösungen für ein LOP wurden als eine erkannt
 -	TODO:
 	+ Hilfe einbauen
 	+ Nutzerinteraktion

@@ -19,6 +19,10 @@
  * 
  * ChangeLog:
  * 
+ * 23.10.2007 - Version 0.5
+ * - In InputPanel umbenannt und in JPannel geändert ( zur Integration ins Hauptfenster)
+ * - An neuen ActionHandler angepasst
+ * - BugFix: String wurde nicht korrekt aus Sprach-Datei geladen
  * 19.10.2007 - Version 0.4
  * - In InputDialog umbenannt
  * - Menü neu designed (Icons hinzugefügt, Multisprachfähigkeit)
@@ -47,7 +51,6 @@
 package info.kriese.soPra.gui;
 
 import info.kriese.soPra.gui.lang.Lang;
-import info.kriese.soPra.io.impl.SettingsFactory;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPAdapter;
 import info.kriese.soPra.math.Vector3Frac;
@@ -56,16 +59,13 @@ import info.kriese.soPra.math.impl.Vector3FracFactory;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
@@ -79,9 +79,9 @@ import javax.swing.table.TableColumn;
  * 
  * @author Peer Sterner
  * @since 13.05.2007
- * @version 0.4
+ * @version 0.5
  */
-public final class InputDialog extends JDialog implements ActionListener {
+public final class InputPanel extends JPanel {
 
     /**
      * Modell für die Eingabeklasse. Beschreibt die zu erstellende Tabelle
@@ -97,7 +97,7 @@ public final class InputDialog extends JDialog implements ActionListener {
 
 	public InputTableModel() {
 	    this.columnNames = new Vector<String>();
-	    setColumnCount(InputDialog.this.vectors.size());
+	    setColumnCount(InputPanel.this.vectors.size());
 	}
 
 	/**
@@ -105,19 +105,19 @@ public final class InputDialog extends JDialog implements ActionListener {
 	 * 
 	 */
 	public void addColumn() {
-	    int num = InputDialog.this.vectors.size();
+	    int num = InputPanel.this.vectors.size();
 
 	    if (num == LOP.MAX_VECTORS)
 		return;
 
-	    InputDialog.this.vectors.add(Vector3FracFactory.getInstance());
+	    InputPanel.this.vectors.add(Vector3FracFactory.getInstance());
 	    num++;
 	    this.columnNames.insertElementAt("<html><b>x<sub>" + num
 		    + "</sub></b></html>", num);
 	    fireTableStructureChanged();
-	    pullDownColumn(InputDialog.this.table, InputDialog.this.table
+	    pullDownColumn(InputPanel.this.table, InputPanel.this.table
 		    .getColumnModel().getColumn(
-			    InputDialog.this.table.getColumnCount() - 2));
+			    InputPanel.this.table.getColumnCount() - 2));
 	}
 
 	@Override
@@ -139,13 +139,13 @@ public final class InputDialog extends JDialog implements ActionListener {
 	}
 
 	public Object getValueAt(int row, int col) {
-	    int num = InputDialog.this.vectors.size();
+	    int num = InputPanel.this.vectors.size();
 
 	    if (col == 0)
 		switch (row) {
 		    case 0:
 			return "<html><b>"
-				+ Lang.getString("String.TargetFunction")
+				+ Lang.getString("Strings.TargetFunction")
 				+ ":</b></html>";
 
 		    default:
@@ -155,22 +155,22 @@ public final class InputDialog extends JDialog implements ActionListener {
 	    if (col == num + 1) {
 		if (row == 0)
 		    return "=";
-		return InputDialog.this.operators[row - 1];
+		return InputPanel.this.operators[row - 1];
 	    }
 
 	    if (col == num + 2)
 		switch (row) {
 		    case 0:
-			return InputDialog.this.max ? "max" : "min";
+			return InputPanel.this.max ? "max" : "min";
 		    case 1:
-			return InputDialog.this.target.getCoordX()
+			return InputPanel.this.target.getCoordX()
 				.getNumerator();
 		    default:
-			return InputDialog.this.target.getCoordY()
+			return InputPanel.this.target.getCoordY()
 				.getNumerator();
 		}
 
-	    Vector3Frac vec = InputDialog.this.vectors.get(col - 1);
+	    Vector3Frac vec = InputPanel.this.vectors.get(col - 1);
 
 	    switch (row) {
 		case 0:
@@ -190,7 +190,7 @@ public final class InputDialog extends JDialog implements ActionListener {
 	@Override
 	public boolean isCellEditable(int row, int col) {
 	    if ((col < 1)
-		    || ((row == 0) && (col == InputDialog.this.vectors.size() + 1)))
+		    || ((row == 0) && (col == InputPanel.this.vectors.size() + 1)))
 		return false;
 	    else
 		return true;
@@ -202,16 +202,16 @@ public final class InputDialog extends JDialog implements ActionListener {
 	 * bei 2 Variablen wird keine weitere entfernt
 	 */
 	public void removeColumn() {
-	    int num = InputDialog.this.vectors.size();
+	    int num = InputPanel.this.vectors.size();
 
 	    if (num > LOP.MIN_VECTORS) {
-		InputDialog.this.vectors.remove(num - 1);
+		InputPanel.this.vectors.remove(num - 1);
 		this.columnNames.remove(num);
 		num--;
 		fireTableStructureChanged();
-		pullDownColumn(InputDialog.this.table, InputDialog.this.table
+		pullDownColumn(InputPanel.this.table, InputPanel.this.table
 			.getColumnModel().getColumn(
-				InputDialog.this.table.getColumnCount() - 2));
+				InputPanel.this.table.getColumnCount() - 2));
 	    }
 	}
 
@@ -228,11 +228,11 @@ public final class InputDialog extends JDialog implements ActionListener {
 
 	@Override
 	public void setValueAt(Object value, int row, int col) {
-	    int num = InputDialog.this.vectors.size();
+	    int num = InputPanel.this.vectors.size();
 
 	    if (col == num + 1) {
 		if (row > 0)
-		    InputDialog.this.operators[row - 1] = (String) value;
+		    InputPanel.this.operators[row - 1] = (String) value;
 	    } else
 
 	    if (col == num + 2)
@@ -240,21 +240,21 @@ public final class InputDialog extends JDialog implements ActionListener {
 		    case 0:
 			String s = (String) value;
 			if (s.contains("min"))
-			    InputDialog.this.max = false;
+			    InputPanel.this.max = false;
 			else
-			    InputDialog.this.max = true;
+			    InputPanel.this.max = true;
 			;
 			break;
 		    case 1:
 			try {
-			    InputDialog.this.target.getCoordX().setNumerator(
+			    InputPanel.this.target.getCoordX().setNumerator(
 				    Integer.parseInt((String) value));
 			} catch (NumberFormatException e) {
 			}
 			break;
 		    default:
 			try {
-			    InputDialog.this.target.getCoordY().setNumerator(
+			    InputPanel.this.target.getCoordY().setNumerator(
 				    Integer.parseInt((String) value));
 			} catch (NumberFormatException e) {
 			}
@@ -262,7 +262,7 @@ public final class InputDialog extends JDialog implements ActionListener {
 		}
 	    else {
 
-		Vector3Frac vec = InputDialog.this.vectors.get(col - 1);
+		Vector3Frac vec = InputPanel.this.vectors.get(col - 1);
 
 		int val = 0;
 		try {
@@ -283,6 +283,7 @@ public final class InputDialog extends JDialog implements ActionListener {
 		}
 	    }
 	    fireTableCellUpdated(row, col);
+	    setEdited(true);
 	}
 
     }
@@ -292,6 +293,8 @@ public final class InputDialog extends JDialog implements ActionListener {
 
     private final JComboBox comboBox;
 
+    private boolean edited = false;
+
     private final LOP lop;
 
     private boolean max;
@@ -299,6 +302,8 @@ public final class InputDialog extends JDialog implements ActionListener {
     private final InputTableModel model;
 
     private String[] operators;
+
+    private Component save;
 
     private final JTable table;
 
@@ -312,9 +317,7 @@ public final class InputDialog extends JDialog implements ActionListener {
      * Vektordaten aus den uebergebenen Argumenten verwendet
      * 
      */
-    public InputDialog(JFrame owner, LOP lop) {
-	super(owner, Lang.getString("Input.Title") + " - Version "
-		+ SettingsFactory.getInstance().getVersion(), true);
+    public InputPanel(LOP lop) {
 	this.lop = lop;
 
 	this.vectors = new ArrayList<Vector3Frac>();
@@ -348,53 +351,14 @@ public final class InputDialog extends JDialog implements ActionListener {
 	add(scrollPane);
 
 	update();
-
-	setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     }
 
-    /**
-     * ActionListener fuer die Toolbar...
-     * 
-     */
-    public void actionPerformed(ActionEvent e) {
-	String cmd = e.getActionCommand();
-	if (cmd.equals("Input.Menu.AddVar"))
-	    this.model.addColumn();
-	else if (cmd.equals("Input.Menu.DelVar"))
-	    this.model.removeColumn();
-	else if (cmd.equals("Input.Menu.Save")) {
-	    this.lop.setVectors(this.vectors);
-	    this.lop.setTarget(this.target);
-	    this.lop.setMaximum(this.max);
-	    this.lop.setOperators(this.operators);
-	    this.lop.problemChanged();
-	} else if (cmd.equals("Input.Menu.Clear"))
-	    clear();
-	else if (cmd.equals("Input.Menu.Reset"))
-	    update();
+    public void addColumn() {
+	this.model.addColumn();
+	setEdited(true);
     }
 
-    /**
-     * Pulldown-Menue fuer die Spalte Nebenbedingungen
-     * 
-     * wird spaeter fuer die Generierung des dualen Problems benoetigt...
-     */
-    public void pullDownColumn(JTable table, TableColumn relation) {
-	relation.setCellEditor(new DefaultCellEditor(this.comboBox));
-
-	// Set up tool tips for the sport cells.
-	DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-	renderer.setToolTipText(Lang.getString("Input.Relation"));
-	relation.setCellRenderer(renderer);
-    }
-
-    @Override
-    public void setVisible(boolean b) {
-	super.setVisible(b);
-	update();
-    }
-
-    private void clear() {
+    public void clear() {
 
 	while (this.vectors.size() > LOP.MIN_VECTORS)
 	    this.model.removeColumn();
@@ -422,6 +386,59 @@ public final class InputDialog extends JDialog implements ActionListener {
 	this.operators[1] = "=";
 	this.max = true;
 	this.model.fireTableDataChanged();
+	setEdited(true);
+    }
+
+    public String[] getOperators() {
+	return this.operators;
+    }
+
+    public Vector3Frac getTarget() {
+	return this.target;
+    }
+
+    public List<Vector3Frac> getVectors() {
+	return this.vectors;
+    }
+
+    public boolean isEdited() {
+	return this.edited;
+    }
+
+    public boolean isMax() {
+	return this.max;
+    }
+
+    public void removeColumn() {
+	this.model.removeColumn();
+	setEdited(true);
+    }
+
+    public void setEdited(boolean value) {
+	this.edited = value;
+	this.save.setEnabled(value);
+    }
+
+    @Override
+    public void setVisible(boolean b) {
+	super.setVisible(b);
+	update();
+    }
+
+    public void update() {
+	this.vectors.clear();
+	for (Vector3Frac vec : this.lop.getVectors())
+	    this.vectors.add(vec.clone());
+	this.target = this.lop.getTarget().clone();
+	this.operators = new String[2];
+	this.operators[0] = this.lop.getOperators()[0];
+	this.operators[1] = this.lop.getOperators()[1];
+	this.max = this.lop.isMaximum();
+
+	this.model.setColumnCount(this.vectors.size());
+	pullDownColumn(this.table, this.table.getColumnModel().getColumn(
+		this.table.getColumnCount() - 2));
+	setEdited(false);
     }
 
     /**
@@ -433,13 +450,18 @@ public final class InputDialog extends JDialog implements ActionListener {
 	toolbar = new JToolBar("Input.Menu");
 	toolbar.setFloatable(false);
 
-	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.AddVar", this));
-	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.DelVar", this));
+	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.AddVar",
+		ActionHandler.INSTANCE));
+	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.DelVar",
+		ActionHandler.INSTANCE));
 	toolbar.addSeparator();
-	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.Reset", this));
-	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.Clear", this));
+	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.Reset",
+		ActionHandler.INSTANCE));
+	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.Clear",
+		ActionHandler.INSTANCE));
 	toolbar.addSeparator();
-	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.Save", this));
+	this.save = toolbar.add(MenuMaker.getToolBarButton("Input.Menu.Save",
+		ActionHandler.INSTANCE));
 
 	add(toolbar, BorderLayout.PAGE_START);
     }
@@ -472,18 +494,17 @@ public final class InputDialog extends JDialog implements ActionListener {
 	}
     }
 
-    private void update() {
-	this.vectors.clear();
-	for (Vector3Frac vec : this.lop.getVectors())
-	    this.vectors.add(vec.clone());
-	this.target = this.lop.getTarget().clone();
-	this.operators = new String[2];
-	this.operators[0] = this.lop.getOperators()[0];
-	this.operators[1] = this.lop.getOperators()[1];
-	this.max = this.lop.isMaximum();
+    /**
+     * Pulldown-Menue fuer die Spalte Nebenbedingungen
+     * 
+     * wird spaeter fuer die Generierung des dualen Problems benoetigt...
+     */
+    private void pullDownColumn(JTable table, TableColumn relation) {
+	relation.setCellEditor(new DefaultCellEditor(this.comboBox));
 
-	this.model.setColumnCount(this.vectors.size());
-	pullDownColumn(this.table, this.table.getColumnModel().getColumn(
-		this.table.getColumnCount() - 2));
+	// Set up tool tips for the sport cells.
+	DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+	renderer.setToolTipText(Lang.getString("Input.Relation"));
+	relation.setCellRenderer(renderer);
     }
 }

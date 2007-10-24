@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 24.10.2007 - Version 0.4
+ *  - ActionListener Verhalten geändert
+ *  - Startnachrichten multisprachfähig gemacht
  * 19.10.2007 - Version 0.3
  * - Funktionalität aus GUI hirhin ausgelagert
  * 14.09.2007 - Version 0.2.1
@@ -32,88 +35,41 @@
  */
 package info.kriese.soPra;
 
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileFilter;
-
 import info.kriese.soPra.engine3D.Engine3D;
 import info.kriese.soPra.gui.AboutDialog;
-import info.kriese.soPra.gui.InputDialog;
+import info.kriese.soPra.gui.ActionHandler;
+import info.kriese.soPra.gui.InputPanel;
 import info.kriese.soPra.gui.MainFrame;
 import info.kriese.soPra.gui.SplashDialog;
 import info.kriese.soPra.gui.Visual3DFrame;
 import info.kriese.soPra.gui.html.HTMLGenerator;
 import info.kriese.soPra.gui.lang.Lang;
-import info.kriese.soPra.io.IOUtils;
 import info.kriese.soPra.math.LOPSolver;
+
+import java.io.File;
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
 
 /**
  * @author Michael Kriese
- * @version 0.3
+ * @version 0.4
  * @since 12.05.2007
  * 
  */
 public final class SoPraLOP {
 
-    private static AboutDialog ABOUT;
+    public static AboutDialog ABOUT;
 
-    private static JFileChooser FC;
+    public static JFileChooser FC;
 
-    private static String FILE = null;
+    public static HTMLGenerator HTML;
 
-    private static InputDialog INPUT;
+    public static InputPanel INPUT;
+    public static MainFrame MAIN;
+    public static LOPSolver SOLVER;
 
-    private static MainFrame MAIN;
-    private static LOPSolver SOLVER;
-
-    private static Visual3DFrame VISUAL;
-
-    public static void actionPerformed(ActionEvent e) {
-	String cmd = e.getActionCommand();
-
-	if (cmd.equals("Menu.File.Exit"))
-	    System.exit(0);
-	else if (cmd.equals("Menu.File.Open"))
-	    fileOpenClass();
-	else if (cmd.equals("Menu.File.Save"))
-	    fileSaveClass(false);
-	else if (cmd.equals("Menu.File.SaveAs"))
-	    fileSaveClass(true);
-	else if (cmd.equals("Menu.Edit.Data")) {
-	    INPUT.setLocationRelativeTo(MAIN);
-	    INPUT.setVisible(true);
-	    SOLVER.solve();
-	} else if (cmd.equals("Menu.Edit.Show")) {
-	    VISUAL.setLocationRelativeTo(MAIN);
-	    VISUAL.setVisible(true);
-	} else if (cmd.equals("Menu.Edit.ShowSolution")) {
-	    if (SOLVER.getProblem().isSolved())
-		SOLVER.getProblem().showSolution();
-	    else
-		JOptionPane.showMessageDialog(MAIN, "Sie muessen erst"
-			+ " ein Problem oeffnen oder eingeben");
-	} else if (cmd.equals("Menu.Edit.ShowDualProblem")) {
-	    if (SOLVER.getProblem().isSolved())
-		SOLVER.getProblem().showDualProblem();
-	    else
-		JOptionPane.showMessageDialog(MAIN, "Sie muessen erst"
-			+ " ein Problem oeffnen oder eingeben");
-	} else if (cmd.equals("Menu.Edit.ShowPrimalProblem"))
-	    SOLVER.getProblem().showPrimalProblem();
-	else if (cmd.equals("Menu.Help.About")) {
-	    ABOUT.setLocationRelativeTo(MAIN);
-	    ABOUT.setVisible(true);
-	} else if (cmd.startsWith("Menu.File.Samples")) {
-	    FILE = null;
-	    SOLVER.open(IOUtils.getURL("problems/"
-		    + Lang.getString(cmd + ".File") + ".lop"));
-	}
-    }
+    public static Visual3DFrame VISUAL;
 
     /**
      * @param args
@@ -134,27 +90,23 @@ public final class SoPraLOP {
 	} else
 	    System.setProperty("j3d.rend", "ogl");
 
-	splash.setMessage("Creating solver ...");
+	splash.setMessage(Lang.getString("Boot.Solver"));
 	SOLVER = new LOPSolver();
 
-	splash.setMessage("Creating main window ...");
+	ActionHandler.INSTANCE.setLOP(SOLVER.getProblem());
+
+	splash.setMessage(Lang.getString("Boot.MainFrame"));
 	MAIN = new MainFrame(SOLVER.getProblem());
 
-	splash.setMessage("Creating 3D window ...");
+	splash.setMessage(Lang.getString("Boot.VisualPanel"));
 	VISUAL = new Visual3DFrame(MAIN);
+	splash.setMessage(Lang.getString("Boot.InputPanel"));
+	INPUT = new InputPanel(SOLVER.getProblem());
 
-	splash.setMessage("Creating about window ...");
+	splash.setMessage(Lang.getString("Boot.About"));
 	ABOUT = AboutDialog.getInstance(MAIN);
-	splash.setMessage("Creating input window ...");
-	INPUT = new InputDialog(MAIN, SOLVER.getProblem());
 
-	// Referenzen auf diese Objekte werden nicht benötigt
-	splash.setMessage("Creating HTML generator ...");
-	new HTMLGenerator(SOLVER.getProblem(), MAIN.info);
-	splash.setMessage("Creating 3D engine ...");
-	new Engine3D(VISUAL, SOLVER.getProblem());
-
-	splash.setMessage("Creating file chooser ...");
+	splash.setMessage(Lang.getString("Boot.FileChooser"));
 	FC = new JFileChooser();
 	FC.addChoosableFileFilter(new FileFilter() {
 	    @Override
@@ -166,46 +118,25 @@ public final class SoPraLOP {
 
 	    @Override
 	    public String getDescription() {
-		return "Lineares Optimierungsproblem (*.lop)";
+		return Lang.getString("Strings.LOP") + " (*.lop)";
 	    }
 	});
 	FC.setMultiSelectionEnabled(false);
 
-	splash.setMessage("Solve LOP ...");
+	// Referenzen auf diese Objekte werden nicht benötigt
+	splash.setMessage(Lang.getString("Boot.HTML"));
+	HTML = new HTMLGenerator(SOLVER.getProblem());
+	MAIN.setContent(HTML.getPanel());
+	splash.setMessage(Lang.getString("Boot.3DEngine"));
+	new Engine3D(VISUAL, SOLVER.getProblem());
+
+	splash.setMessage(Lang.getString("Boot.SolveLOP"));
 	SOLVER.solve();
 
-	splash.setMessage("Showing main window ...");
+	splash.setMessage(Lang.getString("Boot.ShowMain"));
 	MAIN.setVisible(true);
-	splash.setMessage("Closeing splash ...");
+	splash.setMessage("");
 	splash.setVisible(false);
     }
 
-    /**
-     * Ladefunktion fuer Daten im xml-Format.
-     * 
-     */
-    private static void fileOpenClass() {
-	if (FC.showOpenDialog(MAIN) == JFileChooser.APPROVE_OPTION) {
-	    FILE = FC.getSelectedFile().getAbsolutePath();
-	    try {
-		SOLVER.open(new URL(FILE));
-	    } catch (MalformedURLException e) {
-	    }
-	}
-    }
-
-    /**
-     * Speicherfunktion fuer Daten im xml-Format
-     * 
-     */
-    private static void fileSaveClass(boolean saveAs) {
-	if (saveAs || FILE == null)
-	    if (FC.showSaveDialog(MAIN) == JFileChooser.APPROVE_OPTION) {
-		FILE = FC.getSelectedFile().getAbsolutePath();
-		if (!FILE.toLowerCase().endsWith(".lop"))
-		    FILE += ".lop";
-	    }
-	if (FILE != null)
-	    SOLVER.save(FILE);
-    }
 }

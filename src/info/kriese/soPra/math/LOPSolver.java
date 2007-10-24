@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 24.10.2007 - Version 0.4.0.1
+ * - BugFix: Mehrere Lösungen wurden als eine erkannt
  * 23.10.2007 - Version 0.4
  * - An neuen Quickhull-Algorithmus angepasst
  * 16.10.2007 - Version 0.3.7.2
@@ -86,7 +88,7 @@ import org.xml.sax.SAXParseException;
 
 /**
  * @author Michael Kriese
- * @version 0.4
+ * @version 0.4.0.1
  * @since 10.05.2007
  * 
  */
@@ -380,7 +382,7 @@ public final class LOPSolver {
 	    opt = Fractional.MAX_VALUE;
 	}
 
-	if (sol.countAreas() > 2)
+	if (sol.countAreas() >= 2)
 	    sol.setSpecialCase(LOPSolution.MORE_THAN_ONE_SOLUTION);
 
 	sol.setValue(opt);

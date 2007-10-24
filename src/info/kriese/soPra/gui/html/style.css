@@ -8,16 +8,16 @@ body {
 	min-width: 500px;
 	font-size: 100.01%;
 	background-color: #EEEEEE;
+	padding: 25px;
 }
 
 td {
-	width: 40px;
+	width: 60px;
 	text-align: center;
 }
 
 .operator {
-	width: 10px;
-	
+	width: 10px;	
 }
 
 .white_box {
@@ -68,10 +68,7 @@ td {
 }
 
 .content {
-	position: relative;
-	margin-top: 25px;
-	margin-left: 50px;
-	margin-right: 50px;
+	position: relative;	
 	border: 2px solid green;
 	background-color: white;
 }

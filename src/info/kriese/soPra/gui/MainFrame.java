@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 24.10.2007 - Version 0.6
+ * - Menü "Bearbeiten" in "Ansicht" geändert
+ * - Das zentrale Panel ist jetzt austauschbar
  * 19.10.2007 - Version 0.5
  * - Funktionalität aus GUI ausgelagert
  * - Menu Icons hinzugefügt
@@ -52,7 +55,6 @@
  */
 package info.kriese.soPra.gui;
 
-import info.kriese.soPra.SoPraLOP;
 import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.io.Settings;
 import info.kriese.soPra.io.impl.SettingsFactory;
@@ -60,23 +62,19 @@ import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPAdapter;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JScrollPane;
-
-import org.xhtmlrenderer.simple.XHTMLPanel;
 
 /**
  * @author Michael Kriese
- * @version 0.5
+ * @version 0.5.1
  * @since 12.05.2007
  * 
  */
@@ -89,7 +87,7 @@ public final class MainFrame extends JFrame {
 
     private static int WIDTH = 600;
 
-    public XHTMLPanel info;
+    private JComponent content = null;
 
     private JMenu edit;
 
@@ -136,19 +134,18 @@ public final class MainFrame extends JFrame {
 	});
 
 	generateMainMenu();
+    }
 
-	this.info = new XHTMLPanel();
-
-	JScrollPane scroll = new JScrollPane(this.info);
-	add(scroll, BorderLayout.CENTER);
+    public void setContent(JComponent content) {
+	if (this.content != null)
+	    remove(this.content);
+	add(content, BorderLayout.CENTER);
+	validate();
+	repaint();
+	this.content = content;
     }
 
     private void generateMainMenu() {
-	ActionListener ac = new ActionListener() {
-	    public void actionPerformed(ActionEvent e) {
-		SoPraLOP.actionPerformed(e);
-	    }
-	};
 	JMenuBar menubar;
 	JMenu menu, submenu;
 
@@ -157,34 +154,46 @@ public final class MainFrame extends JFrame {
 
 	menu = MenuMaker.getMenu("Menu.File");
 	menubar.add(menu);
-	menu.add(MenuMaker.getMenuItem("Menu.File.Open", ac));
-	menu.add(MenuMaker.getMenuItem("Menu.File.Save", ac));
-	menu.add(MenuMaker.getMenuItem("Menu.File.SaveAs", ac));
+	menu.add(MenuMaker
+		.getMenuItem("Menu.File.Open", ActionHandler.INSTANCE));
+	menu.add(MenuMaker
+		.getMenuItem("Menu.File.Save", ActionHandler.INSTANCE));
+	menu.add(MenuMaker.getMenuItem("Menu.File.SaveAs",
+		ActionHandler.INSTANCE));
 	menu.addSeparator();
 	submenu = MenuMaker.getMenu("Menu.File.Samples");
 
 	for (int i = 1; i <= Lang.getInt("Menu.File.Samples.Count"); i++)
 	    submenu.add(MenuMaker.getMenuItem("Menu.File.Samples.S"
-		    + (i < 10 ? "0" + i : i), ac));
+		    + (i < 10 ? "0" + i : i), ActionHandler.INSTANCE));
 
 	menu.add(submenu);
 	menu.addSeparator();
-	menu.add(MenuMaker.getMenuItem("Menu.File.Exit", ac));
+	menu.add(MenuMaker
+		.getMenuItem("Menu.File.Exit", ActionHandler.INSTANCE));
 
-	menu = MenuMaker.getMenu("Menu.Edit");
+	menu = MenuMaker.getMenu("Menu.View");
 	menubar.add(menu);
-	menu.add(MenuMaker.getMenuItem("Menu.Edit.Data", ac));
+	menu.add(MenuMaker
+		.getMenuItem("Menu.View.Data", ActionHandler.INSTANCE));
 	menu.addSeparator();
-	menu.add(MenuMaker.getMenuItem("Menu.Edit.Show", ac));
-	menu.add(MenuMaker.getMenuItem("Menu.Edit.ShowSolution", ac));
-	this.primale = MenuMaker.getMenuItem("Menu.Edit.ShowPrimalProblem", ac);
-	this.duale = MenuMaker.getMenuItem("Menu.Edit.ShowDualProblem", ac);
+	menu.add(MenuMaker.getMenuItem("Menu.View.Result",
+		ActionHandler.INSTANCE));
+	menu.add(MenuMaker
+		.getMenuItem("Menu.View.Show", ActionHandler.INSTANCE));
+	menu.add(MenuMaker.getMenuItem("Menu.View.ShowSolution",
+		ActionHandler.INSTANCE));
+	this.primale = MenuMaker.getMenuItem("Menu.View.ShowPrimalProblem",
+		ActionHandler.INSTANCE);
+	this.duale = MenuMaker.getMenuItem("Menu.View.ShowDualProblem",
+		ActionHandler.INSTANCE);
 
 	menu.add(this.duale);
 	this.edit = menu;
 
 	menu = MenuMaker.getMenu("Menu.Help");
-	menu.add(MenuMaker.getMenuItem("Menu.Help.About", ac));
+	menu.add(MenuMaker.getMenuItem("Menu.Help.About",
+		ActionHandler.INSTANCE));
 	menubar.add(menu);
     }
 

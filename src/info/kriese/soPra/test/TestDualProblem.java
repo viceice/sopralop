@@ -1,6 +1,5 @@
 package info.kriese.soPra.test;
 
-import info.kriese.soPra.gui.InputDialog;
 import info.kriese.soPra.math.Vector3Frac;
 import info.kriese.soPra.math.impl.Vector3FracFactory;
 
@@ -39,14 +38,6 @@ public class TestDualProblem {
 
     private static void createAndShowGUI() {
 	// Create and set up the window.
-
-	InputDialog frame = new InputDialog(null, null);
-	// frame.setTarget(target);
-	// frame.setVectors(vectors);
-	// frame.setOps(ops);
-	// frame.setMax(max);
-	frame.setLocation(300, 200);
-	frame.setVisible(true);
 	System.exit(0);
     }
 
