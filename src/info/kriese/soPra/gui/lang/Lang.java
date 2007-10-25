@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 25.10.2007 - Version 0.4
+ * - Methode getString kann jetzt ein Default-rückgabewert übergeben werden
  * 16.10.2007 - Version 0.3
  * - Methode getInt hinzugefügt
  * 09.10.2007 - Version 0.2.1
@@ -38,7 +40,7 @@ import java.util.ResourceBundle;
 /**
  * 
  * @author Michael Kriese
- * @version 0.3
+ * @version 0.4
  * @since 29.07.2007
  * 
  */
@@ -58,17 +60,21 @@ public final class Lang {
     }
 
     public static String getString(String key) {
+	return getString(key, "!" + key + "!");
+    }
+
+    public static String getString(String key, String def) {
 	try {
 	    String value = RESOURCE_BUNDLE.getString(key);
 	    try {
 		return new String(value.getBytes("ISO-8859-1"), "UTF-8");
 	    } catch (UnsupportedEncodingException e) {
 		e.printStackTrace();
-		return '!' + key + '!';
+		return def;
 	    }
 	} catch (MissingResourceException e) {
 	    // System.err.println(e);
-	    return '!' + key + '!';
+	    return def;
 	}
     }
 }

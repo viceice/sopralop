@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 25.10.2007 - Version 0.2
+ * - MouseListener hinzugefügt, welcher Hilfetexte auf der StatusBar anzeigt
  * 24.10.2007 - Version 0.1
  *  - Datei hinzugefuegt
  */
@@ -29,8 +31,12 @@ import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.io.IOUtils;
 import info.kriese.soPra.lop.LOP;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -42,7 +48,7 @@ import javax.swing.JOptionPane;
  * Klasse zum handeln aller Actions in SoPraLOP
  * 
  * @author Michael Kriese
- * @version 0.1
+ * @version 0.2
  * @since 24.10.2007
  * 
  */
@@ -56,6 +62,8 @@ public final class ActionHandler {
 
     private LOP lop = null;
 
+    private final MouseListener ml;
+
     private ActionHandler() {
 	this.ac = new ActionListener() {
 
@@ -63,10 +71,34 @@ public final class ActionHandler {
 		ActionHandler.this.actionPerformed(e);
 	    }
 	};
+
+	this.ml = new MouseAdapter() {
+
+	    @Override
+	    public void mouseEntered(MouseEvent e) {
+		Component c = e.getComponent();
+
+		if (c instanceof AbstractButton) {
+		    AbstractButton btn = (AbstractButton) c;
+		    String s = Lang.getString(btn.getActionCommand() + ".Help",
+			    null);
+		    if (s != null)
+			SoPraLOP.MAIN.setStatus(s);
+		    // else
+		    // SoPraLOP.MAIN.setStatus("No help available!");
+		}
+	    }
+
+	    @Override
+	    public void mouseExited(MouseEvent e) {
+		SoPraLOP.MAIN.setStatus("");
+	    }
+	};
     }
 
     public void add(AbstractButton btn) {
 	btn.addActionListener(this.ac);
+	btn.addMouseListener(this.ml);
     }
 
     public void setLOP(LOP lop) {

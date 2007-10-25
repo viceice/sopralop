@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 25.10.2007 - Version 0.6.1
+ * - StatusBar hinzugefügt
  * 24.10.2007 - Version 0.6
  * - Menü "Bearbeiten" in "Ansicht" geändert
  * - Das zentrale Panel ist jetzt austauschbar
@@ -62,19 +64,24 @@ import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPAdapter;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 
 /**
  * @author Michael Kriese
- * @version 0.5.1
+ * @version 0.6.1
  * @since 12.05.2007
  * 
  */
@@ -87,6 +94,13 @@ public final class MainFrame extends JFrame {
 
     private static int WIDTH = 600;
 
+    private static Border createStatusBarBorder() {
+	Border inner, outer;
+	outer = BorderFactory.createBevelBorder(BevelBorder.LOWERED);
+	inner = BorderFactory.createEmptyBorder(2, 5, 2, 5);
+	return BorderFactory.createCompoundBorder(outer, inner);
+    }
+
     private JComponent content = null;
 
     private JMenu edit;
@@ -94,6 +108,8 @@ public final class MainFrame extends JFrame {
     private JMenuItem primale, duale;
 
     private final Settings PROPS = SettingsFactory.getInstance();
+
+    private final JLabel status;
 
     public MainFrame(LOP lop) {
 	setTitle(this.PROPS.getName() + " - Version " + this.PROPS.getVersion());
@@ -133,6 +149,11 @@ public final class MainFrame extends JFrame {
 
 	});
 
+	this.status = new JLabel();
+	this.status.setPreferredSize(new Dimension(200, 20));
+	this.status.setBorder(createStatusBarBorder());
+	add(this.status, BorderLayout.SOUTH);
+
 	generateMainMenu();
     }
 
@@ -143,6 +164,10 @@ public final class MainFrame extends JFrame {
 	validate();
 	repaint();
 	this.content = content;
+    }
+
+    public void setStatus(String msg) {
+	this.status.setText(msg);
     }
 
     private void generateMainMenu() {
