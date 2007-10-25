@@ -27,11 +27,11 @@ public class TestHelp {
 	 */
 	public static void main(String[] args) {
 		
-		frame = new JFrame("Hilfe");
+		frame = new JFrame("SoPra LOP Hilfefenster");
 		frame.setSize(600, 500);
 		myHtmlHelp = new XHTMLPanel();
 		frame.add(myHtmlHelp);
-		myHtmlHelp.setDocument(IOUtils.getURL("gui/html/help/edit_data_help.html").toString());
+		myHtmlHelp.setDocument(IOUtils.getURL("gui/html/help/file_help.html").toString());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		scrollPane = new JScrollPane(myHtmlHelp);
 		scrollPane.remove(scrollPane.getHorizontalScrollBar());
