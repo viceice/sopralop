@@ -25,7 +25,7 @@ public class TestHelp {
 		frame.setSize(800, 600);
 		XHTMLPanel myHtmlHelp = new XHTMLPanel();
 		frame.add(myHtmlHelp);
-		myHtmlHelp.setDocument(IOUtils.getURL("gui/html/help/help.html").toString());
+		myHtmlHelp.setDocument(IOUtils.getURL("gui/html/help/file_help.html").toString());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		
