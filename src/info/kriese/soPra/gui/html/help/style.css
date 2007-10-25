@@ -2,11 +2,17 @@ h1,h2,b,i,body,div,span,ul,ol,li,input {
 	margin: 0px;
 	padding: 0px;
 	font-family: Helvetica, Arial, sans-serif;
+	text-align:justify;
+	line-height:140%;
 }
 
 h1 {
 	font-size:2.5ex;
 	font-weight:bold;
+}
+
+low {
+	vertical-align:sub;
 }
 
 body {

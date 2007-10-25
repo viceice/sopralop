@@ -8,6 +8,7 @@ package info.kriese.soPra.test;
 import info.kriese.soPra.io.IOUtils;
 
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 
 import org.xhtmlrenderer.simple.XHTMLPanel;
 
@@ -16,17 +17,25 @@ import org.xhtmlrenderer.simple.XHTMLPanel;
  *
  */
 public class TestHelp {
+	
+	private static JScrollPane scrollPane;
+	private static JFrame frame;
+	private static XHTMLPanel myHtmlHelp;
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		JFrame frame = new JFrame();
-		frame.setSize(800, 600);
-		XHTMLPanel myHtmlHelp = new XHTMLPanel();
+		
+		frame = new JFrame("Hilfe");
+		frame.setSize(600, 500);
+		myHtmlHelp = new XHTMLPanel();
 		frame.add(myHtmlHelp);
-		myHtmlHelp.setDocument(IOUtils.getURL("gui/html/help/file_help.html").toString());
+		myHtmlHelp.setDocument(IOUtils.getURL("gui/html/help/edit_data_help.html").toString());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		scrollPane = new JScrollPane(myHtmlHelp);
+		scrollPane.remove(scrollPane.getHorizontalScrollBar());
+		frame.add(scrollPane);
 		
 		
 		
