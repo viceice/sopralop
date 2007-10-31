@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 30.10.2007 - Version 0.4.1
+ * - FPS-Counter entfernt
  * 23.10.2007 - Version 0.4
  * - An neuen Quickhull-Algorithmus angepasst
  * 16.10.2007 - Version 0.3.6.2
@@ -62,7 +64,6 @@
 
 package info.kriese.soPra.engine3D;
 
-import info.kriese.soPra.engine3D.manipulate.FrameRateBehavior;
 import info.kriese.soPra.engine3D.objects.Cone3D;
 import info.kriese.soPra.engine3D.objects.CoordinatePlane3D;
 import info.kriese.soPra.engine3D.objects.GeomObjects;
@@ -82,6 +83,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 import javax.media.j3d.BranchGroup;
+import javax.media.j3d.Canvas3D;
 import javax.media.j3d.DirectionalLight;
 import javax.media.j3d.GraphicsConfigTemplate3D;
 import javax.media.j3d.Transform3D;
@@ -98,7 +100,7 @@ import com.sun.j3d.utils.universe.ViewingPlatform;
  * Stellt Methoden zur Berechnung der 3D-Szene bereit.
  * 
  * @author Michael Kriese
- * @version 0.4
+ * @version 0.4.1
  * @since 26.04.2007
  */
 public final class Engine3D {
@@ -106,7 +108,7 @@ public final class Engine3D {
     /** */
     private static final long serialVersionUID = 1L;
 
-    private final OverlayCanvas3D canvas;
+    private final Canvas3D canvas;
 
     private final Cone3D cone;
 
@@ -130,7 +132,7 @@ public final class Engine3D {
 
     public Engine3D(Virtual3DFrame conn, LOP lop) {
 
-	this.canvas = new OverlayCanvas3D(createConfig());
+	this.canvas = new Canvas3D(createConfig());
 	this.canvas.addKeyListener(new KeyAdapter() {
 
 	    @Override
@@ -196,8 +198,6 @@ public final class Engine3D {
 
 	this.targetLine = new Target3D();
 	this.elemsGroup.addChild(this.targetLine);
-
-	this.elemsGroup.addChild(new FrameRateBehavior(this.canvas));
 
 	// fuege Schnittpunkt hinzu
 	this.intersection = new Point3D();

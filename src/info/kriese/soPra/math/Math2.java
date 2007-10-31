@@ -19,7 +19,9 @@
  * 
  * ChangeLog:
  * 
- * 23.10.2007 - Versaion 0.3
+ * 30.10.2007 - Version 0.3
+ * - Spezialversion von sqrt hinzugefügt
+ * 23.10.2007 - Version 0.2.3
  * - BugFix: isPointInTriangle hat bei bestimmten konstellationen falsch gerechnet
  * 02.10.2007 - Version 0.2.2
  * - Methode angle hizugefügt
@@ -138,6 +140,8 @@ public final class Math2 {
      * @return der normierte und dann skalierte Vektor
      */
     public static Point3f normalizeScale(Point3f orig, float scale) {
+	if (orig.x == 0.0f && orig.y == 0.0f && orig.z == 0.0f)
+	    return orig;
 	Vector3f tmp = new Vector3f(orig.x, orig.y, orig.z);
 	tmp.normalize();
 	tmp.scale(scale);
@@ -153,6 +157,18 @@ public final class Math2 {
      */
     public static float round(double val) {
 	return Math.round(val * EPSILON) / EPSILON;
+    }
+
+    /**
+     * Berechnet die quadratische Wurzel.
+     * 
+     * @param a
+     * @return
+     */
+    public static double sqrt(double a) {
+	if (Math.abs(a) <= 2.2204460492503131e-16)
+	    return a;
+	return Math.sqrt(a);
     }
 
     /**

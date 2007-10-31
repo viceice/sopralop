@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 31.10.2007 - Version 0.4.1
+ * - 3D-Fenster entfernt, wird nicht mehr benötigt
  * 24.10.2007 - Version 0.4
  *  - ActionListener Verhalten geändert
  *  - Startnachrichten multisprachfähig gemacht
@@ -41,7 +43,6 @@ import info.kriese.soPra.gui.ActionHandler;
 import info.kriese.soPra.gui.InputPanel;
 import info.kriese.soPra.gui.MainFrame;
 import info.kriese.soPra.gui.SplashDialog;
-import info.kriese.soPra.gui.Visual3DFrame;
 import info.kriese.soPra.gui.html.HTMLGenerator;
 import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.math.LOPSolver;
@@ -49,11 +50,14 @@ import info.kriese.soPra.math.LOPSolver;
 import java.io.File;
 
 import javax.swing.JFileChooser;
+import javax.swing.JPopupMenu;
+import javax.swing.ToolTipManager;
+import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 
 /**
  * @author Michael Kriese
- * @version 0.4
+ * @version 0.4.1
  * @since 12.05.2007
  * 
  */
@@ -61,20 +65,31 @@ public final class SoPraLOP {
 
     public static AboutDialog ABOUT;
 
+    public static Engine3D ENGINE;
+
     public static JFileChooser FC;
 
     public static HTMLGenerator HTML;
-
     public static InputPanel INPUT;
     public static MainFrame MAIN;
-    public static LOPSolver SOLVER;
 
-    public static Visual3DFrame VISUAL;
+    public static LOPSolver SOLVER;
 
     /**
      * @param args
      */
     public static void main(String[] args) {
+
+	try { // use the local look and feel
+	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	} catch (Exception e) {
+	    e.printStackTrace(System.err);
+	}
+
+	// We need heavyweight elements, so we can see them infront of our
+	// canvas3d
+	JPopupMenu.setDefaultLightWeightPopupEnabled(false);
+	ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
 
 	SplashDialog splash = SplashDialog.getInstance();
 
@@ -98,8 +113,6 @@ public final class SoPraLOP {
 	splash.setMessage(Lang.getString("Boot.MainFrame"));
 	MAIN = new MainFrame(SOLVER.getProblem());
 
-	splash.setMessage(Lang.getString("Boot.VisualPanel"));
-	VISUAL = new Visual3DFrame(MAIN);
 	splash.setMessage(Lang.getString("Boot.InputPanel"));
 	INPUT = new InputPanel(SOLVER.getProblem());
 
@@ -128,9 +141,10 @@ public final class SoPraLOP {
 	HTML = new HTMLGenerator(SOLVER.getProblem());
 	MAIN.setContent(HTML.getPanel());
 	splash.setMessage(Lang.getString("Boot.3DEngine"));
-	new Engine3D(VISUAL, SOLVER.getProblem());
+	ENGINE = new Engine3D(MAIN, SOLVER.getProblem());
 
 	splash.setMessage(Lang.getString("Boot.SolveLOP"));
+	SOLVER.getProblem().problemChanged();
 	SOLVER.solve();
 
 	splash.setMessage(Lang.getString("Boot.ShowMain"));

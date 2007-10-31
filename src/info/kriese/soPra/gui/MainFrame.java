@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 31.10.2007 - Version 0.7
+ * - 3D-Visualisierung integriert
  * 25.10.2007 - Version 0.6.1
  * - StatusBar hinzugefügt
  * 24.10.2007 - Version 0.6
@@ -68,6 +70,7 @@ import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
+import javax.media.j3d.Canvas3D;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -76,23 +79,24 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JSplitPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 
 /**
  * @author Michael Kriese
- * @version 0.6.1
+ * @version 0.7
  * @since 12.05.2007
  * 
  */
-public final class MainFrame extends JFrame {
+public final class MainFrame extends JFrame implements Virtual3DFrame {
 
-    private static int HEIGHT = 600;
+    private static final int HEIGHT = 600;
 
     /**	*/
     private static final long serialVersionUID = -2209082679810518777L;
 
-    private static int WIDTH = 600;
+    private static final int WIDTH = 800;
 
     private static Border createStatusBarBorder() {
 	Border inner, outer;
@@ -101,7 +105,7 @@ public final class MainFrame extends JFrame {
 	return BorderFactory.createCompoundBorder(outer, inner);
     }
 
-    private JComponent content = null;
+    private final JSplitPane body;
 
     private JMenu edit;
 
@@ -113,7 +117,7 @@ public final class MainFrame extends JFrame {
 
     public MainFrame(LOP lop) {
 	setTitle(this.PROPS.getName() + " - Version " + this.PROPS.getVersion());
-	setSize(600, 500);
+	setSize(WIDTH, HEIGHT);
 	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	setLayout(new BorderLayout());
 	setLocationRelativeTo(null);
@@ -139,15 +143,17 @@ public final class MainFrame extends JFrame {
 
 	    @Override
 	    public void componentResized(ComponentEvent e) {
-		MainFrame f = MainFrame.this;
-		if (f.getWidth() < MainFrame.WIDTH)
-		    f.setSize(MainFrame.WIDTH, f.getHeight());
-
-		if (f.getHeight() < MainFrame.HEIGHT)
-		    f.setSize(f.getWidth(), MainFrame.HEIGHT);
+		validate();
+		repaint();
 	    }
 
 	});
+
+	this.body = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+	this.body.setOneTouchExpandable(true);
+	this.body.setDividerSize(10);
+	// this.body.setDividerLocation(WIDTH / 2);
+	add(this.body, BorderLayout.CENTER);
 
 	this.status = new JLabel();
 	this.status.setPreferredSize(new Dimension(200, 20));
@@ -157,13 +163,18 @@ public final class MainFrame extends JFrame {
 	generateMainMenu();
     }
 
+    public void addCanvas(Canvas3D canvas) {
+	canvas.setMinimumSize(new Dimension(0, 0));
+	canvas.setPreferredSize(new Dimension(WIDTH / 2, 300));
+	this.body.setRightComponent(canvas);
+    }
+
     public void setContent(JComponent content) {
-	if (this.content != null)
-	    remove(this.content);
-	add(content, BorderLayout.CENTER);
+	content.setMinimumSize(new Dimension(0, 0));
+	content.setPreferredSize(new Dimension(300, 300));
+	this.body.setLeftComponent(content);
 	validate();
 	repaint();
-	this.content = content;
     }
 
     public void setStatus(String msg) {

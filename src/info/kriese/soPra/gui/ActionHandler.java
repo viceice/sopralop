@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 31.10.2007 - Version 0.2.1
+ * - Funktionalität in InputPanel verschoben
  * 25.10.2007 - Version 0.2
  * - MouseListener hinzugefügt, welcher Hilfetexte auf der StatusBar anzeigt
  * 24.10.2007 - Version 0.1
@@ -48,7 +50,7 @@ import javax.swing.JOptionPane;
  * Klasse zum handeln aller Actions in SoPraLOP
  * 
  * @author Michael Kriese
- * @version 0.2
+ * @version 0.2.1
  * @since 24.10.2007
  * 
  */
@@ -129,20 +131,16 @@ public final class ActionHandler {
 		int res = JOptionPane.showConfirmDialog(SoPraLOP.MAIN, Lang
 			.getString("Errors.IsEdited"));
 		if (res == JOptionPane.YES_OPTION) {
-		    this.lop.setVectors(SoPraLOP.INPUT.getVectors());
-		    this.lop.setTarget(SoPraLOP.INPUT.getTarget());
-		    this.lop.setMaximum(SoPraLOP.INPUT.isMax());
-		    this.lop.setOperators(SoPraLOP.INPUT.getOperators());
-		    this.lop.problemChanged();
-		    SoPraLOP.SOLVER.solve();
+		    if (SoPraLOP.INPUT.save())
+			SoPraLOP.SOLVER.solve();
+		    else
+			return;
 		} else if (res == JOptionPane.CANCEL_OPTION)
 		    return;
-		SoPraLOP.INPUT.setEdited(false);
+		else
+		    SoPraLOP.INPUT.cancel();
 	    }
 	    SoPraLOP.MAIN.setContent(SoPraLOP.HTML.getPanel());
-	} else if (cmd.equals("Menu.View.Show")) {
-	    SoPraLOP.VISUAL.setLocationRelativeTo(SoPraLOP.MAIN);
-	    SoPraLOP.VISUAL.setVisible(true);
 	} else if (cmd.equals("Menu.View.ShowSolution")) {
 	    if (this.lop.isSolved())
 		this.lop.showSolution();
@@ -169,12 +167,10 @@ public final class ActionHandler {
 	else if (cmd.equals("Input.Menu.DelVar"))
 	    SoPraLOP.INPUT.removeColumn();
 	else if (cmd.equals("Input.Menu.Save")) {
-	    this.lop.setVectors(SoPraLOP.INPUT.getVectors());
-	    this.lop.setTarget(SoPraLOP.INPUT.getTarget());
-	    this.lop.setMaximum(SoPraLOP.INPUT.isMax());
-	    this.lop.setOperators(SoPraLOP.INPUT.getOperators());
-	    this.lop.problemChanged();
-	    SoPraLOP.SOLVER.solve();
+	    if (SoPraLOP.INPUT.save()) {
+		SoPraLOP.MAIN.setContent(SoPraLOP.HTML.getPanel());
+		SoPraLOP.SOLVER.solve();
+	    }
 	} else if (cmd.equals("Input.Menu.Clear"))
 	    SoPraLOP.INPUT.clear();
 	else if (cmd.equals("Input.Menu.Reset"))

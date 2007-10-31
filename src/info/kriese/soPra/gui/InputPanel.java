@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 31.10.2007 - Version 0.6
+ * - Funktionalität aus dem ActionHandler hier her verlagert
  * 23.10.2007 - Version 0.5
  * - In InputPanel umbenannt und in JPannel geändert ( zur Integration ins Hauptfenster)
  * - An neuen ActionHandler angepasst
@@ -65,6 +67,7 @@ import java.util.Vector;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -79,7 +82,7 @@ import javax.swing.table.TableColumn;
  * 
  * @author Peer Sterner
  * @since 13.05.2007
- * @version 0.5
+ * @version 0.6
  */
 public final class InputPanel extends JPanel {
 
@@ -112,12 +115,11 @@ public final class InputPanel extends JPanel {
 
 	    InputPanel.this.vectors.add(Vector3FracFactory.getInstance());
 	    num++;
-	    this.columnNames.insertElementAt("<html><b>x<sub>" + num
-		    + "</sub></b></html>", num);
+	    this.columnNames.insertElementAt("<html><center><b>x<sub>" + num
+		    + "</sub></b></center></html>", num);
 	    fireTableStructureChanged();
-	    pullDownColumn(InputPanel.this.table, InputPanel.this.table
-		    .getColumnModel().getColumn(
-			    InputPanel.this.table.getColumnCount() - 2));
+	    pullDownColumn(InputPanel.this.table.getColumnModel().getColumn(
+		    InputPanel.this.table.getColumnCount() - 2));
 	}
 
 	@Override
@@ -209,9 +211,8 @@ public final class InputPanel extends JPanel {
 		this.columnNames.remove(num);
 		num--;
 		fireTableStructureChanged();
-		pullDownColumn(InputPanel.this.table, InputPanel.this.table
-			.getColumnModel().getColumn(
-				InputPanel.this.table.getColumnCount() - 2));
+		pullDownColumn(InputPanel.this.table.getColumnModel()
+			.getColumn(InputPanel.this.table.getColumnCount() - 2));
 	    }
 	}
 
@@ -219,10 +220,11 @@ public final class InputPanel extends JPanel {
 	    this.columnNames.clear();
 	    this.columnNames.add(" ");
 	    for (int i = 1; i <= size; i++)
-		this.columnNames.add("<html><b>x<sub>" + i
-			+ "</sub></b></html>");
-	    this.columnNames.add("<html><b>" + "&lt; / > / =" + "</b></html>");
-	    this.columnNames.add("<html><b>z</b></html>");
+		this.columnNames.add("<html><center><b>x<sub>" + i
+			+ "</sub></b></center></html>");
+	    this.columnNames.add("<html><center><b>" + "&lt; / > / ="
+		    + "</b></center></html>");
+	    this.columnNames.add("<html><center><b>z</b></center></html>");
 	    fireTableStructureChanged();
 	}
 
@@ -334,7 +336,9 @@ public final class InputPanel extends JPanel {
 	setSize(600, 200);
 
 	this.model = new InputTableModel();
+
 	this.table = new JTable(this.model);
+	this.table.setFillsViewportHeight(true);
 
 	JScrollPane scrollPane = new JScrollPane(this.table);
 	this.table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -356,6 +360,10 @@ public final class InputPanel extends JPanel {
     public void addColumn() {
 	this.model.addColumn();
 	setEdited(true);
+    }
+
+    public void cancel() {
+	setEdited(false);
     }
 
     public void clear() {
@@ -389,18 +397,6 @@ public final class InputPanel extends JPanel {
 	setEdited(true);
     }
 
-    public String[] getOperators() {
-	return this.operators;
-    }
-
-    public Vector3Frac getTarget() {
-	return this.target;
-    }
-
-    public List<Vector3Frac> getVectors() {
-	return this.vectors;
-    }
-
     public boolean isEdited() {
 	return this.edited;
     }
@@ -414,9 +410,25 @@ public final class InputPanel extends JPanel {
 	setEdited(true);
     }
 
-    public void setEdited(boolean value) {
-	this.edited = value;
-	this.save.setEnabled(value);
+    public boolean save() {
+	int cnt = 0;
+	for (Vector3Frac vec : this.vectors)
+	    if (!vec.equals(Vector3Frac.ZERO))
+		cnt++;
+	if (cnt < this.vectors.size()) {
+	    JOptionPane.showMessageDialog(this, Lang
+		    .getString("Errors.NoZeroVectors"), Lang
+		    .getString("Strings.Error"), JOptionPane.ERROR_MESSAGE);
+	    return false;
+	}
+
+	this.lop.setVectors(this.vectors);
+	this.lop.setTarget(this.target);
+	this.lop.setMaximum(this.max);
+	this.lop.setOperators(this.operators);
+	this.lop.problemChanged();
+	setEdited(false);
+	return true;
     }
 
     @Override
@@ -436,8 +448,13 @@ public final class InputPanel extends JPanel {
 	this.max = this.lop.isMaximum();
 
 	this.model.setColumnCount(this.vectors.size());
-	pullDownColumn(this.table, this.table.getColumnModel().getColumn(
+	// TableColumn col = this.table.getColumnModel().getColumn(0);
+	// col.setCellRenderer(new TableRowHeaderRenderer());
+	// this.model.fireTableStructureChanged();
+
+	pullDownColumn(this.table.getColumnModel().getColumn(
 		this.table.getColumnCount() - 2));
+
 	setEdited(false);
     }
 
@@ -499,12 +516,17 @@ public final class InputPanel extends JPanel {
      * 
      * wird spaeter fuer die Generierung des dualen Problems benoetigt...
      */
-    private void pullDownColumn(JTable table, TableColumn relation) {
+    private void pullDownColumn(TableColumn relation) {
 	relation.setCellEditor(new DefaultCellEditor(this.comboBox));
 
-	// Set up tool tips for the sport cells.
+	// Set up tool tips for the cells.
 	DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 	renderer.setToolTipText(Lang.getString("Input.Relation"));
 	relation.setCellRenderer(renderer);
+    }
+
+    private void setEdited(boolean value) {
+	this.edited = value;
+	this.save.setEnabled(value);
     }
 }

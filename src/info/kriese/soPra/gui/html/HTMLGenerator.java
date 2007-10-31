@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 31.10.2007- Version 0.4.1
+ * - BugFix: Anzeige des Dualen Problems korrigiert (es fehlte ein Leerzeichen)
+ * - Verhalten bei Größenänderung verändert
  * 24.10.2007 - Version 0.4
  * - Struktur für neuen ActionHandler geändert
  * 10.10.2007 - Version 0.3.1
@@ -64,7 +67,7 @@ import org.xhtmlrenderer.simple.XHTMLPanel;
 /**
  * 
  * @author Michael Kriese
- * @version 0.4
+ * @version 0.4.1
  * @since 23.08.2007
  * 
  */
@@ -89,15 +92,15 @@ public final class HTMLGenerator {
 
     public HTMLGenerator(LOP lop) {
 	this.lop = lop;
+
 	this.info = new XHTMLPanel();
+	this.info.setDocument(IOUtils.BASE_URL.toString());
 
 	this.content = new JScrollPane(this.info);
 
-	this.doc = IOUtils.getDocumentTemplate();
+	this.doc = this.info.getDocument();
 
-	this.info.setDocument(this.doc, IOUtils.BASE_URL.toString());
-
-	this.info.addComponentListener(new ComponentAdapter() {
+	this.content.addComponentListener(new ComponentAdapter() {
 
 	    @Override
 	    public void componentResized(ComponentEvent e) {
@@ -149,7 +152,6 @@ public final class HTMLGenerator {
 		HTMLGenerator.this.showSolution(true);
 	    }
 	});
-	updateProblem();
     }
 
     public JComponent getPanel() {
@@ -228,7 +230,7 @@ public final class HTMLGenerator {
 	tr.appendChild(createNode("td", target.getCoordX() + " x", createNode(
 		"sub", 1)));
 	tr.appendChild(createNode("td", "+"));
-	tr.appendChild(createNode("td", target.getCoordY() + " x", createNode(
+	tr.appendChild(createNode("td", target.getCoordY() + "x", createNode(
 		"sub", 1)));
 	tr.appendChild(createNode("td", "="));
 	tr.appendChild(createNode("td", this.lop.isMinimum() ? "max" : "min"));
