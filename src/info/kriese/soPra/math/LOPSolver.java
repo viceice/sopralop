@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 01.11.2007 - Version 0.5
+ * - An LOPEditor angepasst
  * 24.10.2007 - Version 0.4.0.1
  * - BugFix: Mehrere Lösungen wurden als eine erkannt
  * 23.10.2007 - Version 0.4
@@ -62,11 +64,11 @@
  */
 package info.kriese.soPra.math;
 
-import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.io.IOUtils;
 import info.kriese.soPra.lop.LOP;
+import info.kriese.soPra.lop.LOPEditor;
+import info.kriese.soPra.lop.LOPEditorAdapter;
 import info.kriese.soPra.lop.LOPSolution;
-import info.kriese.soPra.lop.impl.LOPFactory;
 import info.kriese.soPra.math.quickhull.QuickHull;
 
 import java.io.FileOutputStream;
@@ -88,7 +90,7 @@ import org.xml.sax.SAXParseException;
 
 /**
  * @author Michael Kriese
- * @version 0.4.0.1
+ * @version 0.5
  * @since 10.05.2007
  * 
  */
@@ -98,20 +100,31 @@ public final class LOPSolver {
 
     private final QuickHull hull;
 
-    private final LOP lop;
-
     public LOPSolver() {
-	this.lop = LOPFactory.newLinearOptimizingProblem();
-
 	this.hull = new QuickHull();
 	this.gauss = new Gauss();
     }
 
-    public LOP getProblem() {
-	return this.lop;
+    public void setEditor(LOPEditor editor) {
+	editor.addListener(new LOPEditorAdapter() {
+	    @Override
+	    public boolean open(LOP lop, URL file) {
+		return LOPSolver.this.open(lop, file);
+	    }
+
+	    @Override
+	    public void save(LOP lop, URL file) {
+		LOPSolver.this.save(lop, file);
+	    }
+
+	    @Override
+	    public void solve(LOP lop) {
+		LOPSolver.this.solve(lop);
+	    }
+	});
     }
 
-    public boolean open(URL file) {
+    private boolean open(LOP lop, URL file) {
 	if (file == null)
 	    return false;
 	try {
@@ -177,14 +190,12 @@ public final class LOPSolver {
 
 	    if (vTarget != null && vecs.size() >= LOP.MIN_VECTORS
 		    && vecs.size() <= LOP.MAX_VECTORS && vOps != null) {
-		this.lop.setMaximum(bMax);
-		this.lop.setTarget(vTarget);
-		this.lop.setOperators(vOps);
-		this.lop.setVectors(vecs);
-		this.lop.problemChanged();
+		lop.setMaximum(bMax);
+		lop.setTarget(vTarget);
+		lop.setOperators(vOps);
+		lop.setVectors(vecs);
+		lop.problemChanged();
 	    }
-
-	    solve();
 	    return true;
 
 	    // ---- Error handling ----
@@ -207,70 +218,11 @@ public final class LOPSolver {
 	return false;
     }
 
-    public void print(PrintStream out) {
-	StringBuffer x = new StringBuffer(), y = new StringBuffer(), z = new StringBuffer();
-
-	Vector3Frac vec = this.lop.getVectors().get(0);
-
-	x.append(vec.getCoordX() + " ");
-	y.append(vec.getCoordY() + " ");
-	z.append(vec.getCoordZ() + " ");
-
-	for (int i = 1; i < this.lop.getVectors().size(); i++) {
-	    vec = this.lop.getVectors().get(i);
-	    if (vec.getCoordX().toDouble() >= 0)
-		x.append("+");
-	    if (vec.getCoordY().toDouble() >= 0)
-		y.append("+");
-	    if (vec.getCoordZ().toDouble() >= 0)
-		z.append("+");
-
-	    x.append(vec.getCoordX() + " ");
-	    y.append(vec.getCoordY() + " ");
-	    z.append(vec.getCoordZ() + " ");
-	}
-
-	vec = this.lop.getTarget();
-
-	x.append(" " + this.lop.getOperators()[0] + " " + vec.getCoordX());
-	y.append(" " + this.lop.getOperators()[1] + " " + vec.getCoordY());
-	z.append(" = " + (this.lop.isMaximum() ? "max" : "min"));
-
-	out.println(x.toString());
-	out.println(y.toString());
-	out.println(z.toString());
-
-	LOPSolution sol = this.lop.getSolution();
-
-	out.println();
-	out.println("Lösung: " + sol.getValue());
-
-	switch (sol.getSpecialCase()) {
-	    case LOPSolution.NO_SOLUTION:
-		out.println(Lang.getString("Strings.NoSolution"));
-		break;
-	    case LOPSolution.MORE_THAN_ONE_SOLUTION:
-		out.println(Lang.getString("Strings.MoreSolutions").replace(
-			"{0}", sol.countAreas() + ""));
-		break;
-	    case LOPSolution.UNLIMITED:
-		out.println(Lang.getString("Strings.UnlimitedSol"));
-		break;
-	    case LOPSolution.SIMPLE:
-		out.println(Lang.getString("Strings.Simple"));
-		break;
-	    default:
-		out.println("Error! Wrong special case. ("
-			+ sol.getSpecialCase() + ")");
-		break;
-	}
-    }
-
-    public boolean save(String file) {
+    private boolean save(LOP lop, URL file) {
 	try {
-	    FileOutputStream fout = new FileOutputStream(file, false);
+	    FileOutputStream fout = new FileOutputStream(file.getFile(), false);
 	    PrintStream myOutput = new PrintStream(fout, false, "UTF-8");
-	    String out = IOUtils.generateXMLContent(this.lop);
+	    String out = IOUtils.generateXMLContent(lop);
 	    myOutput.println(out);
 	    myOutput.flush();
 	    myOutput.close();
@@ -282,15 +234,15 @@ public final class LOPSolver {
 	}
     }
 
-    public void solve() {
+    private void solve(LOP lop) {
 
-	LOPSolution sol = this.lop.getSolution();
+	LOPSolution sol = lop.getSolution();
 
-	this.hull.build(this.lop.getVectors());
+	this.hull.build(lop.getVectors());
 
-	Vector3Frac sln, opt_vector = this.lop.getTarget().clone();
+	Vector3Frac sln, opt_vector = lop.getTarget().clone();
 
-	boolean max = this.lop.isMaximum(), unlimited = false;
+	boolean max = lop.isMaximum(), unlimited = false;
 	Fractional value_high, value_low, opt = null, value_unlimit = null;
 
 	value_high = Fractional.MAX_VALUE;
@@ -300,7 +252,7 @@ public final class LOPSolver {
 	    if (vertex.p1.equals(Vector3Frac.ZERO)) {
 
 		sln = this.gauss.gaussElimination(vertex.p2, vertex.p3,
-			vertex.p1, this.lop.getTarget());
+			vertex.p1, lop.getTarget());
 
 		opt_vector.setCoordZ(sln.getCoordZ());
 
@@ -356,7 +308,7 @@ public final class LOPSolver {
 		// Falls ja ist MAX oder MIN unendlich
 
 		sln = this.gauss.gaussElimination(vertex.p1, vertex.p2,
-			vertex.p3, this.lop.getTarget());
+			vertex.p3, lop.getTarget());
 		opt_vector.setCoordZ(sln.getCoordZ());
 
 		if (vertex.isPointInVertex(opt_vector)) {
@@ -387,6 +339,6 @@ public final class LOPSolver {
 
 	sol.setValue(opt);
 
-	this.lop.problemSolved();
+	lop.problemSolved();
     }
 }

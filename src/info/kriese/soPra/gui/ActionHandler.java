@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 01.11.2007 - Version 0.3
+ * - LOPEditor hizugefügt
+ * - Verlagerung von Fuktionalität
  * 31.10.2007 - Version 0.2.1
  * - Funktionalität in InputPanel verschoben
  * 25.10.2007 - Version 0.2
@@ -50,7 +53,7 @@ import javax.swing.JOptionPane;
  * Klasse zum handeln aller Actions in SoPraLOP
  * 
  * @author Michael Kriese
- * @version 0.2.1
+ * @version 0.3
  * @since 24.10.2007
  * 
  */
@@ -58,7 +61,18 @@ public final class ActionHandler {
 
     public static final ActionHandler INSTANCE = new ActionHandler();
 
-    public String FILE = null;
+    public static void exit() {
+	exit(0);
+    }
+
+    public static void exit(int code) {
+	SoPraLOP.ABOUT.setVisible(false);
+	SoPraLOP.VISUAL.setVisible(false);
+	SoPraLOP.MAIN.setVisible(false);
+	System.exit(code);
+    }
+
+    public String file = null;
 
     private final ActionListener ac;
 
@@ -86,8 +100,6 @@ public final class ActionHandler {
 			    null);
 		    if (s != null)
 			SoPraLOP.MAIN.setStatus(s);
-		    // else
-		    // SoPraLOP.MAIN.setStatus("No help available!");
 		}
 	    }
 
@@ -96,6 +108,8 @@ public final class ActionHandler {
 		SoPraLOP.MAIN.setStatus("");
 	    }
 	};
+
+	MenuMaker.setDefaultActionHandler(this);
     }
 
     public void add(AbstractButton btn) {
@@ -112,36 +126,22 @@ public final class ActionHandler {
 
 	if (this.lop == null) {
 	    System.err.println("ActionHandler: lop shoudn\'t be null!");
-	    System.exit(-1);
+	    exit(-1);
 	}
 
 	if (cmd.equals("Menu.File.Exit"))
-	    System.exit(0);
+	    exit();
 	else if (cmd.equals("Menu.File.Open"))
 	    fileOpenClass();
 	else if (cmd.equals("Menu.File.Save"))
 	    fileSaveClass(false);
 	else if (cmd.equals("Menu.File.SaveAs"))
 	    fileSaveClass(true);
-	else if (cmd.equals("Menu.View.Data")) {
-	    SoPraLOP.MAIN.setContent(SoPraLOP.INPUT);
-	    SoPraLOP.INPUT.update();
-	} else if (cmd.equals("Menu.View.Result")) {
-	    if (SoPraLOP.INPUT.isEdited()) {
-		int res = JOptionPane.showConfirmDialog(SoPraLOP.MAIN, Lang
-			.getString("Errors.IsEdited"));
-		if (res == JOptionPane.YES_OPTION) {
-		    if (SoPraLOP.INPUT.save())
-			SoPraLOP.SOLVER.solve();
-		    else
-			return;
-		} else if (res == JOptionPane.CANCEL_OPTION)
-		    return;
-		else
-		    SoPraLOP.INPUT.cancel();
-	    }
-	    SoPraLOP.MAIN.setContent(SoPraLOP.HTML.getPanel());
-	} else if (cmd.equals("Menu.View.ShowSolution")) {
+	else if (cmd.equals("Menu.View.Reset"))
+	    SoPraLOP.ENGINE.resetScene();
+	else if (cmd.equals("Menu.View.Show"))
+	    SoPraLOP.VISUAL.setVisible(true);
+	else if (cmd.equals("Menu.View.ShowSolution")) {
 	    if (this.lop.isSolved())
 		this.lop.showSolution();
 	    else
@@ -159,22 +159,20 @@ public final class ActionHandler {
 	    SoPraLOP.ABOUT.setLocationRelativeTo(SoPraLOP.MAIN);
 	    SoPraLOP.ABOUT.setVisible(true);
 	} else if (cmd.startsWith("Menu.File.Samples")) {
-	    this.FILE = null;
-	    SoPraLOP.SOLVER.open(IOUtils.getURL("problems/"
+	    this.file = null;
+	    SoPraLOP.EDITOR.open(IOUtils.getURL("problems/"
 		    + Lang.getString(cmd + ".File") + ".lop"));
+	    SoPraLOP.MAIN.setTitle(Lang.getString("Strings.Sample"));
 	} else if (cmd.equals("Input.Menu.AddVar"))
-	    SoPraLOP.INPUT.addColumn();
+	    SoPraLOP.EDITOR.addVariable();
 	else if (cmd.equals("Input.Menu.DelVar"))
-	    SoPraLOP.INPUT.removeColumn();
-	else if (cmd.equals("Input.Menu.Save")) {
-	    if (SoPraLOP.INPUT.save()) {
-		SoPraLOP.MAIN.setContent(SoPraLOP.HTML.getPanel());
-		SoPraLOP.SOLVER.solve();
-	    }
-	} else if (cmd.equals("Input.Menu.Clear"))
-	    SoPraLOP.INPUT.clear();
+	    SoPraLOP.EDITOR.removeVariable();
+	else if (cmd.equals("Input.Menu.Save"))
+	    SoPraLOP.EDITOR.take();
+	else if (cmd.equals("Input.Menu.Clear"))
+	    SoPraLOP.EDITOR.clear();
 	else if (cmd.equals("Input.Menu.Reset"))
-	    SoPraLOP.INPUT.update();
+	    SoPraLOP.EDITOR.update();
     }
 
     /**
@@ -183,10 +181,15 @@ public final class ActionHandler {
      */
     private void fileOpenClass() {
 	if (SoPraLOP.FC.showOpenDialog(SoPraLOP.MAIN) == JFileChooser.APPROVE_OPTION) {
-	    this.FILE = SoPraLOP.FC.getSelectedFile().getAbsolutePath();
+	    this.file = SoPraLOP.FC.getSelectedFile().getAbsolutePath();
+
 	    try {
-		SoPraLOP.SOLVER.open(new URL(this.FILE));
+		SoPraLOP.EDITOR.open(SoPraLOP.FC.getSelectedFile().toURI()
+			.toURL());
+		SoPraLOP.MAIN.setTitle(SoPraLOP.FC.getSelectedFile().getName());
 	    } catch (MalformedURLException e) {
+		System.err.println("Error: Coudn't open file! " + this.file);
+		System.err.println(e.getMessage());
 	    }
 	}
     }
@@ -196,14 +199,19 @@ public final class ActionHandler {
      * 
      */
     private void fileSaveClass(boolean saveAs) {
-	if (saveAs || this.FILE == null)
+	if (saveAs || this.file == null)
 	    if (SoPraLOP.FC.showSaveDialog(SoPraLOP.MAIN) == JFileChooser.APPROVE_OPTION) {
-		this.FILE = SoPraLOP.FC.getSelectedFile().getAbsolutePath();
-		if (!this.FILE.toLowerCase().endsWith(".lop"))
-		    this.FILE += ".lop";
+		this.file = SoPraLOP.FC.getSelectedFile().getAbsolutePath();
+		if (!this.file.toLowerCase().endsWith(".lop"))
+		    this.file += ".lop";
 	    }
-	if (this.FILE != null)
-	    SoPraLOP.SOLVER.save(this.FILE);
+	if (this.file != null)
+	    try {
+		SoPraLOP.EDITOR.save(new URL(this.file));
+		SoPraLOP.MAIN.setTitle(SoPraLOP.FC.getSelectedFile().getName());
+	    } catch (MalformedURLException e) {
+		System.err.println("Error: Coudn't save to file! " + this.file);
+	    }
     }
 
 }

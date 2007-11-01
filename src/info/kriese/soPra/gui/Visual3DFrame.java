@@ -40,15 +40,14 @@ package info.kriese.soPra.gui;
 import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.io.impl.SettingsFactory;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.media.j3d.Canvas3D;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 /**
  * @author Michael Kriese
@@ -58,16 +57,10 @@ import javax.swing.JPanel;
  */
 public final class Visual3DFrame extends JFrame implements Virtual3DFrame {
 
-    private static final int PHEIGHT = 512;
-
-    private static final int PWIDTH = 512; // size of panel
-
     /** */
     private static final long serialVersionUID = 6930931764821628616L;
 
     private boolean close;
-
-    private final JPanel pn;
 
     public Visual3DFrame(JFrame owner) {
 	super(Lang.getString("Visual.Title") + " - Version "
@@ -82,28 +75,22 @@ public final class Visual3DFrame extends JFrame implements Virtual3DFrame {
 	    this.close = false;
 	}
 
-	setLayout(new BorderLayout());
+	setSize(new Dimension(400, 400));
 	setExtendedState(JFrame.MAXIMIZED_BOTH);
-	setSize(new Dimension(600, 500));
 
 	ImageIcon ico = MenuMaker.getImage("MainFrame");
 	if (ico != null)
 	    setIconImage(ico.getImage());
-
-	this.pn = new JPanel();
-	this.pn.setLayout(new BorderLayout());
-	this.pn.setOpaque(false);
-	this.pn.setPreferredSize(new Dimension(PWIDTH, PHEIGHT));
-
-	add(this.pn, BorderLayout.CENTER);
     }
 
     public void addCanvas(Canvas3D canvas) {
-	this.pn.add("Center", canvas);
+	add(canvas);
+	validate();
+	repaint();
 	canvas.setFocusable(true); // give focus to the canvas
 	canvas.requestFocus();
 
-	canvas.addKeyListener(new KeyAdapter() {
+	KeyListener l = new KeyAdapter() {
 
 	    @Override
 	    public void keyPressed(KeyEvent e) {
@@ -113,7 +100,9 @@ public final class Visual3DFrame extends JFrame implements Virtual3DFrame {
 		    else
 			setVisible(false);
 	    }
-	});
-    }
+	};
 
+	canvas.addKeyListener(l);
+	addKeyListener(l);
+    }
 }

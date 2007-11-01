@@ -30,6 +30,9 @@ package info.kriese.soPra.test;
 
 import info.kriese.soPra.io.IOUtils;
 import info.kriese.soPra.io.impl.SettingsFactory;
+import info.kriese.soPra.lop.LOP;
+import info.kriese.soPra.lop.LOPEditor;
+import info.kriese.soPra.lop.impl.LOPFactory;
 import info.kriese.soPra.math.LOPSolver;
 
 /**
@@ -42,16 +45,19 @@ import info.kriese.soPra.math.LOPSolver;
 public final class TestSolve {
 
     public static void main(String[] args) {
+	LOP lop = LOPFactory.newLinearOptimizingProblem();
+	LOPEditor editor = LOPFactory.newLOPEditor(lop);
 	LOPSolver solver = new LOPSolver();
+	solver.setEditor(editor);
 
 	System.out.println("SoPraLOP Test - Version "
 		+ SettingsFactory.getInstance().getVersion());
 	System.out.println("\t(c) 2007 "
 		+ SettingsFactory.getInstance().getAuthor());
 	System.out.println();
-	solver.open(IOUtils.getURL("problems/unlimited_high2.lop"));
+	editor.open(IOUtils.getURL("problems/unlimited_high2.lop"));
 	System.out.println();
 	System.out.println("Problem: ");
-	solver.print(System.out);
+	IOUtils.print(lop, System.out);
     }
 }

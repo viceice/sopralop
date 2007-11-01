@@ -19,7 +19,8 @@
  * 
  * ChangeLog:
  * 
- * 31.10.2007 - Version 0.6
+ *  01.11.2007 - Version 0.6
+ * - Model-Klasse ausgelagert
  * - Funktionalität aus dem ActionHandler hier her verlagert
  * 23.10.2007 - Version 0.5
  * - In InputPanel umbenannt und in JPannel geändert ( zur Integration ins Hauptfenster)
@@ -52,30 +53,24 @@
 
 package info.kriese.soPra.gui;
 
-import info.kriese.soPra.gui.lang.Lang;
-import info.kriese.soPra.lop.LOP;
-import info.kriese.soPra.lop.LOPAdapter;
+import info.kriese.soPra.gui.table.LOPTableModel;
+import info.kriese.soPra.lop.LOPEditor;
 import info.kriese.soPra.math.Vector3Frac;
-import info.kriese.soPra.math.impl.FractionalFactory;
-import info.kriese.soPra.math.impl.Vector3FracFactory;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
-import javax.swing.DefaultCellEditor;
-import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
 
 /**
  * grafische Klasse zur Eingabe der Zielfunktion
@@ -86,232 +81,22 @@ import javax.swing.table.TableColumn;
  */
 public final class InputPanel extends JPanel {
 
-    /**
-     * Modell für die Eingabeklasse. Beschreibt die zu erstellende Tabelle
-     * 
-     */
-    private final class InputTableModel extends AbstractTableModel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 13L;
-
-	private final Vector<String> columnNames;
-
-	public InputTableModel() {
-	    this.columnNames = new Vector<String>();
-	    setColumnCount(InputPanel.this.vectors.size());
-	}
-
-	/**
-	 * erweitert die Tabelle um eine weitere Variable xi
-	 * 
-	 */
-	public void addColumn() {
-	    int num = InputPanel.this.vectors.size();
-
-	    if (num == LOP.MAX_VECTORS)
-		return;
-
-	    InputPanel.this.vectors.add(Vector3FracFactory.getInstance());
-	    num++;
-	    this.columnNames.insertElementAt("<html><center><b>x<sub>" + num
-		    + "</sub></b></center></html>", num);
-	    fireTableStructureChanged();
-	    pullDownColumn(InputPanel.this.table.getColumnModel().getColumn(
-		    InputPanel.this.table.getColumnCount() - 2));
-	}
-
-	@Override
-	public Class<?> getColumnClass(int c) {
-	    return getValueAt(0, c).getClass();
-	}
-
-	public int getColumnCount() {
-	    return this.columnNames.size();
-	}
-
-	@Override
-	public String getColumnName(int col) {
-	    return this.columnNames.get(col);
-	}
-
-	public int getRowCount() {
-	    return 3;
-	}
-
-	public Object getValueAt(int row, int col) {
-	    int num = InputPanel.this.vectors.size();
-
-	    if (col == 0)
-		switch (row) {
-		    case 0:
-			return "<html><b>"
-				+ Lang.getString("Strings.TargetFunction")
-				+ ":</b></html>";
-
-		    default:
-			return "<html><b>NB " + row + ":</b></html>";
-		}
-
-	    if (col == num + 1) {
-		if (row == 0)
-		    return "=";
-		return InputPanel.this.operators[row - 1];
-	    }
-
-	    if (col == num + 2)
-		switch (row) {
-		    case 0:
-			return InputPanel.this.max ? "max" : "min";
-		    case 1:
-			return InputPanel.this.target.getCoordX()
-				.getNumerator();
-		    default:
-			return InputPanel.this.target.getCoordY()
-				.getNumerator();
-		}
-
-	    Vector3Frac vec = InputPanel.this.vectors.get(col - 1);
-
-	    switch (row) {
-		case 0:
-		    return vec.getCoordZ().getNumerator();
-		case 1:
-		    return vec.getCoordX().getNumerator();
-		default:
-		    return vec.getCoordY().getNumerator();
-	    }
-
-	}
-
-	/**
-	 * legt die Editierbarkeit einzelner Zellen fest
-	 * 
-	 */
-	@Override
-	public boolean isCellEditable(int row, int col) {
-	    if ((col < 1)
-		    || ((row == 0) && (col == InputPanel.this.vectors.size() + 1)))
-		return false;
-	    else
-		return true;
-	}
-
-	/**
-	 * reduziert die Tabelle um eine Variable xi;
-	 * 
-	 * bei 2 Variablen wird keine weitere entfernt
-	 */
-	public void removeColumn() {
-	    int num = InputPanel.this.vectors.size();
-
-	    if (num > LOP.MIN_VECTORS) {
-		InputPanel.this.vectors.remove(num - 1);
-		this.columnNames.remove(num);
-		num--;
-		fireTableStructureChanged();
-		pullDownColumn(InputPanel.this.table.getColumnModel()
-			.getColumn(InputPanel.this.table.getColumnCount() - 2));
-	    }
-	}
-
-	public void setColumnCount(int size) {
-	    this.columnNames.clear();
-	    this.columnNames.add(" ");
-	    for (int i = 1; i <= size; i++)
-		this.columnNames.add("<html><center><b>x<sub>" + i
-			+ "</sub></b></center></html>");
-	    this.columnNames.add("<html><center><b>" + "&lt; / > / ="
-		    + "</b></center></html>");
-	    this.columnNames.add("<html><center><b>z</b></center></html>");
-	    fireTableStructureChanged();
-	}
-
-	@Override
-	public void setValueAt(Object value, int row, int col) {
-	    int num = InputPanel.this.vectors.size();
-
-	    if (col == num + 1) {
-		if (row > 0)
-		    InputPanel.this.operators[row - 1] = (String) value;
-	    } else
-
-	    if (col == num + 2)
-		switch (row) {
-		    case 0:
-			String s = (String) value;
-			if (s.contains("min"))
-			    InputPanel.this.max = false;
-			else
-			    InputPanel.this.max = true;
-			;
-			break;
-		    case 1:
-			try {
-			    InputPanel.this.target.getCoordX().setNumerator(
-				    Integer.parseInt((String) value));
-			} catch (NumberFormatException e) {
-			}
-			break;
-		    default:
-			try {
-			    InputPanel.this.target.getCoordY().setNumerator(
-				    Integer.parseInt((String) value));
-			} catch (NumberFormatException e) {
-			}
-			break;
-		}
-	    else {
-
-		Vector3Frac vec = InputPanel.this.vectors.get(col - 1);
-
-		int val = 0;
-		try {
-		    val = (Integer) value;
-		} catch (NumberFormatException e) {
-		}
-
-		switch (row) {
-		    case 0:
-			vec.getCoordZ().setNumerator(val);
-			break;
-		    case 1:
-			vec.getCoordX().setNumerator(val);
-			break;
-		    default:
-			vec.getCoordY().setNumerator(val);
-			break;
-		}
-	    }
-	    fireTableCellUpdated(row, col);
-	    setEdited(true);
-	}
-
-    }
-
     /** */
     private static final long serialVersionUID = 4944381133035213540L;
 
-    private final JComboBox comboBox;
+    private final LOPTableModel model;
 
-    private boolean edited = false;
+    private Component take = null;
 
-    private final LOP lop;
+    boolean max;
 
-    private boolean max;
+    String[] operators;
 
-    private final InputTableModel model;
+    final JTable table;
 
-    private String[] operators;
+    Vector3Frac target;
 
-    private Component save;
-
-    private final JTable table;
-
-    private Vector3Frac target;
-
-    private final List<Vector3Frac> vectors;
+    final List<Vector3Frac> vectors;
 
     /**
      * InputTable ueberladen: wenn Aufruf ohne Argumente, dann werden die
@@ -319,143 +104,39 @@ public final class InputPanel extends JPanel {
      * Vektordaten aus den uebergebenen Argumenten verwendet
      * 
      */
-    public InputPanel(LOP lop) {
-	this.lop = lop;
+    public InputPanel() {
 
 	this.vectors = new ArrayList<Vector3Frac>();
-
-	lop.addProblemListener(new LOPAdapter() {
-
-	    @Override
-	    public void problemChanged(LOP lop) {
-		update();
-	    }
-	});
 
 	setLayout(new BorderLayout());
 	setSize(600, 200);
 
-	this.model = new InputTableModel();
+	this.model = new LOPTableModel();
+	this.model.addTableModelListener(new TableModelListener() {
+
+	    public void tableChanged(TableModelEvent e) {
+		// if (InputPanel.this.model.isEdited())
+		InputPanel.this.take.setEnabled(true);
+		// else
+		// InputPanel.this.take.setEnabled(false);
+	    }
+	});
 
 	this.table = new JTable(this.model);
 	this.table.setFillsViewportHeight(true);
+	this.table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
 	JScrollPane scrollPane = new JScrollPane(this.table);
-	this.table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
 	initColumnSizes(this.table);
 
-	this.comboBox = new JComboBox();
-	this.comboBox.addItem("=");
-	this.comboBox.addItem(">");
-	this.comboBox.addItem("<");
-
 	generateEditToolbar();
 
-	add(scrollPane);
-
-	update();
+	add(scrollPane, BorderLayout.CENTER);
     }
 
-    public void addColumn() {
-	this.model.addColumn();
-	setEdited(true);
-    }
-
-    public void cancel() {
-	setEdited(false);
-    }
-
-    public void clear() {
-
-	while (this.vectors.size() > LOP.MIN_VECTORS)
-	    this.model.removeColumn();
-
-	for (int i = 0; i < LOP.MIN_VECTORS; i++) {
-	    Vector3Frac vec = Vector3Frac.ZERO.clone();
-	    switch (i % 3) {
-		case 0:
-		    vec.setCoordX(FractionalFactory.getInstance(1));
-		    break;
-		case 1:
-		    vec.setCoordY(FractionalFactory.getInstance(1));
-		    break;
-		default:
-		    vec.setCoordZ(FractionalFactory.getInstance(1));
-		    break;
-	    }
-	    this.vectors.set(i, vec);
-	}
-
-	this.target.getCoordX().setNumerator(0);
-	this.target.getCoordY().setNumerator(0);
-
-	this.operators[0] = "=";
-	this.operators[1] = "=";
-	this.max = true;
-	this.model.fireTableDataChanged();
-	setEdited(true);
-    }
-
-    public boolean isEdited() {
-	return this.edited;
-    }
-
-    public boolean isMax() {
-	return this.max;
-    }
-
-    public void removeColumn() {
-	this.model.removeColumn();
-	setEdited(true);
-    }
-
-    public boolean save() {
-	int cnt = 0;
-	for (Vector3Frac vec : this.vectors)
-	    if (!vec.equals(Vector3Frac.ZERO))
-		cnt++;
-	if (cnt < this.vectors.size()) {
-	    JOptionPane.showMessageDialog(this, Lang
-		    .getString("Errors.NoZeroVectors"), Lang
-		    .getString("Strings.Error"), JOptionPane.ERROR_MESSAGE);
-	    return false;
-	}
-
-	this.lop.setVectors(this.vectors);
-	this.lop.setTarget(this.target);
-	this.lop.setMaximum(this.max);
-	this.lop.setOperators(this.operators);
-	this.lop.problemChanged();
-	setEdited(false);
-	return true;
-    }
-
-    @Override
-    public void setVisible(boolean b) {
-	super.setVisible(b);
-	update();
-    }
-
-    public void update() {
-	this.vectors.clear();
-	for (Vector3Frac vec : this.lop.getVectors())
-	    this.vectors.add(vec.clone());
-	this.target = this.lop.getTarget().clone();
-	this.operators = new String[2];
-	this.operators[0] = this.lop.getOperators()[0];
-	this.operators[1] = this.lop.getOperators()[1];
-	this.max = this.lop.isMaximum();
-
-	this.model.setColumnCount(this.vectors.size());
-	// TableColumn col = this.table.getColumnModel().getColumn(0);
-	// col.setCellRenderer(new TableRowHeaderRenderer());
-	// this.model.fireTableStructureChanged();
-
-	pullDownColumn(this.table.getColumnModel().getColumn(
-		this.table.getColumnCount() - 2));
-
-	setEdited(false);
+    public void setEditor(LOPEditor editor) {
+	this.model.setEditor(editor);
     }
 
     /**
@@ -463,8 +144,9 @@ public final class InputPanel extends JPanel {
      * 
      */
     private void generateEditToolbar() {
-	JToolBar toolbar;
-	toolbar = new JToolBar("Input.Menu");
+	JToolBar toolbar = new JToolBar("Input.Menu");
+	add(toolbar, BorderLayout.PAGE_START);
+
 	toolbar.setFloatable(false);
 
 	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.AddVar",
@@ -477,10 +159,8 @@ public final class InputPanel extends JPanel {
 	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.Clear",
 		ActionHandler.INSTANCE));
 	toolbar.addSeparator();
-	this.save = toolbar.add(MenuMaker.getToolBarButton("Input.Menu.Save",
+	this.take = toolbar.add(MenuMaker.getToolBarButton("Input.Menu.Save",
 		ActionHandler.INSTANCE));
-
-	add(toolbar, BorderLayout.PAGE_START);
     }
 
     /**
@@ -488,7 +168,7 @@ public final class InputPanel extends JPanel {
      * 
      */
     private void initColumnSizes(JTable table) {
-	InputTableModel model = (InputTableModel) table.getModel();
+	TableModel model = table.getModel();
 	TableColumn column = null;
 	Component comp = null;
 	int headerWidth = 0;
@@ -509,24 +189,5 @@ public final class InputPanel extends JPanel {
 	    cellWidth = comp.getPreferredSize().width;
 	    column.setPreferredWidth(Math.max(headerWidth, cellWidth));
 	}
-    }
-
-    /**
-     * Pulldown-Menue fuer die Spalte Nebenbedingungen
-     * 
-     * wird spaeter fuer die Generierung des dualen Problems benoetigt...
-     */
-    private void pullDownColumn(TableColumn relation) {
-	relation.setCellEditor(new DefaultCellEditor(this.comboBox));
-
-	// Set up tool tips for the cells.
-	DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-	renderer.setToolTipText(Lang.getString("Input.Relation"));
-	relation.setCellRenderer(renderer);
-    }
-
-    private void setEdited(boolean value) {
-	this.edited = value;
-	this.save.setEnabled(value);
     }
 }

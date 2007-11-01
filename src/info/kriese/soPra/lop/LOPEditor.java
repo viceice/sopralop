@@ -19,38 +19,38 @@
  * 
  * ChangeLog:
  * 
- * 01.11.2007 - Version 0.2
- * - An LOPEditor angepasst
- * 23.08.2007 - Version 0.1
+ * 01.11.2007 - Version 0.1
  *  - Datei hinzugefuegt
  */
-package info.kriese.soPra.lop.impl;
+package info.kriese.soPra.lop;
 
-import info.kriese.soPra.lop.LOP;
-import info.kriese.soPra.lop.LOPEditor;
+import java.net.URL;
 
 /**
  * 
  * @author Michael Kriese
- * @version 0.2
- * @since 23.08.2007
+ * @version 0.1
+ * @since 01.11.2007
  * 
  */
-public final class LOPFactory {
+public interface LOPEditor {
+    void addListener(LOPEditorListener l);
 
-    /**
-     * Generiert ein neues lineares Optimierungsproblem
-     * 
-     * @return Lineares Optimierungsproblem
-     */
-    public static LOP newLinearOptimizingProblem() {
-	return new LOPImpl();
-    }
+    void addVariable();
 
-    public static LOPEditor newLOPEditor(LOP lop) {
-	return new LOPEditorImpl(lop);
-    }
+    void clear();
 
-    protected LOPFactory() {
-    }
+    void open(URL file);
+
+    void removeListener(LOPEditorListener l);
+
+    void removeVariable();
+
+    void save(URL file);
+
+    void solve();
+
+    void take();
+
+    void update();
 }

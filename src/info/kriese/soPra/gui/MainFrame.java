@@ -19,8 +19,10 @@
  * 
  * ChangeLog:
  * 
- * 31.10.2007 - Version 0.7
+ * 01.11.2007 - Version 0.7
  * - 3D-Visualisierung integriert
+ * - An LOPEditor angepasst
+ * - Im Titel wird der Name der geöffneten Datei angezeigt
  * 25.10.2007 - Version 0.6.1
  * - StatusBar hinzugefügt
  * 24.10.2007 - Version 0.6
@@ -80,6 +82,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JSplitPane;
+import javax.swing.JToolBar;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 
@@ -91,7 +94,7 @@ import javax.swing.border.Border;
  */
 public final class MainFrame extends JFrame implements Virtual3DFrame {
 
-    private static final int HEIGHT = 600;
+    private static final int HEIGHT = 400;
 
     /**	*/
     private static final long serialVersionUID = -2209082679810518777L;
@@ -115,16 +118,66 @@ public final class MainFrame extends JFrame implements Virtual3DFrame {
 
     private final JLabel status;
 
-    public MainFrame(LOP lop) {
+    private String title = "";
+
+    public MainFrame() {
 	setTitle(this.PROPS.getName() + " - Version " + this.PROPS.getVersion());
 	setSize(WIDTH, HEIGHT);
-	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 	setLayout(new BorderLayout());
 	setLocationRelativeTo(null);
 	ImageIcon ico = MenuMaker.getImage("MainFrame");
 	if (ico != null)
 	    setIconImage(ico.getImage());
 
+	addComponentListener(new ComponentAdapter() {
+
+	    @Override
+	    public void componentResized(ComponentEvent e) {
+		validate();
+		repaint();
+	    }
+	});
+
+	this.body = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+	this.body.setOneTouchExpandable(false);
+	this.body.setDividerSize(10);
+	this.body.setDividerLocation(WIDTH / 2);
+	add(this.body, BorderLayout.CENTER);
+
+	this.status = new JLabel();
+	this.status.setPreferredSize(new Dimension(200, 20));
+	this.status.setBorder(createStatusBarBorder());
+	add(this.status, BorderLayout.PAGE_END);
+
+	generateMainMenu();
+	generateMainToolbar();
+    }
+
+    public void addCanvas(Canvas3D canvas) {
+	canvas.setMinimumSize(new Dimension(0, 0));
+	canvas.setPreferredSize(new Dimension(WIDTH / 2, 300));
+	this.body.setRightComponent(canvas);
+	this.body.setDividerLocation(WIDTH / 2);
+	validate();
+	repaint();
+    }
+
+    @Override
+    public String getTitle() {
+	return this.title;
+    }
+
+    public void setContent(JComponent content) {
+	content.setMinimumSize(new Dimension(0, 0));
+	content.setPreferredSize(new Dimension(WIDTH / 2, 300));
+	this.body.setLeftComponent(content);
+	this.body.setDividerLocation(WIDTH / 2);
+	validate();
+	repaint();
+    }
+
+    public void setLOP(LOP lop) {
 	lop.addProblemListener(new LOPAdapter() {
 	    @Override
 	    public void showDualProblem(LOP lop) {
@@ -138,47 +191,17 @@ public final class MainFrame extends JFrame implements Virtual3DFrame {
 		MainFrame.this.edit.add(MainFrame.this.duale);
 	    }
 	});
-
-	addComponentListener(new ComponentAdapter() {
-
-	    @Override
-	    public void componentResized(ComponentEvent e) {
-		validate();
-		repaint();
-	    }
-
-	});
-
-	this.body = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-	this.body.setOneTouchExpandable(true);
-	this.body.setDividerSize(10);
-	// this.body.setDividerLocation(WIDTH / 2);
-	add(this.body, BorderLayout.CENTER);
-
-	this.status = new JLabel();
-	this.status.setPreferredSize(new Dimension(200, 20));
-	this.status.setBorder(createStatusBarBorder());
-	add(this.status, BorderLayout.SOUTH);
-
-	generateMainMenu();
-    }
-
-    public void addCanvas(Canvas3D canvas) {
-	canvas.setMinimumSize(new Dimension(0, 0));
-	canvas.setPreferredSize(new Dimension(WIDTH / 2, 300));
-	this.body.setRightComponent(canvas);
-    }
-
-    public void setContent(JComponent content) {
-	content.setMinimumSize(new Dimension(0, 0));
-	content.setPreferredSize(new Dimension(300, 300));
-	this.body.setLeftComponent(content);
-	validate();
-	repaint();
     }
 
     public void setStatus(String msg) {
 	this.status.setText(msg);
+    }
+
+    @Override
+    public void setTitle(String title) {
+	this.title = title;
+	super.setTitle(title + " - " + this.PROPS.getName() + " - Version "
+		+ this.PROPS.getVersion());
     }
 
     private void generateMainMenu() {
@@ -190,47 +213,48 @@ public final class MainFrame extends JFrame implements Virtual3DFrame {
 
 	menu = MenuMaker.getMenu("Menu.File");
 	menubar.add(menu);
-	menu.add(MenuMaker
-		.getMenuItem("Menu.File.Open", ActionHandler.INSTANCE));
-	menu.add(MenuMaker
-		.getMenuItem("Menu.File.Save", ActionHandler.INSTANCE));
-	menu.add(MenuMaker.getMenuItem("Menu.File.SaveAs",
-		ActionHandler.INSTANCE));
+	menu.add(MenuMaker.getMenuItem("Menu.File.Open"));
+	menu.add(MenuMaker.getMenuItem("Menu.File.Save"));
+	menu.add(MenuMaker.getMenuItem("Menu.File.SaveAs"));
 	menu.addSeparator();
 	submenu = MenuMaker.getMenu("Menu.File.Samples");
 
 	for (int i = 1; i <= Lang.getInt("Menu.File.Samples.Count"); i++)
 	    submenu.add(MenuMaker.getMenuItem("Menu.File.Samples.S"
-		    + (i < 10 ? "0" + i : i), ActionHandler.INSTANCE));
+		    + (i < 10 ? "0" + i : i)));
 
 	menu.add(submenu);
 	menu.addSeparator();
-	menu.add(MenuMaker
-		.getMenuItem("Menu.File.Exit", ActionHandler.INSTANCE));
+	menu.add(MenuMaker.getMenuItem("Menu.File.Exit"));
 
 	menu = MenuMaker.getMenu("Menu.View");
 	menubar.add(menu);
-	menu.add(MenuMaker
-		.getMenuItem("Menu.View.Data", ActionHandler.INSTANCE));
+	menu.add(MenuMaker.getMenuItem("Menu.View.Reset"));
 	menu.addSeparator();
-	menu.add(MenuMaker.getMenuItem("Menu.View.Result",
-		ActionHandler.INSTANCE));
-	menu.add(MenuMaker
-		.getMenuItem("Menu.View.Show", ActionHandler.INSTANCE));
-	menu.add(MenuMaker.getMenuItem("Menu.View.ShowSolution",
-		ActionHandler.INSTANCE));
-	this.primale = MenuMaker.getMenuItem("Menu.View.ShowPrimalProblem",
-		ActionHandler.INSTANCE);
-	this.duale = MenuMaker.getMenuItem("Menu.View.ShowDualProblem",
-		ActionHandler.INSTANCE);
+	menu.add(MenuMaker.getMenuItem("Menu.View.Show"));
+	menu.add(MenuMaker.getMenuItem("Menu.View.ShowSolution"));
+	this.primale = MenuMaker.getMenuItem("Menu.View.ShowPrimalProblem");
+	this.duale = MenuMaker.getMenuItem("Menu.View.ShowDualProblem");
 
 	menu.add(this.duale);
 	this.edit = menu;
 
 	menu = MenuMaker.getMenu("Menu.Help");
-	menu.add(MenuMaker.getMenuItem("Menu.Help.About",
-		ActionHandler.INSTANCE));
+	menu.add(MenuMaker.getMenuItem("Menu.Help.Help"));
+	menu.addSeparator();
+	menu.add(MenuMaker.getMenuItem("Menu.Help.About"));
 	menubar.add(menu);
     }
 
+    private void generateMainToolbar() {
+	JToolBar tb = new JToolBar();
+	tb.setFloatable(false);
+	add(tb, BorderLayout.NORTH);
+
+	tb.add(MenuMaker.getToolBarButton("Menu.File.Open"));
+	tb.add(MenuMaker.getToolBarButton("Menu.File.Save"));
+	tb.addSeparator();
+	tb.add(MenuMaker.getToolBarButton("Menu.View.Show"));
+	tb.add(MenuMaker.getToolBarButton("Menu.View.Reset"));
+    }
 }

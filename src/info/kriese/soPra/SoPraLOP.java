@@ -19,8 +19,9 @@
  * 
  * ChangeLog:
  * 
- * 31.10.2007 - Version 0.4.1
- * - 3D-Fenster entfernt, wird nicht mehr benötigt
+ * 31.10.2007 - Version 0.5
+ * - An LOPEditor angepasst
+ * - Boot Meldungen angepasst (Reihenfolge)
  * 24.10.2007 - Version 0.4
  *  - ActionListener Verhalten geändert
  *  - Startnachrichten multisprachfähig gemacht
@@ -43,10 +44,15 @@ import info.kriese.soPra.gui.ActionHandler;
 import info.kriese.soPra.gui.InputPanel;
 import info.kriese.soPra.gui.MainFrame;
 import info.kriese.soPra.gui.SplashDialog;
-import info.kriese.soPra.gui.html.HTMLGenerator;
+import info.kriese.soPra.gui.Visual3DFrame;
 import info.kriese.soPra.gui.lang.Lang;
+import info.kriese.soPra.lop.LOP;
+import info.kriese.soPra.lop.LOPEditor;
+import info.kriese.soPra.lop.impl.LOPFactory;
 import info.kriese.soPra.math.LOPSolver;
 
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.File;
 
 import javax.swing.JFileChooser;
@@ -57,7 +63,7 @@ import javax.swing.filechooser.FileFilter;
 
 /**
  * @author Michael Kriese
- * @version 0.4.1
+ * @version 0.5
  * @since 12.05.2007
  * 
  */
@@ -65,15 +71,19 @@ public final class SoPraLOP {
 
     public static AboutDialog ABOUT;
 
+    public static LOPEditor EDITOR;
+
     public static Engine3D ENGINE;
 
     public static JFileChooser FC;
 
-    public static HTMLGenerator HTML;
+    // public static HTMLGenerator HTML;
     public static InputPanel INPUT;
     public static MainFrame MAIN;
 
     public static LOPSolver SOLVER;
+
+    public static Visual3DFrame VISUAL;
 
     /**
      * @param args
@@ -105,16 +115,34 @@ public final class SoPraLOP {
 	} else
 	    System.setProperty("j3d.rend", "ogl");
 
-	splash.setMessage(Lang.getString("Boot.Solver"));
-	SOLVER = new LOPSolver();
-
-	ActionHandler.INSTANCE.setLOP(SOLVER.getProblem());
+	splash.setMessage(Lang.getString("Boot.LOP"));
+	LOP lop = LOPFactory.newLinearOptimizingProblem();
+	EDITOR = LOPFactory.newLOPEditor(lop);
+	ActionHandler.INSTANCE.setLOP(lop);
 
 	splash.setMessage(Lang.getString("Boot.MainFrame"));
-	MAIN = new MainFrame(SOLVER.getProblem());
+	MAIN = new MainFrame();
+	MAIN.setLOP(lop);
+	MAIN.addComponentListener(new ComponentAdapter() {
+	    @Override
+	    public void componentHidden(ComponentEvent e) {
+		ActionHandler.exit();
+	    }
+	});
 
-	splash.setMessage(Lang.getString("Boot.InputPanel"));
-	INPUT = new InputPanel(SOLVER.getProblem());
+	splash.setMessage(Lang.getString("Boot.VisualFrame"));
+	VISUAL = new Visual3DFrame(MAIN);
+	VISUAL.addComponentListener(new ComponentAdapter() {
+	    @Override
+	    public void componentHidden(ComponentEvent e) {
+		ENGINE.addConnection(MAIN);
+	    }
+
+	    @Override
+	    public void componentShown(ComponentEvent e) {
+		ENGINE.addConnection(VISUAL);
+	    }
+	});
 
 	splash.setMessage(Lang.getString("Boot.About"));
 	ABOUT = AboutDialog.getInstance(MAIN);
@@ -136,16 +164,21 @@ public final class SoPraLOP {
 	});
 	FC.setMultiSelectionEnabled(false);
 
-	// Referenzen auf diese Objekte werden nicht benötigt
-	splash.setMessage(Lang.getString("Boot.HTML"));
-	HTML = new HTMLGenerator(SOLVER.getProblem());
-	MAIN.setContent(HTML.getPanel());
-	splash.setMessage(Lang.getString("Boot.3DEngine"));
-	ENGINE = new Engine3D(MAIN, SOLVER.getProblem());
+	splash.setMessage(Lang.getString("Boot.InputPanel"));
+	INPUT = new InputPanel();
+	INPUT.setEditor(EDITOR);
+	MAIN.setContent(SoPraLOP.INPUT);
 
-	splash.setMessage(Lang.getString("Boot.SolveLOP"));
-	SOLVER.getProblem().problemChanged();
-	SOLVER.solve();
+	splash.setMessage(Lang.getString("Boot.3DEngine"));
+	ENGINE = new Engine3D();
+	ENGINE.addConnection(MAIN);
+	ENGINE.setLOP(lop);
+
+	splash.setMessage(Lang.getString("Boot.Solver"));
+	SOLVER = new LOPSolver();
+	SOLVER.setEditor(EDITOR);
+	lop.problemChanged();
+	EDITOR.solve();
 
 	splash.setMessage(Lang.getString("Boot.ShowMain"));
 	MAIN.setVisible(true);

@@ -38,13 +38,16 @@
 package info.kriese.soPra.io;
 
 import info.kriese.soPra.SoPraLOP;
+import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.lop.LOP;
+import info.kriese.soPra.lop.LOPSolution;
 import info.kriese.soPra.math.Fractional;
 import info.kriese.soPra.math.Vector3Frac;
 import info.kriese.soPra.math.impl.FractionalFactory;
 import info.kriese.soPra.math.impl.Vector3FracFactory;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.URL;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -270,5 +273,64 @@ public final class IOUtils {
 	    return ">";
 
 	return null;
+    }
+
+    public static void print(LOP lop, PrintStream out) {
+        StringBuffer x = new StringBuffer(), y = new StringBuffer(), z = new StringBuffer();
+    
+        Vector3Frac vec = lop.getVectors().get(0);
+    
+        x.append(vec.getCoordX() + " ");
+        y.append(vec.getCoordY() + " ");
+        z.append(vec.getCoordZ() + " ");
+    
+        for (int i = 1; i < lop.getVectors().size(); i++) {
+            vec = lop.getVectors().get(i);
+            if (vec.getCoordX().toDouble() >= 0)
+        	x.append("+");
+            if (vec.getCoordY().toDouble() >= 0)
+        	y.append("+");
+            if (vec.getCoordZ().toDouble() >= 0)
+        	z.append("+");
+    
+            x.append(vec.getCoordX() + " ");
+            y.append(vec.getCoordY() + " ");
+            z.append(vec.getCoordZ() + " ");
+        }
+    
+        vec = lop.getTarget();
+    
+        x.append(" " + lop.getOperators()[0] + " " + vec.getCoordX());
+        y.append(" " + lop.getOperators()[1] + " " + vec.getCoordY());
+        z.append(" = " + (lop.isMaximum() ? "max" : "min"));
+    
+        out.println(x.toString());
+        out.println(y.toString());
+        out.println(z.toString());
+    
+        LOPSolution sol = lop.getSolution();
+    
+        out.println();
+        out.println("Lösung: " + sol.getValue());
+    
+        switch (sol.getSpecialCase()) {
+            case LOPSolution.NO_SOLUTION:
+        	out.println(Lang.getString("Strings.NoSolution"));
+        	break;
+            case LOPSolution.MORE_THAN_ONE_SOLUTION:
+        	out.println(Lang.getString("Strings.MoreSolutions").replace(
+        		"{0}", sol.countAreas() + ""));
+        	break;
+            case LOPSolution.UNLIMITED:
+        	out.println(Lang.getString("Strings.UnlimitedSol"));
+        	break;
+            case LOPSolution.SIMPLE:
+        	out.println(Lang.getString("Strings.Simple"));
+        	break;
+            default:
+        	out.println("Error! Wrong special case. ("
+        		+ sol.getSpecialCase() + ")");
+        	break;
+        }
     }
 }

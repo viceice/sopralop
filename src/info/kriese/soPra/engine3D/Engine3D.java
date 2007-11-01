@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 01.11.2007 - Version 0.5
+ * - An neue Oberflächenstruktur angepasst
  * 30.10.2007 - Version 0.4.1
  * - FPS-Counter entfernt
  * 23.10.2007 - Version 0.4
@@ -100,7 +102,7 @@ import com.sun.j3d.utils.universe.ViewingPlatform;
  * Stellt Methoden zur Berechnung der 3D-Szene bereit.
  * 
  * @author Michael Kriese
- * @version 0.4.1
+ * @version 0.5
  * @since 26.04.2007
  */
 public final class Engine3D {
@@ -120,8 +122,6 @@ public final class Engine3D {
 
     private final Point3D intersection;
 
-    private LOP lop;
-
     private OrbitBehavior orbit;
 
     private float size = 15.0f;
@@ -130,39 +130,15 @@ public final class Engine3D {
 
     private final Target3D targetLine;
 
-    public Engine3D(Virtual3DFrame conn, LOP lop) {
+    public Engine3D() {
 
 	this.canvas = new Canvas3D(createConfig());
 	this.canvas.addKeyListener(new KeyAdapter() {
 
 	    @Override
 	    public void keyPressed(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_F5)
+		if (e.getKeyCode() == KeyEvent.VK_F2)
 		    resetScene();
-		else if (e.getKeyCode() == KeyEvent.VK_F6)
-		    Engine3D.this.lop.showSolution();
-	    }
-	});
-
-	conn.addCanvas(this.canvas);
-
-	this.lop = lop;
-	lop.addProblemListener(new LOPAdapter() {
-	    @Override
-	    public void problemChanged(LOP lop) {
-		Engine3D.this.lop = lop;
-		Engine3D.this.intersection.setVisible(false);
-		Engine3D.this.computeProblem();
-	    }
-
-	    @Override
-	    public void problemSolved(LOP lop) {
-		Engine3D.this.computeSolution();
-	    }
-
-	    @Override
-	    public void showSolution(LOP lop) {
-		Engine3D.this.showSolution();
 	    }
 	});
 
@@ -215,6 +191,10 @@ public final class Engine3D {
 	this.su.getViewingPlatform().addChild(bg);
     }
 
+    public void addConnection(Virtual3DFrame conn) {
+	conn.addCanvas(this.canvas);
+    }
+
     public void resetScene() {
 	TransformGroup targetTG = this.su.getViewingPlatform()
 		.getViewPlatformTransform();
@@ -223,14 +203,35 @@ public final class Engine3D {
 	targetTG.setTransform(t3d);
     }
 
-    public void showSolution() {
-	if (this.lop.isSolved())
+    public void setLOP(LOP lop) {
+	lop.addProblemListener(new LOPAdapter() {
+	    @Override
+	    public void problemChanged(LOP lop) {
+		Engine3D.this.intersection.setVisible(false);
+		Engine3D.this.computeProblem(lop);
+	    }
+
+	    @Override
+	    public void problemSolved(LOP lop) {
+		Engine3D.this.computeSolution(lop);
+	    }
+
+	    @Override
+	    public void showSolution(LOP lop) {
+		Engine3D.this.showSolution(lop);
+	    }
+	});
+
+    }
+
+    public void showSolution(LOP lop) {
+	if (lop.isSolved())
 	    this.intersection.setVisible(true);
     }
 
-    private void computeProblem() {
+    private void computeProblem(LOP lop) {
 
-	Vector3Frac vec = this.lop.getTarget();
+	Vector3Frac vec = lop.getTarget();
 
 	this.size = (vec.getCoordX().toFloat() > vec.getCoordY().toFloat() ? vec
 		.getCoordX().toFloat()
@@ -238,7 +239,7 @@ public final class Engine3D {
 
 	this.intersection.setVisible(false);
 
-	this.hull.build(this.lop.getVectors());
+	this.hull.build(lop.getVectors());
 
 	// fuege Koordinatensystem hinzu
 	this.coordsPlane.compute(this.size);
@@ -247,22 +248,22 @@ public final class Engine3D {
 	this.cone.compute(this.hull.getVerticesList(), this.size);
 
 	// fuege ZielVektor hinzu
-	this.targetLine.compute(this.lop.getTarget().toVector3f(), this.size);
+	this.targetLine.compute(lop.getTarget().toVector3f(), this.size);
 
 	resetScene();
     }
 
-    private void computeSolution() {
-	int sCase = this.lop.getSolution().getSpecialCase();
+    private void computeSolution(LOP lop) {
+	int sCase = lop.getSolution().getSpecialCase();
 
 	if (sCase == LOPSolution.SIMPLE
 		|| sCase == LOPSolution.MORE_THAN_ONE_SOLUTION)
-	    this.size = (this.size > this.lop.getSolution().getValue() + 3.0f ? this.size
-		    : (float) this.lop.getSolution().getValue()) + 3.0f;
+	    this.size = (this.size > lop.getSolution().getValue() + 3.0f ? this.size
+		    : (float) lop.getSolution().getValue()) + 3.0f;
 
 	this.intersection.setVisible(false);
 
-	this.hull.build(this.lop.getVectors());
+	this.hull.build(lop.getVectors());
 
 	// fuege Koordinatensystem hinzu
 	this.coordsPlane.compute(this.size);
@@ -271,10 +272,9 @@ public final class Engine3D {
 	this.cone.compute(this.hull.getVerticesList(), this.size);
 
 	// fuege ZielVektor hinzu
-	this.targetLine.compute(this.lop.getTarget().toVector3f(), this.size);
+	this.targetLine.compute(lop.getTarget().toVector3f(), this.size);
 
-	this.intersection.compute(this.lop.getSolution().getVector()
-		.toVector3f());
+	this.intersection.compute(lop.getSolution().getVector().toVector3f());
 
 	resetScene();
     }

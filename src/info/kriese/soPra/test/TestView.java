@@ -30,6 +30,9 @@ import info.kriese.soPra.engine3D.Engine3D;
 import info.kriese.soPra.gui.Visual3DFrame;
 import info.kriese.soPra.io.IOUtils;
 import info.kriese.soPra.io.impl.SettingsFactory;
+import info.kriese.soPra.lop.LOP;
+import info.kriese.soPra.lop.LOPEditor;
+import info.kriese.soPra.lop.impl.LOPFactory;
 import info.kriese.soPra.math.LOPSolver;
 
 /**
@@ -45,7 +48,10 @@ public final class TestView {
      * @param args
      */
     public static void main(String[] args) {
+	LOP lop = LOPFactory.newLinearOptimizingProblem();
+	LOPEditor editor = LOPFactory.newLOPEditor(lop);
 	LOPSolver solver = new LOPSolver();
+	solver.setEditor(editor);
 
 	System.out.println("SoPraLOP VisualTest - Version "
 		+ SettingsFactory.getInstance().getVersion());
@@ -55,15 +61,15 @@ public final class TestView {
 
 	Visual3DFrame view = new Visual3DFrame(null);
 
-	new Engine3D(view, solver.getProblem());
+	Engine3D engine = new Engine3D();
+	engine.addConnection(view);
+	engine.setLOP(lop);
 
-	solver.open(IOUtils.getURL("problems/unlimited_high2.lop"));
+	editor.open(IOUtils.getURL("problems/unlimited_high2.lop"));
 
 	System.err.flush();
 	System.out.println("Problem: ");
-	solver.print(System.out);
-
-	solver.getProblem().showSolution();
+	IOUtils.print(lop, System.out);
 
 	view.setVisible(true);
     }

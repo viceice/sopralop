@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 01.11.2007 - Version 0.3
+ * - Es kann ein standard ActionHandler registriert werden, so muss er nicht 
+ *   jedesmal übergeben werden. (weniger Referenzen)
  * 24.10.2007 - Version 0.2
  * - An neuen ActionHandler angepasst
  * 29.07.2007 - Version 0.1
@@ -39,11 +42,13 @@ import javax.swing.KeyStroke;
 /**
  * 
  * @author Michael Kriese
- * @version 0.2
+ * @version 0.3
  * @since 29.07.2007
  * 
  */
 public final class MenuMaker {
+
+    private static ActionHandler AC = null;
 
     public static ImageIcon getImage(String key) {
 	String imgLocation = Lang.getString(key + ".Image");
@@ -65,6 +70,10 @@ public final class MenuMaker {
 	KeyStroke res = KeyStroke.getKeyStroke(Lang.getString(key
 		+ ".Accelerator"));
 	return res;
+    }
+
+    public static JMenuItem getMenuItem(String key) {
+	return getMenuItem(key, AC);
     }
 
     public static JMenuItem getMenuItem(String key, ActionHandler ac) {
@@ -90,6 +99,10 @@ public final class MenuMaker {
 	return Lang.getString(key + ".Title");
     }
 
+    public static JButton getToolBarButton(String key) {
+	return getToolBarButton(key, AC);
+    }
+
     public static JButton getToolBarButton(String key, ActionHandler ac) {
 	JButton button = new JButton();
 	button.setFocusable(false);
@@ -104,6 +117,10 @@ public final class MenuMaker {
 	    button.setText(getMenuTitle(key));
 
 	return button;
+    }
+
+    public static void setDefaultActionHandler(ActionHandler ac) {
+	AC = ac;
     }
 
     private MenuMaker() {
