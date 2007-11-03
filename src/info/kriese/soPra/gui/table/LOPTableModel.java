@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 03.10.2007- Version 0.2.1
+ * - An neuen CellRenderer angepasst
  * 01.11.2007 - Version 0.2
  * - An neuen ActionHandler angepasst
  * 30.10.2007 - Version 0.1
@@ -30,6 +32,7 @@ import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPEditor;
 import info.kriese.soPra.lop.LOPEditorAdapter;
+import info.kriese.soPra.math.Fractional;
 import info.kriese.soPra.math.Vector3Frac;
 import info.kriese.soPra.math.impl.FractionalFactory;
 import info.kriese.soPra.math.impl.Vector3FracFactory;
@@ -38,19 +41,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.DefaultCellEditor;
-import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
 
 /**
  * Wandelt das LOP in ein von JTable lesbares Format um.
  * 
  * @author Peer Sterner
- * @version 0.2
+ * @version 0.2.1
  * @since 01.11.2007
  * 
  */
@@ -59,8 +58,6 @@ public final class LOPTableModel extends AbstractTableModel {
     private static final long serialVersionUID = 13L;
 
     private final Vector<String> columnNames;
-
-    private final JComboBox comboBox;
 
     private boolean edited = false;
 
@@ -79,11 +76,6 @@ public final class LOPTableModel extends AbstractTableModel {
 	this.vectors = new ArrayList<Vector3Frac>();
 	this.operators = new String[2];
 	setColumnCount();
-
-	this.comboBox = new JComboBox();
-	this.comboBox.addItem("=");
-	this.comboBox.addItem(">");
-	this.comboBox.addItem("<");
     }
 
     @Override
@@ -101,11 +93,14 @@ public final class LOPTableModel extends AbstractTableModel {
     }
 
     public int getRowCount() {
-	return 3;
+	return 6;
     }
 
     public Object getValueAt(int row, int col) {
 	int num = this.vectors.size();
+
+	if (row == 1 || row == 4)
+	    return "";
 
 	if (col == 0)
 	    switch (row) {
@@ -113,38 +108,45 @@ public final class LOPTableModel extends AbstractTableModel {
 		    return "<html><b>"
 			    + Lang.getString("Strings.TargetFunction")
 			    + ":</b></html>";
-
+		case 5:
+		    return "<html><b>" + Lang.getString("Strings.Solution")
+			    + ":</b></html>";
 		default:
-		    return "<html><b>NB " + row + ":</b></html>";
+		    return "<html><b>NB " + (row - 1) + ":</b></html>";
 	    }
 
 	if (col == num + 1) {
-	    if (row == 0)
-		return "=";
-	    return this.operators[row - 1];
+	    if (row == 0 || row == 5)
+		return LOPOperator.getOp("=");
+	    return LOPOperator.getOp(this.operators[row - 2]);
 	}
 
 	if (col == num + 2)
 	    switch (row) {
 		case 0:
 		    return this.max ? "max" : "min";
-		case 1:
-		    return this.target.getCoordX().getNumerator();
+		case 2:
+		    return this.target.getCoordX();
+		case 3:
+		    return this.target.getCoordY();
 		default:
-		    return this.target.getCoordY().getNumerator();
+		    return 0; // TODO: Lösung ein- / ausgeben
 	    }
 
 	Vector3Frac vec = this.vectors.get(col - 1);
 
 	switch (row) {
 	    case 0:
-		return vec.getCoordZ().getNumerator();
-	    case 1:
-		return vec.getCoordX().getNumerator();
-	    default:
-		return vec.getCoordY().getNumerator();
+		return vec.getCoordZ();
+	    case 2:
+		return vec.getCoordX();
+	    case 3:
+		return vec.getCoordY();
+	    case 5:
+		return 0; // TODO: Lösungen für X1 ... Xn ein- / asugeben
 	}
 
+	return "";
     }
 
     /**
@@ -153,7 +155,9 @@ public final class LOPTableModel extends AbstractTableModel {
      */
     @Override
     public boolean isCellEditable(int row, int col) {
-	if ((col < 1) || ((row == 0) && (col == this.vectors.size() + 1)))
+	int vecs = this.vectors.size();
+	if ((col < 1) || ((row == 0) && (col == vecs + 1)) || row == 1
+		|| row == 4 || (row == 5 && col == vecs + 1))
 	    return false;
 	else
 	    return true;
@@ -196,64 +200,82 @@ public final class LOPTableModel extends AbstractTableModel {
 	});
     }
 
+    public void setTable(JTable table) {
+	this.table = table;
+    }
+
     @Override
     public void setValueAt(Object value, int row, int col) {
 	int num = this.vectors.size();
 
 	if (col == num + 1) {
-	    if (row > 0)
-		this.operators[row - 1] = (String) value;
-	} else
-
-	if (col == num + 2)
+	    if (row == 2 || row == 3) {
+		String s = (String) value;
+		if (this.operators[row - 2].equals(s))
+		    this.operators[row - 2] = s;
+		else
+		    return;
+	    }
+	} else if (col == num + 2)
 	    switch (row) {
 		case 0:
 		    String s = (String) value;
+		    if ((s.contains("min") && !this.max)
+			    || (s.contains("max") && this.max))
+			return;
 		    if (s.contains("min"))
 			this.max = false;
 		    else
 			this.max = true;
-		    ;
+
 		    break;
-		case 1:
+		case 2:
 		    try {
 			this.target.getCoordX().setNumerator(
 				Integer.parseInt((String) value));
 		    } catch (NumberFormatException e) {
 		    }
 		    break;
-		default:
+		case 3:
 		    try {
 			this.target.getCoordY().setNumerator(
 				Integer.parseInt((String) value));
 		    } catch (NumberFormatException e) {
 		    }
 		    break;
+		case 5:
+		    // TODO: Lösung prüfen
+		    break;
 	    }
 	else {
-
 	    Vector3Frac vec = this.vectors.get(col - 1);
 
-	    int val = 0;
-	    try {
-		val = (Integer) value;
-	    } catch (NumberFormatException e) {
-	    }
+	    Fractional frac = FractionalFactory
+		    .getInstance(value != null ? (Integer) value : 0);
 
 	    switch (row) {
 		case 0:
-		    vec.getCoordZ().setNumerator(val);
+		    if (vec.getCoordZ().equals(frac))
+			return;
+		    vec.setCoordZ(frac);
 		    break;
-		case 1:
-		    vec.getCoordX().setNumerator(val);
+		case 2:
+		    if (vec.getCoordX().equals(frac))
+			return;
+		    vec.setCoordX(frac);
 		    break;
-		default:
-		    vec.getCoordY().setNumerator(val);
+		case 3:
+		    if (vec.getCoordY().equals(frac))
+			return;
+		    vec.setCoordY(frac);
+		    break;
+		case 5:
+		    // TODO Lösung überprüfen
 		    break;
 	    }
 	}
-	fireTableCellUpdated(row, col);
 	setEdited(true);
+	fireTableCellUpdated(row, col);
     }
 
     public void update(LOP lop) {
@@ -265,13 +287,8 @@ public final class LOPTableModel extends AbstractTableModel {
 	this.operators[1] = lop.getOperators()[1];
 	this.max = lop.isMaximum();
 
-	setColumnCount();
-
-	if (this.table != null)
-	    pullDownColumn(this.table.getColumnModel().getColumn(
-		    this.table.getColumnCount() - 2));
-
 	setEdited(false);
+	setColumnCount();
     }
 
     /**
@@ -288,8 +305,8 @@ public final class LOPTableModel extends AbstractTableModel {
 	num++;
 	this.columnNames.insertElementAt("<html><center><b>x<sub>" + num
 		+ "</sub></b></center></html>", num);
-	fireTableStructureChanged();
 	setEdited(true);
+	fireTableStructureChanged();
     }
 
     private void clear() {
@@ -318,22 +335,9 @@ public final class LOPTableModel extends AbstractTableModel {
 	this.operators[0] = "=";
 	this.operators[1] = "=";
 	this.max = true;
-	fireTableDataChanged();
+
 	setEdited(true);
-    }
-
-    /**
-     * Pulldown-Menue fuer die Spalte Nebenbedingungen
-     * 
-     * wird spaeter fuer die Generierung des dualen Problems benoetigt...
-     */
-    private void pullDownColumn(TableColumn relation) {
-	relation.setCellEditor(new DefaultCellEditor(this.comboBox));
-
-	// Set up tool tips for the cells.
-	DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-	renderer.setToolTipText(Lang.getString("Input.Relation"));
-	relation.setCellRenderer(renderer);
+	fireTableDataChanged();
     }
 
     /**
@@ -344,13 +348,14 @@ public final class LOPTableModel extends AbstractTableModel {
     private void removeColumn() {
 	int num = this.vectors.size();
 
-	if (num > LOP.MIN_VECTORS) {
-	    setEdited(true);
-	    this.vectors.remove(num - 1);
-	    this.columnNames.remove(num);
-	    num--;
-	    fireTableStructureChanged();
-	}
+	if (num <= LOP.MIN_VECTORS)
+	    return;
+
+	this.vectors.remove(num - 1);
+	this.columnNames.remove(num);
+	num--;
+	setEdited(true);
+	fireTableStructureChanged();
     }
 
     private boolean save(LOP lop) {
@@ -371,6 +376,7 @@ public final class LOPTableModel extends AbstractTableModel {
 	lop.setOperators(this.operators);
 	lop.problemChanged();
 	setEdited(false);
+	fireTableCellUpdated(0, 0);
 	return true;
     }
 
