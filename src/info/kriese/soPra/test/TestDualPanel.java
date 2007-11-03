@@ -40,8 +40,7 @@ public class TestDualPanel extends JPanel {
 
 	private static int offsetX = 30, offsetY = 30, stepWidth, numVar;
 
-	private static float scale, coordX, coordY, dash1[] = { 1.5f },
-			dash2[] = { 10.0f };
+	private static float scale, coordX, coordY, dash1[] = { 1.5f },	dash2[] = { 10.0f };
 
 	private static float[] mouseCoords = new float[2];
 
@@ -72,35 +71,35 @@ public class TestDualPanel extends JPanel {
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
 		d = getSize();
+		
 		stepWidth = Math.round(d.width / scale);
-
+		if (((d.height - 2 * offsetY)/ stepWidth) < scale) {
+			stepWidth = Math.round(d.height / scale);
+		}
+		
 		// Linien und Beschriftung des Koordinatensystems
 		g2.setPaint(fg);
 		g2.setStroke(normal);
-		g2.drawLine(offsetX, 20, offsetX, d.height - offsetY);
-		g2.drawString("^", 28, 28);
-		g2.drawString("X", 12, 25);
-		g2.drawString("2", 19, 28);
-		g2.drawLine(offsetX, d.height - 30, d.width - offsetX, d.height
-				- offsetY);
+		g2.drawLine(offsetX, offsetY, offsetX, d.height - offsetY);
+		g2.drawString("^", 28, 38);
+		g2.drawString("X", 12, 30);
+		g2.drawString("2", 19, 33);
+		g2.drawLine(offsetX, d.height - offsetY, d.width - offsetX, d.height - offsetY);
 		g2.drawString("X", d.width - 34, d.height - 13);
 		g2.drawString("1", d.width - 27, d.height - 10);
 		g2.drawString(">", d.width - 34, d.height - 25);
 
 		// Hilfslinien und Koordinaten der X-Achse
+		g2.setStroke(dashed);
+		g2.setPaint(grey);
 		for (int step = offsetX; step <= d.width - 50; step += stepWidth) {
-			g2.setStroke(dashed);
-			g2.setPaint(grey);
-			g2.drawLine(step, d.height - offsetY, step, 30);
+			g2.drawLine(step, d.height - offsetY, step, offsetY);
 			g2.setPaint(fg);
-			g2.drawString((step - offsetX) / stepWidth + "", step - 3,
-					d.height - 15);
+			g2.drawString((step - offsetX) / stepWidth + "", step - 3, d.height - 15);
 		}
 
 		// Hilfslinien und Koordinaten der Y-Achse
 		for (int step = d.height - offsetY; step >= 40; step -= stepWidth) {
-			g2.setStroke(dashed);
-			g2.setPaint(grey);
 			g2.drawLine(offsetX, step, d.width - 30, step);
 			g2.setPaint(fg);
 			g2.drawString((d.height - offsetY - step) / stepWidth + "", 13,
@@ -121,6 +120,7 @@ public class TestDualPanel extends JPanel {
 					- (Math.round(vectors.get(i).getCoordZ().mul(stepWidth)
 							.div(vectors.get(i).getCoordY()).toFloat())));
 
+			
 			if (vectors.get(i).getCoordX().getNumerator() == 0) {
 				g2.drawLine(offsetX, localCoordY2, localCoordX2, localCoordY2);
 				g2.drawString("NB" + (i + 1), localCoordX1, localCoordY2 - 5);
@@ -171,8 +171,8 @@ public class TestDualPanel extends JPanel {
 		vectors.get(1).getCoordY().setNumerator(4);
 		vectors.get(1).getCoordZ().setNumerator(24);
 
-		vectors.get(2).getCoordX().setNumerator(1);
-		vectors.get(2).getCoordY().setNumerator(0);
+		vectors.get(2).getCoordX().setNumerator(0);
+		vectors.get(2).getCoordY().setNumerator(1);
 		vectors.get(2).getCoordZ().setNumerator(2);
 
 	}
@@ -222,7 +222,7 @@ public class TestDualPanel extends JPanel {
 
 		frame.add(panel);
 		frame.pack();
-		frame.setSize(500, 500);
+		frame.setSize(600, 600);
 		frame.setLocation(400, 200);
 		frame.setVisible(true);
 
