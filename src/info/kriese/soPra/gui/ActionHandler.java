@@ -19,6 +19,10 @@
  * 
  * ChangeLog:
  * 
+ * 04.11.2007 - Version 0.3.1
+ * - BugFix: NullPointer abgefangen, wenn MainFrame nicht existiert
+ * - BugFix: Fehler bei der Übergabe der zu speichernden Datei behoben. Das
+ *   Problem kann jetzt wieder gespeichert werden.
  * 01.11.2007 - Version 0.3
  * - LOPEditor hizugefügt
  * - Verlagerung von Fuktionalität
@@ -42,8 +46,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
 import java.net.MalformedURLException;
-import java.net.URL;
 
 import javax.swing.AbstractButton;
 import javax.swing.JFileChooser;
@@ -53,11 +57,12 @@ import javax.swing.JOptionPane;
  * Klasse zum handeln aller Actions in SoPraLOP
  * 
  * @author Michael Kriese
- * @version 0.3
+ * @version 0.3.1
  * @since 24.10.2007
  * 
  */
 public final class ActionHandler {
+    // TODO: NullPointer abfangen
 
     public static final ActionHandler INSTANCE = new ActionHandler();
 
@@ -98,14 +103,15 @@ public final class ActionHandler {
 		    AbstractButton btn = (AbstractButton) c;
 		    String s = Lang.getString(btn.getActionCommand() + ".Help",
 			    null);
-		    if (s != null)
+		    if (s != null && SoPraLOP.MAIN != null)
 			SoPraLOP.MAIN.setStatus(s);
 		}
 	    }
 
 	    @Override
 	    public void mouseExited(MouseEvent e) {
-		SoPraLOP.MAIN.setStatus("");
+		if (SoPraLOP.MAIN != null)
+		    SoPraLOP.MAIN.setStatus("");
 	    }
 	};
 
@@ -207,8 +213,8 @@ public final class ActionHandler {
 	    }
 	if (this.file != null)
 	    try {
-		SoPraLOP.EDITOR.save(new URL(this.file));
-		SoPraLOP.MAIN.setTitle(SoPraLOP.FC.getSelectedFile().getName());
+		SoPraLOP.EDITOR.save(new File(this.file).toURI().toURL());
+		SoPraLOP.MAIN.setTitle(new File(this.file).getName());
 	    } catch (MalformedURLException e) {
 		System.err.println("Error: Coudn't save to file! " + this.file);
 	    }

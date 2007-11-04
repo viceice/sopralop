@@ -19,7 +19,9 @@
  * 
  * ChangeLog:
  * 
- *  03.11.2007 - Version 0.6
+ * 04.11.2007 - Version 0.6.1
+ * - CellEditoren funktionieren jetzt auch wieder
+ * 03.11.2007 - Version 0.6
  * - Model-Klasse ausgelagert
  * - Funktionalität aus dem ActionHandler hier her verlagert
  * - Eigenen CellRenderer eingeführt
@@ -55,17 +57,17 @@
 package info.kriese.soPra.gui;
 
 import info.kriese.soPra.gui.lang.Lang;
+import info.kriese.soPra.gui.table.FractionalTableCellEditor;
+import info.kriese.soPra.gui.table.LOPMinMax;
 import info.kriese.soPra.gui.table.LOPOperator;
 import info.kriese.soPra.gui.table.LOPTableCellRenderer;
 import info.kriese.soPra.gui.table.LOPTableModel;
 import info.kriese.soPra.lop.LOPEditor;
-import info.kriese.soPra.math.Vector3Frac;
+import info.kriese.soPra.math.Fractional;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
@@ -76,9 +78,8 @@ import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
 
 /**
  * grafische Klasse zur Eingabe der Zielfunktion
@@ -94,32 +95,15 @@ public final class InputPanel extends JPanel {
 
     private final LOPTableModel model;
 
-    private final JComboBox opEditor;
+    private final JComboBox opEditor, maxEditor;
+
+    private final JTable table;
 
     private Component take = null;
 
-    boolean max;
-
-    String[] operators;
-
-    final JTable table;
-
-    Vector3Frac target;
-
-    final List<Vector3Frac> vectors;
-
-    /**
-     * InputTable ueberladen: wenn Aufruf ohne Argumente, dann werden die
-     * Variablen mit Standardwerten initialisiert ansonsten werden die
-     * Vektordaten aus den uebergebenen Argumenten verwendet
-     * 
-     */
     public InputPanel() {
 
-	this.vectors = new ArrayList<Vector3Frac>();
-
 	setLayout(new BorderLayout());
-	setSize(600, 200);
 
 	this.opEditor = new JComboBox();
 	this.opEditor.setFocusable(false);
@@ -128,15 +112,37 @@ public final class InputPanel extends JPanel {
 	this.opEditor.addItem(">");
 	this.opEditor.addItem("<");
 
+	this.maxEditor = new JComboBox();
+	this.maxEditor.setFocusable(false);
+	this.maxEditor.setToolTipText(Lang.getString("Input.MinMax"));
+	this.maxEditor.addItem("max");
+	this.maxEditor.addItem("min");
+
 	this.model = new LOPTableModel();
 	this.model.addTableModelListener(new TableModelListener() {
 
 	    public void tableChanged(TableModelEvent e) {
 		setSaveBtn();
+		initColumnSizes();
 	    }
+
 	});
 
-	this.table = new JTable(this.model);
+	this.table = new JTable() {
+
+	    private static final long serialVersionUID = 1L;
+
+	    @Override
+	    public TableCellEditor getCellEditor(int row, int column) {
+		if (column > 0 && column < getColumnCount() - 2)
+		    return getDefaultEditor(Fractional.class);
+
+		if (column == getColumnCount() - 1 && row > 0)
+		    return getDefaultEditor(Fractional.class);
+
+		return super.getCellEditor(row, column);
+	    }
+	};
 	this.table.setFillsViewportHeight(true);
 	this.table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 	this.table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -147,15 +153,16 @@ public final class InputPanel extends JPanel {
 	this.table.setDefaultRenderer(Object.class, new LOPTableCellRenderer());
 	this.table.setDefaultEditor(LOPOperator.class, new DefaultCellEditor(
 		this.opEditor));
+	this.table.setDefaultEditor(LOPMinMax.class, new DefaultCellEditor(
+		this.maxEditor));
+	this.table.setDefaultEditor(Fractional.class,
+		new FractionalTableCellEditor());
 
 	this.table.getTableHeader().setReorderingAllowed(false);
-	this.table.getTableHeader().setResizingAllowed(false);
 
 	this.model.setTable(this.table);
 
 	JScrollPane scrollPane = new JScrollPane(this.table);
-
-	initColumnSizes(this.table);
 
 	generateEditToolbar();
 
@@ -176,46 +183,36 @@ public final class InputPanel extends JPanel {
 
 	toolbar.setFloatable(false);
 
-	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.AddVar",
-		ActionHandler.INSTANCE));
-	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.DelVar",
-		ActionHandler.INSTANCE));
+	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.AddVar"));
+	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.DelVar"));
 	toolbar.addSeparator();
-	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.Reset",
-		ActionHandler.INSTANCE));
-	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.Clear",
-		ActionHandler.INSTANCE));
+	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.Reset"));
+	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.Clear"));
 	toolbar.addSeparator();
-	this.take = toolbar.add(MenuMaker.getToolBarButton("Input.Menu.Save",
-		ActionHandler.INSTANCE));
+	this.take = toolbar.add(MenuMaker.getToolBarButton("Input.Menu.Save"));
     }
 
     /**
      * Formatierung der Zellenelemente
      * 
      */
-    private void initColumnSizes(JTable table) {
-	TableModel model = table.getModel();
+    private void initColumnSizes() {
 	TableColumn column = null;
-	Component comp = null;
-	int headerWidth = 0;
-	int cellWidth = 0;
-	TableCellRenderer headerRenderer = table.getTableHeader()
-		.getDefaultRenderer();
 
-	for (int i = 0; i < table.getColumnCount(); i++) {
-	    column = table.getColumnModel().getColumn(i);
+	column = this.table.getColumnModel().getColumn(0);
+	column.setPreferredWidth(40);
 
-	    comp = headerRenderer.getTableCellRendererComponent(null, column
-		    .getHeaderValue(), false, false, 0, 0);
-	    headerWidth = comp.getPreferredSize().width;
-
-	    comp = table.getDefaultRenderer(model.getColumnClass(i))
-		    .getTableCellRendererComponent(table,
-			    model.getColumnName(i), false, false, 0, i);
-	    cellWidth = comp.getPreferredSize().width;
-	    column.setPreferredWidth(Math.max(headerWidth, cellWidth));
+	for (int i = 1; i < this.table.getColumnCount() - 2; i++) {
+	    column = this.table.getColumnModel().getColumn(i);
+	    column.setPreferredWidth(40);
 	}
+
+	column = this.table.getColumnModel().getColumn(
+		this.table.getColumnCount() - 2);
+	column.setPreferredWidth(60);
+	column = this.table.getColumnModel().getColumn(
+		this.table.getColumnCount() - 1);
+	column.setPreferredWidth(40);
     }
 
     private void setSaveBtn() {

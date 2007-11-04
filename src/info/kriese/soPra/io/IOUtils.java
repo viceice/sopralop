@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 04.11.2007 - Version 0.3.3.1
+ * - BugFix: Doppelte Anführungszeichen bei den Operatoren entfernt.
  * 09.10.2007 - Version 0.3.3
  * - Fehler in getURL behoben
  * - Lösung des LOP nicht mehr speichern
@@ -67,7 +69,7 @@ import org.xml.sax.SAXException;
 /**
  * 
  * @author Michael Kriese
- * @version 0.3.2.1
+ * @version 0.3.3.1
  * @since 29.07.2007
  * 
  */
@@ -90,11 +92,11 @@ public final class IOUtils {
 	String[] newOps = new String[2], ops = lop.getOperators();
 	for (int i = 0; i < 2; i++)
 	    if (ops[i].equals("="))
-		newOps[i] = "\"equal\"";
+		newOps[i] = "equal";
 	    else if (ops[i].equals("<"))
-		newOps[i] = "\"less\"";
+		newOps[i] = "less";
 	    else if (ops[i].equals(">"))
-		newOps[i] = "\"greater\"";
+		newOps[i] = "greater";
 
 	// die Vektordaten der Variablen xi
 	out.append("<vectors>\n");
@@ -257,6 +259,65 @@ public final class IOUtils {
 		.println("---------------------------------------------------------------------------");
     }
 
+    public static void print(LOP lop, PrintStream out) {
+	StringBuffer x = new StringBuffer(), y = new StringBuffer(), z = new StringBuffer();
+
+	Vector3Frac vec = lop.getVectors().get(0);
+
+	x.append(vec.getCoordX() + " ");
+	y.append(vec.getCoordY() + " ");
+	z.append(vec.getCoordZ() + " ");
+
+	for (int i = 1; i < lop.getVectors().size(); i++) {
+	    vec = lop.getVectors().get(i);
+	    if (vec.getCoordX().toDouble() >= 0)
+		x.append("+");
+	    if (vec.getCoordY().toDouble() >= 0)
+		y.append("+");
+	    if (vec.getCoordZ().toDouble() >= 0)
+		z.append("+");
+
+	    x.append(vec.getCoordX() + " ");
+	    y.append(vec.getCoordY() + " ");
+	    z.append(vec.getCoordZ() + " ");
+	}
+
+	vec = lop.getTarget();
+
+	x.append(" " + lop.getOperators()[0] + " " + vec.getCoordX());
+	y.append(" " + lop.getOperators()[1] + " " + vec.getCoordY());
+	z.append(" = " + (lop.isMaximum() ? "max" : "min"));
+
+	out.println(x.toString());
+	out.println(y.toString());
+	out.println(z.toString());
+
+	LOPSolution sol = lop.getSolution();
+
+	out.println();
+	out.println("Lösung: " + sol.getValue());
+
+	switch (sol.getSpecialCase()) {
+	    case LOPSolution.NO_SOLUTION:
+		out.println(Lang.getString("Strings.NoSolution"));
+		break;
+	    case LOPSolution.MORE_THAN_ONE_SOLUTION:
+		out.println(Lang.getString("Strings.MoreSolutions").replace(
+			"{0}", sol.countAreas() + ""));
+		break;
+	    case LOPSolution.UNLIMITED:
+		out.println(Lang.getString("Strings.UnlimitedSol"));
+		break;
+	    case LOPSolution.SIMPLE:
+		out.println(Lang.getString("Strings.Simple"));
+		break;
+	    default:
+		out.println("Error! Wrong special case. ("
+			+ sol.getSpecialCase() + ")");
+		break;
+	}
+    }
+
     /**
      * Extrahiert einen Operator aus dem String
      * 
@@ -273,64 +334,5 @@ public final class IOUtils {
 	    return ">";
 
 	return null;
-    }
-
-    public static void print(LOP lop, PrintStream out) {
-        StringBuffer x = new StringBuffer(), y = new StringBuffer(), z = new StringBuffer();
-    
-        Vector3Frac vec = lop.getVectors().get(0);
-    
-        x.append(vec.getCoordX() + " ");
-        y.append(vec.getCoordY() + " ");
-        z.append(vec.getCoordZ() + " ");
-    
-        for (int i = 1; i < lop.getVectors().size(); i++) {
-            vec = lop.getVectors().get(i);
-            if (vec.getCoordX().toDouble() >= 0)
-        	x.append("+");
-            if (vec.getCoordY().toDouble() >= 0)
-        	y.append("+");
-            if (vec.getCoordZ().toDouble() >= 0)
-        	z.append("+");
-    
-            x.append(vec.getCoordX() + " ");
-            y.append(vec.getCoordY() + " ");
-            z.append(vec.getCoordZ() + " ");
-        }
-    
-        vec = lop.getTarget();
-    
-        x.append(" " + lop.getOperators()[0] + " " + vec.getCoordX());
-        y.append(" " + lop.getOperators()[1] + " " + vec.getCoordY());
-        z.append(" = " + (lop.isMaximum() ? "max" : "min"));
-    
-        out.println(x.toString());
-        out.println(y.toString());
-        out.println(z.toString());
-    
-        LOPSolution sol = lop.getSolution();
-    
-        out.println();
-        out.println("Lösung: " + sol.getValue());
-    
-        switch (sol.getSpecialCase()) {
-            case LOPSolution.NO_SOLUTION:
-        	out.println(Lang.getString("Strings.NoSolution"));
-        	break;
-            case LOPSolution.MORE_THAN_ONE_SOLUTION:
-        	out.println(Lang.getString("Strings.MoreSolutions").replace(
-        		"{0}", sol.countAreas() + ""));
-        	break;
-            case LOPSolution.UNLIMITED:
-        	out.println(Lang.getString("Strings.UnlimitedSol"));
-        	break;
-            case LOPSolution.SIMPLE:
-        	out.println(Lang.getString("Strings.Simple"));
-        	break;
-            default:
-        	out.println("Error! Wrong special case. ("
-        		+ sol.getSpecialCase() + ")");
-        	break;
-        }
     }
 }

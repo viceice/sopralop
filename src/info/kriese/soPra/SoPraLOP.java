@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 04.11.2007 - Version 0.5.1
+ * - Unnötige Ausgabe entfernt
  * 31.10.2007 - Version 0.5
  * - An LOPEditor angepasst
  * - Boot Meldungen angepasst (Reihenfolge)
@@ -63,7 +65,7 @@ import javax.swing.filechooser.FileFilter;
 
 /**
  * @author Michael Kriese
- * @version 0.5
+ * @version 0.5.1
  * @since 12.05.2007
  * 
  */
@@ -93,7 +95,6 @@ public final class SoPraLOP {
 	try { // use the local look and feel
 	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 	} catch (Exception e) {
-	    e.printStackTrace(System.err);
 	}
 
 	// We need heavyweight elements, so we can see them infront of our

@@ -28,7 +28,6 @@ import info.kriese.soPra.gui.lang.Lang;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -74,6 +73,7 @@ public class LOPTableCellRenderer implements TableCellRenderer {
 	int rows = table.getRowCount();
 	int cols = table.getColumnCount();
 
+	// Zellausrichtung
 	if (column == 0)
 	    this.content.setHorizontalAlignment(JLabel.LEFT);
 	else if (column == cols - 2)
@@ -81,6 +81,7 @@ public class LOPTableCellRenderer implements TableCellRenderer {
 	else
 	    this.content.setHorizontalAlignment(JLabel.RIGHT);
 
+	// Rahmen
 	if (row != 1 && row != rows - 2) {
 	    if (hasFocus && table.isCellEditable(row, column))
 		this.content.setBorder(this.selected);
@@ -89,15 +90,23 @@ public class LOPTableCellRenderer implements TableCellRenderer {
 	} else
 	    this.content.setBorder(this.noBorder);
 
+	// ToolTips
 	if (column == cols - 2 && row > 1 && row < rows - 2)
 	    this.content.setToolTipText(Lang.getString("Input.Relation"));
-	else
+	else if (column == 0) {
+	    if (row == 0)
+		this.content.setToolTipText(Lang
+			.getString("Strings.TargetFunction"));
+	    else if (row > 1 && row < rows - 2)
+		this.content.setToolTipText(Lang
+			.getString("Strings.Constraint"));
+	    else if (row == rows - 1)
+		this.content.setToolTipText(Lang.getString("Strings.Solution"));
+	} else
 	    this.content.setToolTipText(null);
 
+	// Wert
 	this.content.setText(value == null ? "" : value.toString());
-
-	this.content.setPreferredSize(new Dimension(this.content.getWidth(),
-		this.content.getHeight()));
 
 	return this.content;
     }

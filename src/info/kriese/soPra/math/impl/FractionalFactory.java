@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 04.11.2007 - Version 0.1.2
+ * - Ein Double String wird jetzt auch als Fractional geparsed
  * 03.10.2007 - Version 0.1.1
  * - BugFix: Fractional wurde nicht korrekt instanziert, falls im übergebenen
  * 	String kein Slash vorhanden war
@@ -33,7 +35,7 @@ import info.kriese.soPra.math.Math2;
 /**
  * 
  * @author Michael Kriese
- * @version 0.1.1
+ * @version 0.1.2
  * @since 17.09.2007
  * 
  */
@@ -72,6 +74,12 @@ public final class FractionalFactory {
 	int denom = 0;
 
 	try {
+	    if (frac == null || "".equals(frac))
+		return getInstance();
+
+	    if (frac.contains("."))
+		return getInstance(Double.parseDouble(frac));
+
 	    String[] split = frac.split("/");
 
 	    if (split.length != 2)

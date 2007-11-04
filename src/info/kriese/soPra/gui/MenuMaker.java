@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 04.11.2007 - Version 0.3.1
+ * - BugFix: NullPointer falls ActionHandler null behoben
  * 01.11.2007 - Version 0.3
  * - Es kann ein standard ActionHandler registriert werden, so muss er nicht 
  *   jedesmal übergeben werden. (weniger Referenzen)
@@ -42,7 +44,7 @@ import javax.swing.KeyStroke;
 /**
  * 
  * @author Michael Kriese
- * @version 0.3
+ * @version 0.3.1
  * @since 29.07.2007
  * 
  */
@@ -108,7 +110,8 @@ public final class MenuMaker {
 	button.setFocusable(false);
 	button.setActionCommand(key);
 	button.setToolTipText(getMenuTitle(key));
-	ac.add(button);
+	if (ac != null)
+	    ac.add(button);
 	ImageIcon icon = getImage(key);
 
 	if (icon != null)

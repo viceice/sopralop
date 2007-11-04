@@ -19,7 +19,7 @@
  * 
  * ChangeLog:
  * 
- * 03.11.2007 - Version 0.1
+ * 04.11.2007 - Version 0.1
  *  - Datei hinzugefuegt
  */
 package info.kriese.soPra.gui.table;
@@ -29,24 +29,31 @@ package info.kriese.soPra.gui.table;
  * 
  * @author Michael Kriese
  * @version 0.1
- * @since 03.11.2007
+ * @since 04.11.2007
  * 
  */
-public class LOPOperator {
+public class LOPMinMax {
 
-    public static LOPOperator getOp(String op) {
-	return new LOPOperator(op);
+    public static LOPMinMax get(boolean value) {
+	return new LOPMinMax(value ? "max" : "min");
     }
 
-    private final String op;
+    public static LOPMinMax get(String value) {
+	return new LOPMinMax(value);
+    }
 
-    protected LOPOperator(String op) {
-	this.op = op;
+    private final String value;
+
+    private LOPMinMax(String value) {
+	this.value = value;
+    }
+
+    public boolean isMax() {
+	return "max".equals(this.value);
     }
 
     @Override
     public String toString() {
-	return this.op;
+	return this.value;
     }
-
 }

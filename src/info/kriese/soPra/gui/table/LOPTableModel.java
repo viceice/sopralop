@@ -19,7 +19,9 @@
  * 
  * ChangeLog:
  * 
- * 03.10.2007- Version 0.2.1
+ * 04.11.2007 - Version 0.2.2
+ * - An neue CellEditoren angepasst
+ * 03.10.2007 - Version 0.2.1
  * - An neuen CellRenderer angepasst
  * 01.11.2007 - Version 0.2
  * - An neuen ActionHandler angepasst
@@ -49,7 +51,7 @@ import javax.swing.table.AbstractTableModel;
  * Wandelt das LOP in ein von JTable lesbares Format um.
  * 
  * @author Peer Sterner
- * @version 0.2.1
+ * @version 0.2.2
  * @since 01.11.2007
  * 
  */
@@ -106,13 +108,16 @@ public final class LOPTableModel extends AbstractTableModel {
 	    switch (row) {
 		case 0:
 		    return "<html><b>"
-			    + Lang.getString("Strings.TargetFunction")
+			    + Lang.getString("Strings.TargetFunction.Short")
 			    + ":</b></html>";
 		case 5:
-		    return "<html><b>" + Lang.getString("Strings.Solution")
+		    return "<html><b>"
+			    + Lang.getString("Strings.Solution.Short")
 			    + ":</b></html>";
 		default:
-		    return "<html><b>NB " + (row - 1) + ":</b></html>";
+		    return "<html><b>"
+			    + Lang.getString("Strings.Constraint.Short") + " "
+			    + (row - 1) + ":</b></html>";
 	    }
 
 	if (col == num + 1) {
@@ -124,7 +129,7 @@ public final class LOPTableModel extends AbstractTableModel {
 	if (col == num + 2)
 	    switch (row) {
 		case 0:
-		    return this.max ? "max" : "min";
+		    return LOPMinMax.get(this.max);
 		case 2:
 		    return this.target.getCoordX();
 		case 3:
@@ -202,6 +207,7 @@ public final class LOPTableModel extends AbstractTableModel {
 
     public void setTable(JTable table) {
 	this.table = table;
+	table.setModel(this);
     }
 
     @Override
@@ -211,7 +217,7 @@ public final class LOPTableModel extends AbstractTableModel {
 	if (col == num + 1) {
 	    if (row == 2 || row == 3) {
 		String s = (String) value;
-		if (this.operators[row - 2].equals(s))
+		if (!this.operators[row - 2].equals(s))
 		    this.operators[row - 2] = s;
 		else
 		    return;
@@ -219,29 +225,20 @@ public final class LOPTableModel extends AbstractTableModel {
 	} else if (col == num + 2)
 	    switch (row) {
 		case 0:
-		    String s = (String) value;
-		    if ((s.contains("min") && !this.max)
-			    || (s.contains("max") && this.max))
+		    boolean bool = LOPMinMax.get((String) value).isMax();
+		    if (this.max && bool)
 			return;
-		    if (s.contains("min"))
-			this.max = false;
-		    else
-			this.max = true;
-
+		    this.max = bool;
 		    break;
 		case 2:
-		    try {
-			this.target.getCoordX().setNumerator(
-				Integer.parseInt((String) value));
-		    } catch (NumberFormatException e) {
-		    }
+		    if (this.target.getCoordX().equals(value))
+			return;
+		    this.target.setCoordX((Fractional) value);
 		    break;
 		case 3:
-		    try {
-			this.target.getCoordY().setNumerator(
-				Integer.parseInt((String) value));
-		    } catch (NumberFormatException e) {
-		    }
+		    if (this.target.getCoordY().equals(value))
+			return;
+		    this.target.setCoordY((Fractional) value);
 		    break;
 		case 5:
 		    // TODO: Lösung prüfen
@@ -250,8 +247,8 @@ public final class LOPTableModel extends AbstractTableModel {
 	else {
 	    Vector3Frac vec = this.vectors.get(col - 1);
 
-	    Fractional frac = FractionalFactory
-		    .getInstance(value != null ? (Integer) value : 0);
+	    Fractional frac = (value != null ? (Fractional) value
+		    : FractionalFactory.getInstance());
 
 	    switch (row) {
 		case 0:

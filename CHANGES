@@ -2,8 +2,9 @@ SoPraLOP
 (c)2007 Michael Kriese & Peer Sterner
 
 -------------------------------------------------------------------------------
-Version 0.5 - 01.11.2007  (voraussichtlicher Termin)
+Version 0.5 - 10.11.2007  (voraussichtlicher Termin)
 -------------------------------------------------------------------------------
+- Oberfläche runderneuert (Nutzerfreundlicher gemacht)
 - Menüs überarbeitet (Multisprachfähikeit, Icons)
 - Splash-Screen hinzugefügt
 - Logo mit höherer Auflösung hinzugefügt
@@ -11,7 +12,9 @@ Version 0.5 - 01.11.2007  (voraussichtlicher Termin)
    liegen, werden nicht mehr gefiltert
  - Eingabefenster in Hauptfenster integriert
  - Multisprachfähigkeit verbessert
- - BugFix: 2 Lösungen für ein LOP wurden als eine erkannt
+ - BugFix: 2 Lösungen für ein LOP wurden nur als eine erkannt
+ - BugFix: Einige NullPointer Exceptions abgefangen
+ - BugFix: Doppelte Quotes beim Speichern der Operatoren entfernt
 -	TODO:
 	+ Hilfe einbauen
 	+ Nutzerinteraktion
