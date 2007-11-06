@@ -122,7 +122,11 @@ class FractionalImpl implements Fractional {
 	else
 	    return super.equals(obj);
     }
-
+    
+    public boolean isZero(Fractional frac) {
+    	return  frac.getNumerator() == 0;
+    }
+    
     public int getDenominator() {
 	return this.denominator;
     }

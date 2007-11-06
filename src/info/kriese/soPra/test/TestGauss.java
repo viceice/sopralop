@@ -41,14 +41,14 @@ public class TestGauss {
      * @param args
      */
     public static void main(String[] args) {
-	Vector3Frac l1 = Vector3FracFactory.getInstance(2, 7, 5);
-	Vector3Frac l2 = Vector3FracFactory.getInstance(0, 4, 6);
-	Vector3Frac l3 = Vector3FracFactory.getInstance();
-	Vector3Frac target = Vector3FracFactory.getInstance(1, 5, 0);
+	Vector3Frac l1 = Vector3FracFactory.getInstance(3, 4, 24);
+	Vector3Frac l2 = Vector3FracFactory.getInstance(2, 1, 8);
+	Vector3Frac l3 = Vector3FracFactory.getInstance(0, 1, 2);
+	Vector3Frac target = Vector3FracFactory.getInstance(10, 10, 0);
 
 	Gauss g = new Gauss();
 
-	Vector3Frac s = g.gaussElimination(l1, l2, l3, target);
+	Vector3Frac s = g.gaussElimination(l1, l2, target);
 
 	System.out.println("x1= " + s.getCoordX() + ", x2= " + s.getCoordY()
 		+ ", z= " + s.getCoordZ());

@@ -76,6 +76,8 @@ public interface Fractional extends Cloneable, Comparable<Fractional> {
     Fractional div(int x);
 
     boolean equals(Fractional frac);
+    
+    boolean isZero(Fractional frac);
 
     /**
      * Gibt den Nenner zurück.
