@@ -69,6 +69,7 @@ import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPEditor;
 import info.kriese.soPra.lop.LOPEditorAdapter;
 import info.kriese.soPra.lop.LOPSolution;
+import info.kriese.soPra.math.impl.FractionalFactory;
 import info.kriese.soPra.math.quickhull.QuickHull;
 
 import java.io.FileOutputStream;
@@ -248,6 +249,8 @@ public final class LOPSolver {
 	value_high = Fractional.MAX_VALUE;
 	value_low = Fractional.MIN_VALUE;
 
+	Fractional ZERO = FractionalFactory.getInstance();
+
 	for (Vertex vertex : this.hull.getVerticesList())
 	    if (vertex.p1.equals(Vector3Frac.ZERO)) {
 
@@ -256,33 +259,41 @@ public final class LOPSolver {
 
 		opt_vector.setCoordZ(sln.getCoordZ());
 
-		if (vertex.isPointInVertex(opt_vector, 100)) {
+		if (sln.getCoordX().compareTo(ZERO) >= 0
+			&& sln.getCoordY().compareTo(ZERO) >= 0) {
+		    // TODO: remove that
+		    System.err.println(vertex + " = " + sln);
 		    if (opt == null) {
 			opt = sln.getCoordZ();
-			sol.addArea(vertex.p2, vertex.p3);
+			sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(), sln
+				.getCoordY());
 		    }
 
 		    if (max && sln.getCoordZ().equals(opt)
 			    && !value_high.equals(Fractional.MAX_VALUE)) {
-			sol.addArea(vertex.p2, vertex.p3);
+			sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(), sln
+				.getCoordY());
 			break;
 		    }
 		    if (!max && sln.getCoordZ().equals(opt)
 			    && !value_low.equals(Fractional.MIN_VALUE)) {
-			sol.addArea(vertex.p2, vertex.p3);
+			sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(), sln
+				.getCoordY());
 			break;
 		    }
 		    if (sln.getCoordZ().compareTo(value_high) < 0) {
 			if (!max) {
 			    sol.clearAreas();
-			    sol.addArea(vertex.p2, vertex.p3);
+			    sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(),
+				    sln.getCoordY());
 			}
 			value_low = sln.getCoordZ();
 		    }
 		    if (sln.getCoordZ().compareTo(value_low) > 0) {
 			if (max) {
 			    sol.clearAreas();
-			    sol.addArea(vertex.p2, vertex.p3);
+			    sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(),
+				    sln.getCoordY());
 			}
 			value_high = sln.getCoordZ();
 		    }
@@ -290,7 +301,8 @@ public final class LOPSolver {
 			if (max) {
 			    opt = sln.getCoordZ();
 			    sol.clearAreas();
-			    sol.addArea(vertex.p2, vertex.p3);
+			    sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(),
+				    sln.getCoordY());
 			}
 			value_high = sln.getCoordZ();
 		    }
@@ -298,7 +310,8 @@ public final class LOPSolver {
 			if (!max) {
 			    opt = sln.getCoordZ();
 			    sol.clearAreas();
-			    sol.addArea(vertex.p2, vertex.p3);
+			    sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(),
+				    sln.getCoordY());
 			}
 			value_low = sln.getCoordZ();
 		    }
@@ -340,5 +353,8 @@ public final class LOPSolver {
 	sol.setValue(opt);
 
 	lop.problemSolved();
+	lop.showSolution();
+
+	IOUtils.print(lop, System.err);
     }
 }

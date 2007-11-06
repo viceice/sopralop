@@ -19,17 +19,20 @@
  * 
  * ChangeLog:
  * 
+ * 06.11.2007 - Version 0.2
+ * - KLasse um die Anteile der Vektoren erweitert
  * 09.10.2007 - Version 0.1
  *  - Datei hinzugefuegt
  */
 package info.kriese.soPra.lop;
 
+import info.kriese.soPra.math.Fractional;
 import info.kriese.soPra.math.Vector3Frac;
 
 /**
  * 
  * @author Michael Kriese
- * @version 0.1
+ * @version 0.2
  * @since 09.10.2007
  * 
  */
@@ -37,5 +40,9 @@ public interface LOPSolutionArea {
 
     Vector3Frac getL1();
 
+    Fractional getL1Amount();
+
     Vector3Frac getL2();
+
+    Fractional getL2Amount();
 }

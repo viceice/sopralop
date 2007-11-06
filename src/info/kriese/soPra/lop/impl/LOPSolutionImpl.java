@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 06.11.2007 - Version 0.3
+ * - Neue Interfacemethoden implementiert
  * 24.09.2007 - Version 0.2.1
  * - Interface Änderungen implementiert
  * 16.09.2007 - Version 0.2
@@ -42,7 +44,7 @@ import info.kriese.soPra.math.impl.FractionalFactory;
 /**
  * 
  * @author Michael Kriese
- * @version 0.2.1
+ * @version 0.3
  * @since 23.08.2007
  * 
  */
@@ -63,11 +65,12 @@ final class LOPSolutionImpl implements LOPSolution {
 	this.areas = new ArrayList<LOPSolutionArea>();
     }
 
-    public void addArea(Vector3Frac l1, Vector3Frac l2) {
-	if (l1 == null || l2 == null)
-	    throw new NotAllowedException();
+    public void addArea(Vector3Frac l1, Vector3Frac l2, Fractional f1,
+	    Fractional f2) {
+	if (l1 == null || l2 == null || f1 == null || f2 == null)
+	    throw new IllegalArgumentException();
 
-	this.areas.add(new LOPSolutionAreaImpl(l1, l2));
+	this.areas.add(new LOPSolutionAreaImpl(l1, l2, f1, f2));
     }
 
     public void clearAreas() {

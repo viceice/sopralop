@@ -67,16 +67,22 @@ public final class LOPTableModel extends AbstractTableModel {
 
     private final String[] operators;
 
+    private Fractional sol;
+
     private JTable table;
 
     private Vector3Frac target;
 
+    private final List<Fractional> values;
     private final List<Vector3Frac> vectors;
 
     public LOPTableModel() {
 	this.columnNames = new Vector<String>();
 	this.vectors = new ArrayList<Vector3Frac>();
 	this.operators = new String[2];
+	this.values = new ArrayList<Fractional>();
+	this.sol = FractionalFactory.getInstance();
+
 	setColumnCount();
     }
 
@@ -135,7 +141,11 @@ public final class LOPTableModel extends AbstractTableModel {
 		case 3:
 		    return this.target.getCoordY();
 		default:
-		    return 0; // TODO: Lösung ein- / ausgeben
+		    return this.sol; // TODO:
+		    // Lösung
+		    // ein-
+		    // /
+		    // ausgeben
 	    }
 
 	Vector3Frac vec = this.vectors.get(col - 1);
@@ -148,7 +158,8 @@ public final class LOPTableModel extends AbstractTableModel {
 	    case 3:
 		return vec.getCoordY();
 	    case 5:
-		return 0; // TODO: Lösungen für X1 ... Xn ein- / asugeben
+		return this.values.get(col - 1); // TODO: Lösungen für X1 ...
+		// Xn ein- / asugeben
 	}
 
 	return "";
@@ -241,7 +252,7 @@ public final class LOPTableModel extends AbstractTableModel {
 		    this.target.setCoordY((Fractional) value);
 		    break;
 		case 5:
-		    // TODO: Lösung prüfen
+		    this.sol = (Fractional) value;
 		    break;
 	    }
 	else {
@@ -267,7 +278,7 @@ public final class LOPTableModel extends AbstractTableModel {
 		    vec.setCoordY(frac);
 		    break;
 		case 5:
-		    // TODO Lösung überprüfen
+		    this.values.set(col - 1, (Fractional) value);
 		    break;
 	    }
 	}
@@ -277,12 +288,17 @@ public final class LOPTableModel extends AbstractTableModel {
 
     public void update(LOP lop) {
 	this.vectors.clear();
-	for (Vector3Frac vec : lop.getVectors())
+	this.values.clear();
+	for (Vector3Frac vec : lop.getVectors()) {
 	    this.vectors.add(vec.clone());
+	    this.values.add(FractionalFactory.getInstance());
+	}
 	this.target = lop.getTarget().clone();
 	this.operators[0] = lop.getOperators()[0];
 	this.operators[1] = lop.getOperators()[1];
 	this.max = lop.isMaximum();
+
+	this.sol = FractionalFactory.getInstance();
 
 	setEdited(false);
 	setColumnCount();
@@ -299,6 +315,7 @@ public final class LOPTableModel extends AbstractTableModel {
 	    return;
 
 	this.vectors.add(Vector3FracFactory.getInstance());
+	this.values.add(FractionalFactory.getInstance());
 	num++;
 	this.columnNames.insertElementAt("<html><center><b>x<sub>" + num
 		+ "</sub></b></center></html>", num);
@@ -324,6 +341,7 @@ public final class LOPTableModel extends AbstractTableModel {
 		    break;
 	    }
 	    this.vectors.set(i, vec);
+	    this.values.set(i, FractionalFactory.getInstance());
 	}
 
 	this.target.getCoordX().setNumerator(0);
@@ -332,6 +350,8 @@ public final class LOPTableModel extends AbstractTableModel {
 	this.operators[0] = "=";
 	this.operators[1] = "=";
 	this.max = true;
+
+	this.sol = FractionalFactory.getInstance();
 
 	setEdited(true);
 	fireTableDataChanged();
@@ -350,6 +370,7 @@ public final class LOPTableModel extends AbstractTableModel {
 
 	this.vectors.remove(num - 1);
 	this.columnNames.remove(num);
+	this.values.remove(num - 1);
 	num--;
 	setEdited(true);
 	fireTableStructureChanged();

@@ -119,6 +119,8 @@ final class Vector3FracImpl implements Vector3Frac {
 
     public Vector3Frac scale(int i) {
 	Vector3Frac res = this.clone();
+	if (res.equals(ZERO))
+	    return res;
 
 	res.setCoordX(this.x.mul(i));
 	res.setCoordY(this.y.mul(i));

@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 06.11.2007 - Version 0.4
+ * - Die Lösungsflächen Funktionen erweitert
  * 10.10.2007 - Version 0.3.1
  * - Konstantent neu numeriert
  * 09.10.2007 - Version 0.3
@@ -41,7 +43,7 @@ import info.kriese.soPra.math.Vector3Frac;
 /**
  * 
  * @author Michael Kriese
- * @version 0.3.1
+ * @version 0.4
  * @since 23.08.2007
  * 
  */
@@ -58,7 +60,7 @@ public interface LOPSolution {
      * @param l1
      * @param l2
      */
-    void addArea(Vector3Frac l1, Vector3Frac l2);
+    void addArea(Vector3Frac l1, Vector3Frac l2, Fractional f1, Fractional f2);
 
     /**
      * Löscht alle Flächen.

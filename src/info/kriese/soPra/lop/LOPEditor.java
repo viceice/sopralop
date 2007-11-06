@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 06.11.2007 - Version 0.2
+ * - getLOP hizugefügt
  * 01.11.2007 - Version 0.1
  *  - Datei hinzugefuegt
  */
@@ -29,7 +31,7 @@ import java.net.URL;
 /**
  * 
  * @author Michael Kriese
- * @version 0.1
+ * @version 0.2
  * @since 01.11.2007
  * 
  */
@@ -39,6 +41,8 @@ public interface LOPEditor {
     void addVariable();
 
     void clear();
+
+    LOP getLOP();
 
     void open(URL file);
 

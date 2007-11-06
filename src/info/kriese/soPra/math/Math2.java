@@ -121,12 +121,15 @@ public final class Math2 {
 	v = round(v);
 
 	// Check if point is in triangle
-	boolean res = (u >= 0) && (v >= 0) && (u + v <= 1)
-		&& isPointInTriangle2(a, b, c, p);
+	boolean res;
+	if (u == 0 && v == 0)
+	    res = isPointInTriangle2(a, b, c, p);
+	else
+	    res = ((u >= 0) && (v >= 0) && (u + v <= 1));
 
-	// System.err.println("[ " + a + ", " + b + ", " + c + " ] = " + p
-	// + "\t\t\t[ u=" + u + ", v=" + v + " | "
-	// + (res ? "true" : "false") + "]");
+	System.err.println("[ " + a + ", " + b + ", " + c + " ] = " + p
+		+ "\t\t\t[ u=" + u + ", v=" + v + " | "
+		+ (res ? "true" : "false") + "]");
 	return res;
     }
 
@@ -206,10 +209,8 @@ public final class Math2 {
     private static boolean isPointInTriangle2(Vector3Frac a, Vector3Frac b,
 	    Vector3Frac c, Vector3Frac p) {
 
-	Vector3Frac n = cross(b.sub(a), c.sub(a));
-
 	if (sameSide(p, a, b, c) && sameSide(p, b, a, c)
-		&& sameSide(p, c, a, b) && p.dot(n) == 0)
+		&& sameSide(p, c, a, b))
 	    return true;
 	else
 	    return false;
