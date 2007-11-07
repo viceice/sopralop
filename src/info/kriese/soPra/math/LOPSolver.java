@@ -255,8 +255,8 @@ public final class LOPSolver {
 	for (Vertex vertex : this.hull.getVerticesList())
 	    if (vertex.p1.equals(Vector3Frac.ZERO)) {
 
-		sln = this.gauss.gaussElimination(vertex.p2, vertex.p3,
-			vertex.p1, lop.getTarget());
+		sln = this.gauss.gaussElimination2(vertex.p1, vertex.p2,
+			vertex.p3, lop.getTarget());
 
 		opt_vector.setCoordZ(sln.getCoordZ());
 
@@ -321,8 +321,8 @@ public final class LOPSolver {
 		// Überprüfe ob Zielvektor den Kegelboden durchstößt
 		// Falls ja ist MAX oder MIN unendlich
 
-		sln = this.gauss.gaussElimination(vertex.p1, vertex.p2,
-			vertex.p3, lop.getTarget());
+		sln = this.gauss.gaussElimination2(vertex.p1, vertex.p2,
+			lop.getTarget());
 		opt_vector.setCoordZ(sln.getCoordZ());
 
 		if (vertex.isPointInVertex(opt_vector)) {

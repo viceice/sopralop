@@ -81,7 +81,10 @@ public final class Gauss {
 	    c = l2.clone();
 	    z = target.clone();
 	}
+	
+	System.out.println("a = " + a.toString());
 
+	// System.out.println("Offset = " + a.toString());
 	if (c.getCoordX().isZero() && b.getCoordY().isZero()) {
 	    b.setCoordZ(b.getCoordZ().div(b.getCoordX()));
 	    c.setCoordZ(c.getCoordZ().div(c.getCoordY()));
@@ -116,9 +119,9 @@ public final class Gauss {
 
 	z.setCoordZ(((b.getCoordZ().mul(z.getCoordX())).add((c.getCoordZ()
 		.mul(z.getCoordY())))).add(a.getCoordZ()));
-	z.setCoordX(b.getCoordZ());
-	z.setCoordY(c.getCoordZ());
-	System.out.println(z.toString());
+	z.setCoordX(b.getCoordZ().sub(a.getCoordX()));
+	z.setCoordY(c.getCoordZ().sub(a.getCoordY()));
+	System.out.println("Lösung = " + z.toString());
 
 	return z;
     }
