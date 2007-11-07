@@ -231,6 +231,7 @@ public final class LOPSolver {
 	    return true;
 	} catch (IOException ex) {
 	    System.out.println("Error writing to file: " + file);
+	    System.err.println(ex);
 	    return false;
 	}
     }

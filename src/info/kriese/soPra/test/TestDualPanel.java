@@ -5,12 +5,16 @@
  */
 package info.kriese.soPra.test;
 
+import info.kriese.soPra.SoPraLOP;
 import info.kriese.soPra.gui.ActionHandler;
 import info.kriese.soPra.io.IOUtils;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPEditor;
+import info.kriese.soPra.lop.LOPSolutionArea;
 import info.kriese.soPra.lop.impl.LOPFactory;
-import info.kriese.soPra.math.Gauss;
+import info.kriese.soPra.lop.LOPSolution;
+// import info.kriese.soPra.math.Gauss;
+import info.kriese.soPra.math.Fractional;
 import info.kriese.soPra.math.LOPSolver;
 import info.kriese.soPra.math.Vector3Frac;
 
@@ -51,8 +55,12 @@ public class TestDualPanel extends JPanel {
     private static final long serialVersionUID = 1769367299092520935L;
 
     private static Vector3Frac target, sol;
+    
+    private static Fractional solX, solY;
 
     private static List<Vector3Frac> vectors;
+    
+    private static LOPSolution solution;
     
     private static String[] operators;
 
@@ -79,29 +87,32 @@ public class TestDualPanel extends JPanel {
 		LOPSolver solver = new LOPSolver();
 		solver.setEditor(editor);
 		editor.open(IOUtils.getURL("problems/testDual.lop"));
-		
-		//generateTestData();
-
-		vectors = lop.getVectors();
-		target = lop.getTarget();
-		operators = lop.getOperators();
-		numVar = lop.getVectors().size();
-		
-		Gauss g = new Gauss();
-		sol = g.gaussElimination(vectors.get(0), vectors.get(1), target);
-
 		ActionHandler.INSTANCE.setLOP(lop);
+		SoPraLOP.EDITOR = editor;
+		editor.update();
+		
+//		generateTestData();
+//		Gauss g = new Gauss();
+//		sol = g.gaussElimination(vectors.get(0), vectors.get(1), target);
+		
+		vectors = editor.getLOP().getVectors();
+		target = editor.getLOP().getTarget();
+		operators = editor.getLOP().getOperators();
+		numVar = editor.getLOP().getVectors().size();
+		solution = editor.getLOP().getSolution();
+		if (solution.getSpecialCase() != solution.NO_SOLUTION) {
+			solX = solution.getAreas().get(0).getL1Amount();
+			solY = solution.getAreas().get(0).getL2Amount();
+		}
 
 		setScale();
 
-		frame = new JFrame("SoPra LOP - Visualisierung des dualen Problems");
+		frame = new JFrame("SoPra LOP - Visualisierung des Dualen Problems");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		panel = new TestDualPanel();
-		// panel.setEditor(editor);
 
-		frame.setBackground(bg);
-
+		//frame.setBackground(bg);
 		frame.add(panel);
 		frame.pack();
 		frame.setSize(600, 600);
@@ -198,7 +209,7 @@ public class TestDualPanel extends JPanel {
 			g2.drawString((d.height - offsetY - step) / stepWidth + "", 13,
 					step + 5);
 		}
-
+		
 		// Zeichnen der der aus den Vektoren abgeleiteten Geraden
 		g2.setPaint(element);
 		g2.setStroke(stroke);
@@ -216,12 +227,12 @@ public class TestDualPanel extends JPanel {
 
 			if (localCoordX1 >= offsetX
 					&& localCoordY2 <= d.getHeight() - offsetY) {
-				if (vectors.get(i).getCoordX().getNumerator() == 0) {
+				if (vectors.get(i).getCoordX().isZero()) {
 					g2.drawLine(offsetX, localCoordY2, localCoordX2,
 							localCoordY2);
 					g2.drawString("NB" + (i + 1), localCoordX1,
 							localCoordY2 - 5);
-				} else if (vectors.get(i).getCoordY().getNumerator() == 0) {
+				} else if (vectors.get(i).getCoordY().isZero()) {
 					g2.drawLine(localCoordX1, localCoordY1, localCoordX1,
 							offsetY);
 					g2.drawString("NB" + (i + 1), localCoordX1,
@@ -235,39 +246,49 @@ public class TestDualPanel extends JPanel {
 			}
 		}
 
-		// Zeichnen des Strahls, der durch das Optimum geht
-		g2.setPaint(optimum);
-		int localOptimumX1 = offsetX
-				+ (Math.round(sol.getCoordZ().mul(stepWidth).div(
-						target.getCoordX()).toFloat()));
-		int localOptimumY1 = Math.round(Math.round(d.getHeight() - offsetY));
-		int localOptimumX2 = offsetX
-				+ Math.round(Math.round(d.getWidth() - 60));
-		int localOptimumY2 = Math.round(Math.round(d.getHeight() - offsetY)
-				- (Math.round(sol.getCoordZ().mul(stepWidth).div(
-						target.getCoordY()).toFloat())));
+		//		 TODO: Richtungvektoren der Vektorengeraden (abhängig vom Relationszeichen)
+		if (solution.getSpecialCase() != solution.NO_SOLUTION) {
 
-		if (target.getCoordX().getNumerator() == 0) {
-			g2.drawLine(offsetX, localOptimumY2, localOptimumX2,
-							localOptimumY2);
-			g2.drawString("Optimum", localOptimumX1, localOptimumY2 - 5);
-		} else if (target.getCoordY().getNumerator() == 0) {
-			g2.drawLine(localOptimumX1, localOptimumY1, localOptimumX1,
-							offsetY);
-			g2.drawString("Optimum", localOptimumX1, localOptimumY2 - 5);
-		} else {
-			g2.drawLine(localOptimumX1, localOptimumY1, offsetX,
-							localOptimumY2);
-			g2.drawString("Optimum", offsetX + 5, localOptimumY2 - 5);
+			// Zeichnen des Strahls, der durch das Optimum geht
+			g2.setPaint(optimum);
+			int localOptimumX1 = offsetX
+					+ (Math.round(solution.getVector().getCoordZ().mul(stepWidth).div(
+							target.getCoordX()).toFloat()));
+			int localOptimumY1 = Math
+					.round(Math.round(d.getHeight() - offsetY));
+			int localOptimumX2 = offsetX
+					+ Math.round(Math.round(d.getWidth() - 60));
+			int localOptimumY2 = Math.round(Math.round(d.getHeight() - offsetY)
+					- (Math.round(solution.getVector().getCoordZ().mul(stepWidth).div(
+							target.getCoordY()).toFloat())));
+
+			if (target.getCoordX().getNumerator() == 0) {
+				g2.drawLine(offsetX, localOptimumY2, localOptimumX2,
+						localOptimumY2);
+				g2.drawString("Optimum", localOptimumX1, localOptimumY2 - 5);
+			} else if (target.getCoordY().getNumerator() == 0) {
+				g2.drawLine(localOptimumX1, localOptimumY1, localOptimumX1,
+						offsetY);
+				g2.drawString("Optimum", localOptimumX1, localOptimumY2 - 5);
+			} else {
+				g2.drawLine(localOptimumX1, localOptimumY1, offsetX,
+						localOptimumY2);
+				g2.drawString("Gerade der Zielfunktion", offsetX + 5, localOptimumY2 - 5);
+			}
+			g2.fillOval(Math.round(offsetX
+					+ solX.mul(stepWidth).toFloat()), localOptimumY1
+					- Math.round(solY.mul(stepWidth).toFloat()), 9,
+					9);
+			g2.drawString("Optimum (" + solX + ", "
+					+ solY + ")", offsetX
+					+ solX.mul(stepWidth).toFloat() + 5,
+					localOptimumY1
+							- Math.round(solY.mul(stepWidth)
+									.toFloat()) - 3);
+
+			// TODO: Richtungvektoren der Lösungsgeraden (abhängig vom
+			// Relationszeichen)
 		}
-		g2.fillOval(Math.round(offsetX
-				+ sol.getCoordX().mul(stepWidth).toFloat()), localOptimumY1
-				- Math.round(sol.getCoordY().mul(stepWidth).toFloat()), 9, 9);
-		g2.drawString("Optimum (" + sol.getCoordX() + ", " + sol.getCoordY()
-				+ ")", offsetX + sol.getCoordX().mul(stepWidth).toFloat() + 5,
-				localOptimumY1
-						- Math.round(sol.getCoordY().mul(stepWidth).toFloat()) - 3);
-
 	}
 
 }

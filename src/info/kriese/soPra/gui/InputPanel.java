@@ -143,7 +143,7 @@ public final class InputPanel extends JPanel {
 		return super.getCellEditor(row, column);
 	    }
 	};
-	this.table.setFillsViewportHeight(true);
+	// this.table.setFillsViewportHeight(true);
 	this.table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 	this.table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	this.table.setRowSelectionAllowed(false);
