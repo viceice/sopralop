@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 07.11.2007 - Version 0.3.1
+ * - NullPointer bei Vergleich behoben
  * 17.09.2007 - Version 0.3
  * - Neue Interface-Methoden implementiert
  * - getInstance Methoden in Factory ausgelagert
@@ -44,7 +46,7 @@ import info.kriese.soPra.math.Vector3Frac;
  * 
  * @author Michael Kriese
  * @since 11.04.2007
- * @version 0.3
+ * @version 0.3.1
  */
 final class Vector3FracImpl implements Vector3Frac {
 
@@ -85,6 +87,8 @@ final class Vector3FracImpl implements Vector3Frac {
     }
 
     public boolean equals(Vector3Frac vec) {
+	if (vec == null)
+	    return false;
 	return this.x.equals(vec.getCoordX()) && this.y.equals(vec.getCoordY())
 		&& this.z.equals(vec.getCoordZ());
     }

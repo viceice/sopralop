@@ -1,5 +1,3 @@
-package info.kriese.soPra.test;
-
 /**
  * @version		$Id$
  * @copyright	(c)2007 Michael Kriese & Peer Sterner
@@ -21,38 +19,85 @@ package info.kriese.soPra.test;
  * 
  * ChangeLog:
  * 
+ * 07.11.2007 - Version 0.2
+ * - Tests erweitert, Lösungen werden mit handgerechneten Lösungen verglichen
  * 16.10.2007 - Version 0.1.1
  * - Aufruf der Gauss-Elimination angepasst
  * 02.05.2007 - Version 0.1
  * - Datei hinzugefuegt
  */
+package info.kriese.soPra.test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import info.kriese.soPra.io.impl.SettingsFactory;
 import info.kriese.soPra.math.Gauss;
 import info.kriese.soPra.math.Vector3Frac;
+import info.kriese.soPra.math.Vertex;
+import info.kriese.soPra.math.impl.FractionalFactory;
 import info.kriese.soPra.math.impl.Vector3FracFactory;
 
 /**
  * @author Peer Sterner
- * @version 0.1
+ * @version 0.2
  * @since 02.05.2007
  */
 public class TestGauss {
+
+    private static List<Vector3Frac> sols = new ArrayList<Vector3Frac>(),
+	    pnts = new ArrayList<Vector3Frac>();
+    private static List<Vertex> vertices = new ArrayList<Vertex>();
 
     /**
      * @param args
      */
     public static void main(String[] args) {
-	Vector3Frac l1 = Vector3FracFactory.getInstance(3, 4, 24);
-	Vector3Frac l2 = Vector3FracFactory.getInstance(2, 1, 8);
-	Vector3Frac l3 = Vector3FracFactory.getInstance(0, 1, 2);
-	Vector3Frac target = Vector3FracFactory.getInstance(10, 10, 0);
+	System.out.println("SoPraLOP GaussianTest - Version "
+		+ SettingsFactory.getInstance().getVersion());
+	System.out.println("\t(c) 2007  "
+		+ SettingsFactory.getInstance().getAuthor());
+	System.out.println();
 
-	Gauss g = new Gauss();
+	Vertex vert;
+	Vector3Frac pnt, sol, tmp;
 
-	Vector3Frac s = g.gaussElimination(l1, l2, target);
+	vert = new Vertex();
+	vert.p1 = Vector3FracFactory.getInstance(3, 4, 24);
+	vert.p2 = Vector3FracFactory.getInstance(2, 1, 8);
+	vert.p3 = Vector3FracFactory.getInstance(0, 1, 2);
+	vertices.add(vert);
+	pnts.add(Vector3FracFactory.getInstance(10, 10, 0));
+	sols.add(Vector3FracFactory.getInstance(FractionalFactory
+		.getInstance("7/2"), FractionalFactory.getInstance("5/2"),
+		FractionalFactory.getInstance(57)));
 
-	System.out.println("x1= " + s.getCoordX() + ", x2= " + s.getCoordY()
-		+ ", z= " + s.getCoordZ());
+	vert = new Vertex();
+	vert.p1 = Vector3FracFactory.getInstance(0, 0, 0);
+	vert.p2 = Vector3FracFactory.getInstance(2, 1, 8);
+	vert.p3 = Vector3FracFactory.getInstance(0, 1, 2);
+	vertices.add(vert);
+	pnts.add(Vector3FracFactory.getInstance(10, 10, 0));
+	sols.add(Vector3FracFactory.getInstance(5, 5, 50));
+
+	vert = new Vertex();
+	vert.p1 = Vector3FracFactory.getInstance(0, 0, 0);
+	vert.p2 = Vector3FracFactory.getInstance(-2, 2, 2);
+	vert.p3 = Vector3FracFactory.getInstance(2, 2, 2);
+	vertices.add(vert);
+	pnts.add(Vector3FracFactory.getInstance(-2, 0, 0));
+	sols.add(Vector3FracFactory.getInstance(FractionalFactory
+		.getInstance("-1/2"), FractionalFactory.getInstance("1/2"),
+		FractionalFactory.getInstance(0)));
+
+	for (int i = 0; i < vertices.size(); i++) {
+	    vert = vertices.get(i);
+	    pnt = pnts.get(i);
+	    sol = sols.get(i);
+	    tmp = Gauss.eliminate(vert, pnt);
+	    System.out.println(vert + " x  " + pnt + " = " + tmp
+		    + (tmp.equals(sol) ? " -> richtig" : " -> falsch " + sol));
+	}
 
     }
-
 }

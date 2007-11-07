@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 07.11.2007 - Version 0.5.1
+ * - An neues GaussVerfahren angepasst
  * 01.11.2007 - Version 0.5
  * - An LOPEditor angepasst
  * 24.10.2007 - Version 0.4.0.1
@@ -69,7 +71,6 @@ import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPEditor;
 import info.kriese.soPra.lop.LOPEditorAdapter;
 import info.kriese.soPra.lop.LOPSolution;
-import info.kriese.soPra.math.impl.FractionalFactory;
 import info.kriese.soPra.math.quickhull.QuickHull;
 
 import java.io.FileOutputStream;
@@ -91,19 +92,16 @@ import org.xml.sax.SAXParseException;
 
 /**
  * @author Michael Kriese
- * @version 0.5
+ * @version 0.5.1
  * @since 10.05.2007
  * 
  */
 public final class LOPSolver {
 
-    private final Gauss gauss;
-
     private final QuickHull hull;
 
     public LOPSolver() {
 	this.hull = new QuickHull();
-	this.gauss = new Gauss();
     }
 
     public void setEditor(LOPEditor editor) {
@@ -250,20 +248,17 @@ public final class LOPSolver {
 	value_high = Fractional.MAX_VALUE;
 	value_low = Fractional.MIN_VALUE;
 
-	Fractional ZERO = FractionalFactory.getInstance();
+	for (Vertex vertex : this.hull.getVerticesList()) {
+	    sln = Gauss.eliminate(vertex, lop.getTarget());
+	    // TODO: remove that later
+	    System.err.println(vertex + " = " + sln);
 
-	for (Vertex vertex : this.hull.getVerticesList())
 	    if (vertex.p1.equals(Vector3Frac.ZERO)) {
-
-		sln = this.gauss.gaussElimination2(vertex.p1, vertex.p2,
-			vertex.p3, lop.getTarget());
-
 		opt_vector.setCoordZ(sln.getCoordZ());
 
-		if (sln.getCoordX().compareTo(ZERO) >= 0
-			&& sln.getCoordY().compareTo(ZERO) >= 0) {
-		    // TODO: remove that
-		    System.err.println(vertex + " = " + sln);
+		if (sln.getCoordX().is(Fractional.GEQUAL_ZERO)
+			&& sln.getCoordY().is(Fractional.GEQUAL_ZERO)) {
+
 		    if (opt == null) {
 			opt = sln.getCoordZ();
 			sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(), sln
@@ -321,15 +316,17 @@ public final class LOPSolver {
 		// Überprüfe ob Zielvektor den Kegelboden durchstößt
 		// Falls ja ist MAX oder MIN unendlich
 
-		sln = this.gauss.gaussElimination2(vertex.p1, vertex.p2,
-			lop.getTarget());
 		opt_vector.setCoordZ(sln.getCoordZ());
 
-		if (vertex.isPointInVertex(opt_vector)) {
+		if (sln.getCoordX().is(Fractional.GEQUAL_ZERO)
+			&& sln.getCoordY().is(Fractional.GEQUAL_ZERO)
+			&& sln.getCoordX().add(sln.getCoordY()).is(
+				Fractional.LEQUAL_ONE)) {
 		    unlimited = true;
 		    value_unlimit = sln.getCoordZ();
 		}
 	    }
+	}
 
 	if (unlimited && opt != null) {
 	    if (max && opt.compareTo(value_unlimit) < 0) {
@@ -356,6 +353,7 @@ public final class LOPSolver {
 	lop.problemSolved();
 	lop.showSolution();
 
+	// TODO: remove that later
 	IOUtils.print(lop, System.err);
     }
 }

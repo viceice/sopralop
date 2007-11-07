@@ -133,6 +133,19 @@ class FractionalImpl implements Fractional {
 	return this.numerator;
     }
 
+    public boolean is(int what) {
+	switch (what) {
+	    case LEQUAL_ONE:
+		return compareTo(ONE) <= 0;
+	    case GEQUAL_ZERO:
+		return compareTo(ZERO) >= 0;
+
+	    default:
+		throw new IllegalArgumentException("Test " + what
+			+ " doesn't exists.");
+	}
+    }
+
     public boolean isZero() {
 	return this.numerator == 0;
     }

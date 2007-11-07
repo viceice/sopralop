@@ -43,6 +43,10 @@ import info.kriese.soPra.math.impl.Vector3FracFactory;
  */
 public final class Gauss {
 
+    public static Vector3Frac eliminate(Vertex vert, Vector3Frac pnt) {
+	return gaussElimination2(vert.p1, vert.p2, vert.p3, pnt);
+    }
+
     /**
      * Methode zur Berechnung von x1, x2 und z fuer zwei gegebene Vektoren.
      * 
@@ -81,7 +85,7 @@ public final class Gauss {
 	    c = l2.clone();
 	    z = target.clone();
 	}
-	
+
 	if (c.getCoordX().isZero() && b.getCoordY().isZero()) {
 	    b.setCoordZ(b.getCoordZ().div(b.getCoordX()));
 	    c.setCoordZ(c.getCoordZ().div(c.getCoordY()));
@@ -93,14 +97,14 @@ public final class Gauss {
 	    b.setCoordZ((b.getCoordZ().sub(b.getCoordY().mul(c.getCoordZ())))
 		    .div(b.getCoordX()));
 	} else if (c.getCoordY().isZero()) {
-		temp = c.getCoordZ().div(c.getCoordX());
-	    c.setCoordZ((b.getCoordZ().sub(b.getCoordX().mul(temp)))
-		    .div(b.getCoordY()));
+	    temp = c.getCoordZ().div(c.getCoordX());
+	    c.setCoordZ((b.getCoordZ().sub(b.getCoordX().mul(temp))).div(b
+		    .getCoordY()));
 	    b.setCoordZ(temp);
 	} else if (b.getCoordX().isZero()) {
-		temp = b.getCoordZ().div(b.getCoordY());
-	    b.setCoordZ((c.getCoordZ().sub(c.getCoordY().mul(temp)))
-		    .div(c.getCoordX()));
+	    temp = b.getCoordZ().div(b.getCoordY());
+	    b.setCoordZ((c.getCoordZ().sub(c.getCoordY().mul(temp))).div(c
+		    .getCoordX()));
 	    c.setCoordZ(temp);
 	} else if (b.getCoordY().isZero()) {
 	    b.setCoordZ(b.getCoordZ().div(b.getCoordX()));
@@ -130,98 +134,7 @@ public final class Gauss {
 	return newVector;
     }
 
-    /**
-     * Methode zur Berechnung von x1, x2 und z fuer zwei gegebene Vektoren.
-     * 
-     * @param l1 -
-     *                Vektor l1 zur Berechnung
-     * @param l2 -
-     *                Vektor l2 zur Berechnung
-     * @param constant -
-     *                Vektor zur Hebung bei Verschiebung aus dem Ursprung
-     * @param target -
-     *                rechte Seite der Nebenbedingungen
-     * 
-     * @return - neuen Vektor z mit z.X = x1, z.Y = x2 und z.Z = z
-     * 
-     * @deprecated use static method
-     */
-    @Deprecated
-    public Vector3Frac gaussElimination(Vector3Frac l1, Vector3Frac l2,
-	    Vector3Frac target) {
-    	
-    	Vector3Frac a, b, c, z;
-    	Fractional temp, factor;
-
-    		a = Vector3FracFactory.getInstance().clone();
-    		b = l1.clone();
-    		c = l2.clone();
-    		z = target.clone();
-    	
-    	if (isZero(c.getCoordX()) && isZero(b.getCoordY())) {
-    	    z.setCoordX(z.getCoordX().div(b.getCoordX()));
-    	    z.setCoordY(z.getCoordY().div(c.getCoordY()));
-    	    temp = z.getCoordX();
-    	    z.setCoordX(z.getCoordY());
-    	    z.setCoordY(temp);
-    	} else if (isZero(c.getCoordY()) && isZero(b.getCoordX())) {
-    	    z.setCoordX(z.getCoordX().div(c.getCoordX()));
-    	    z.setCoordY(z.getCoordY().div(b.getCoordY()));
-    	} else if (isZero(c.getCoordX())) {
-    	    z.setCoordX(z.getCoordX().div(b.getCoordX()));
-    	    z.setCoordY((z.getCoordY().sub(b.getCoordY().mul(z.getCoordX())))
-    		    .div(c.getCoordY()));
-    	    temp = z.getCoordX();
-    	    z.setCoordX(z.getCoordY());
-    	    z.setCoordY(temp);
-    	} else if (isZero(c.getCoordY())) {
-    	    z.setCoordY(z.getCoordY().div(b.getCoordY()));
-    	    z.setCoordX((z.getCoordX().sub(b.getCoordX().mul(z.getCoordY())))
-    		    .div(c.getCoordX()));
-    	} else if (isZero(b.getCoordX())) {
-    	    z.setCoordX(z.getCoordX().div(c.getCoordX()));
-    	    z.setCoordY((z.getCoordY().sub(c.getCoordY().mul(z.getCoordX())))
-    		    .div(b.getCoordY()));
-    	} else if (isZero(b.getCoordY())) {
-    	    z.setCoordY(z.getCoordY().div(c.getCoordY()));
-    	    z.setCoordX((z.getCoordX().sub(c.getCoordX().mul(z.getCoordY())))
-    		    .div(b.getCoordX()));
-    	    temp = z.getCoordX();
-    	    z.setCoordX(z.getCoordY());
-    	    z.setCoordY(temp);
-    	} else {
-    	    factor = Fractional.ZERO.sub(b.getCoordY().div(c.getCoordY()));
-    	    temp = b.getCoordX().add(factor.mul(c.getCoordX()));
-    	    b.setCoordZ(b.getCoordZ().add(factor.mul(c.getCoordZ())).div(temp));
-    	    c.setCoordZ((c.getCoordZ().sub(b.getCoordZ().mul(c.getCoordX()))).div(c.getCoordY()));
-    	}
-
-    	z.setCoordZ(((b.getCoordZ().mul(z.getCoordX())).add((c.getCoordZ().mul(z
-    		.getCoordY())))).add(a.getCoordZ()));
-    	z.setCoordX(b.getCoordZ());
-    	z.setCoordY(c.getCoordZ());
-
-    	return z;
+    private Gauss() {
     }
 
-	private boolean isZero(Fractional frac) {
-		return frac.getNumerator() == 0;
-	}
-    /**
-     * Use static method.
-     * 
-     * @param constant
-     * @param l1
-     * @param l2
-     * @param target
-     * @return
-     * 
-     * @deprecated use static method
-     */
-    @Deprecated
-    public Vector3Frac gaussElimination(Vector3Frac constant, Vector3Frac l1,
-	    Vector3Frac l2, Vector3Frac target) {
-
-	return gaussElimination2(constant, l1, l2, target);
-    }
 }
