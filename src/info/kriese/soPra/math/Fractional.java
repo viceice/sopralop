@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 07.11.2007 - Version 0.4
+ * - Neue Konstanten ONE & ZERO
+ * - Neue Methode isZero()
  * 09.10.2007 - Version 0.3
  * - Konstanten MIN_VALUE und MAX_VALUE hizugefügt
  * 15.09.2007 - Version 0.2.1
@@ -37,7 +40,7 @@ import info.kriese.soPra.math.impl.FractionalFactory;
  * 
  * @author Michael Kriese
  * @since 11.04.2007
- * @version 0.3
+ * @version 0.4
  */
 
 public interface Fractional extends Cloneable, Comparable<Fractional> {
@@ -53,6 +56,10 @@ public interface Fractional extends Cloneable, Comparable<Fractional> {
      */
     static final Fractional MIN_VALUE = FractionalFactory
 	    .getInstance(Integer.MIN_VALUE);
+
+    static final Fractional ONE = FractionalFactory.getInstance(1);
+
+    static final Fractional ZERO = FractionalFactory.getInstance();
 
     /**
      * Addiert den übergebenen Bruch mit diesem und gibt das Ergebnis zurück.
@@ -76,8 +83,6 @@ public interface Fractional extends Cloneable, Comparable<Fractional> {
     Fractional div(int x);
 
     boolean equals(Fractional frac);
-    
-    boolean isZero(Fractional frac);
 
     /**
      * Gibt den Nenner zurück.
@@ -92,6 +97,8 @@ public interface Fractional extends Cloneable, Comparable<Fractional> {
      * @return Zähler
      */
     int getNumerator();
+
+    boolean isZero();
 
     Fractional max(Fractional frac);
 

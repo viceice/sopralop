@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 07.11.2007 - Version 0.4
+ * - Neue Interfacemethode implementiert
  * 17.09.2007 - Version 0.3.3
  * - getInstance Methoden in Factory ausgelagert
  * 16.09.2007 - Version 0.3.2
@@ -46,7 +48,7 @@ import info.kriese.soPra.math.Math2;
  * 
  * @author Michael Kriese
  * @since 11.04.2007
- * @version 0.3.3
+ * @version 0.4
  */
 class FractionalImpl implements Fractional {
 
@@ -122,17 +124,17 @@ class FractionalImpl implements Fractional {
 	else
 	    return super.equals(obj);
     }
-    
-    public boolean isZero(Fractional frac) {
-    	return  frac.getNumerator() == 0;
-    }
-    
+
     public int getDenominator() {
 	return this.denominator;
     }
 
     public int getNumerator() {
 	return this.numerator;
+    }
+
+    public boolean isZero() {
+	return this.numerator == 0;
     }
 
     public Fractional max(Fractional frac) {
