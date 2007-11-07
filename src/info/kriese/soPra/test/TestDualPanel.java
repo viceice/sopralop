@@ -10,10 +10,8 @@ import info.kriese.soPra.gui.ActionHandler;
 import info.kriese.soPra.io.IOUtils;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPEditor;
-import info.kriese.soPra.lop.LOPSolutionArea;
 import info.kriese.soPra.lop.impl.LOPFactory;
 import info.kriese.soPra.lop.LOPSolution;
-// import info.kriese.soPra.math.Gauss;
 import info.kriese.soPra.math.Fractional;
 import info.kriese.soPra.math.LOPSolver;
 import info.kriese.soPra.math.Vector3Frac;
@@ -54,7 +52,7 @@ public class TestDualPanel extends JPanel {
      */
     private static final long serialVersionUID = 1769367299092520935L;
 
-    private static Vector3Frac target, sol;
+    private static Vector3Frac target;
     
     private static Fractional solX, solY;
 
@@ -62,7 +60,7 @@ public class TestDualPanel extends JPanel {
     
     private static LOPSolution solution;
     
-    private static String[] operators;
+    //private static String[] operators;
 
     final static BasicStroke dashed = new BasicStroke(1.0f,
 	    BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash1, 0.0f);
@@ -91,13 +89,9 @@ public class TestDualPanel extends JPanel {
 		SoPraLOP.EDITOR = editor;
 		editor.update();
 		
-//		generateTestData();
-//		Gauss g = new Gauss();
-//		sol = g.gaussElimination(vectors.get(0), vectors.get(1), target);
-		
 		vectors = editor.getLOP().getVectors();
 		target = editor.getLOP().getTarget();
-		operators = editor.getLOP().getOperators();
+		//operators = editor.getLOP().getOperators();
 		numVar = editor.getLOP().getVectors().size();
 		solution = editor.getLOP().getSolution();
 		if (solution.getSpecialCase() != solution.NO_SOLUTION) {
@@ -112,7 +106,7 @@ public class TestDualPanel extends JPanel {
 
 		panel = new TestDualPanel();
 
-		//frame.setBackground(bg);
+		frame.setBackground(bg);
 		frame.add(panel);
 		frame.pack();
 		frame.setSize(600, 600);
@@ -120,33 +114,6 @@ public class TestDualPanel extends JPanel {
 		frame.setVisible(true);
 
 	}
-
-//    private static void generateTestData() {
-//
-//	vectors = new Vector<Vector3Frac>();
-//	target = Vector3FracFactory.getInstance();
-//	// ops = new String[] { "=", ">", "=" };
-//	// max = false;
-//	numVar = 3;
-//	for (int i = 0; i <= numVar; i++)
-//	    vectors.add(Vector3FracFactory.getInstance());
-//
-//	target.getCoordX().setNumerator(10);
-//	target.getCoordY().setNumerator(10);
-//
-//	vectors.get(0).getCoordX().setNumerator(2);
-//	vectors.get(0).getCoordY().setNumerator(1);
-//	vectors.get(0).getCoordZ().setNumerator(8);
-//
-//	vectors.get(1).getCoordX().setNumerator(3);
-//	vectors.get(1).getCoordY().setNumerator(4);
-//	vectors.get(1).getCoordZ().setNumerator(24);
-//
-//	vectors.get(2).getCoordX().setNumerator(0);
-//	vectors.get(2).getCoordY().setNumerator(1);
-//	vectors.get(2).getCoordZ().setNumerator(2);
-//
-//    }
 
     private static void setScale() {
 	float temp = 0;
@@ -161,7 +128,7 @@ public class TestDualPanel extends JPanel {
 	    if (scaleTemp2 > temp)
 		temp = scaleTemp2;
 	}
-	scale = temp + 3;
+	scale = temp + 2;
     }
 
     /**
@@ -214,6 +181,7 @@ public class TestDualPanel extends JPanel {
 		g2.setPaint(element);
 		g2.setStroke(stroke);
 		for (int i = 0; i < numVar; i++) {
+			System.out.println(vectors.get(i).toString());
 
 			int localCoordX1 = offsetX
 					+ (Math.round(vectors.get(i).getCoordZ().mul(stepWidth)
@@ -248,6 +216,7 @@ public class TestDualPanel extends JPanel {
 
 		//		 TODO: Richtungvektoren der Vektorengeraden (abhängig vom Relationszeichen)
 		if (solution.getSpecialCase() != solution.NO_SOLUTION) {
+			System.out.println("Lösung: x1 = " + solX + ", x2 = " + solY);
 
 			// Zeichnen des Strahls, der durch das Optimum geht
 			g2.setPaint(optimum);
@@ -276,8 +245,8 @@ public class TestDualPanel extends JPanel {
 				g2.drawString("Gerade der Zielfunktion", offsetX + 5, localOptimumY2 - 5);
 			}
 			g2.fillOval(Math.round(offsetX
-					+ solX.mul(stepWidth).toFloat()), localOptimumY1
-					- Math.round(solY.mul(stepWidth).toFloat()), 9,
+					+ solX.mul(stepWidth).toFloat()) - 3, localOptimumY1
+					- Math.round(solY.mul(stepWidth).toFloat()) - 3, 9,
 					9);
 			g2.drawString("Optimum (" + solX + ", "
 					+ solY + ")", offsetX

@@ -83,36 +83,29 @@ public final class Gauss {
 	}
 
 	if (c.getCoordX().isZero() && b.getCoordY().isZero()) {
-	    z.setCoordX(z.getCoordX().div(b.getCoordX()));
-	    z.setCoordY(z.getCoordY().div(c.getCoordY()));
-	    temp = z.getCoordX();
-	    z.setCoordX(z.getCoordY());
-	    z.setCoordY(temp);
+	    b.setCoordZ(b.getCoordZ().div(b.getCoordX()));
+	    c.setCoordZ(c.getCoordZ().div(c.getCoordY()));
 	} else if (c.getCoordY().isZero() && b.getCoordX().isZero()) {
-	    z.setCoordX(z.getCoordX().div(c.getCoordX()));
-	    z.setCoordY(z.getCoordY().div(b.getCoordY()));
+	    b.setCoordX(c.getCoordZ().div(c.getCoordX()));
+	    c.setCoordY(b.getCoordZ().div(b.getCoordY()));
 	} else if (c.getCoordX().isZero()) {
-	    z.setCoordX(z.getCoordX().div(b.getCoordX()));
-	    z.setCoordY((z.getCoordY().sub(b.getCoordY().mul(z.getCoordX())))
-		    .div(c.getCoordY()));
-	    temp = z.getCoordX();
-	    z.setCoordX(z.getCoordY());
-	    z.setCoordY(temp);
-	} else if (c.getCoordY().isZero()) {
-	    z.setCoordY(z.getCoordY().div(b.getCoordY()));
-	    z.setCoordX((z.getCoordX().sub(b.getCoordX().mul(z.getCoordY())))
-		    .div(c.getCoordX()));
-	} else if (b.getCoordX().isZero()) {
-	    z.setCoordX(z.getCoordX().div(c.getCoordX()));
-	    z.setCoordY((z.getCoordY().sub(c.getCoordY().mul(z.getCoordX())))
-		    .div(b.getCoordY()));
-	} else if (b.getCoordY().isZero()) {
-	    z.setCoordY(z.getCoordY().div(c.getCoordY()));
-	    z.setCoordX((z.getCoordX().sub(c.getCoordX().mul(z.getCoordY())))
+	    c.setCoordZ(c.getCoordZ().div(c.getCoordY()));
+	    b.setCoordZ((b.getCoordZ().sub(b.getCoordY().mul(c.getCoordZ())))
 		    .div(b.getCoordX()));
-	    temp = z.getCoordX();
-	    z.setCoordX(z.getCoordY());
-	    z.setCoordY(temp);
+	} else if (c.getCoordY().isZero()) {
+		temp = c.getCoordZ().div(c.getCoordX());
+	    c.setCoordZ((b.getCoordZ().sub(b.getCoordX().mul(temp)))
+		    .div(b.getCoordY()));
+	    b.setCoordZ(temp);
+	} else if (b.getCoordX().isZero()) {
+		temp = b.getCoordZ().div(b.getCoordY());
+	    b.setCoordZ((c.getCoordZ().sub(c.getCoordY().mul(temp)))
+		    .div(c.getCoordX()));
+	    c.setCoordZ(temp);
+	} else if (b.getCoordY().isZero()) {
+	    b.setCoordZ(b.getCoordZ().div(b.getCoordX()));
+	    c.setCoordZ((c.getCoordZ().sub(c.getCoordX().mul(b.getCoordZ())))
+		    .div(c.getCoordY()));
 	} else {
 	    factor = Fractional.ZERO.sub(b.getCoordY().div(c.getCoordY()));
 	    temp = b.getCoordX().add(factor.mul(c.getCoordX()));
@@ -125,6 +118,7 @@ public final class Gauss {
 		.mul(z.getCoordY())))).add(a.getCoordZ()));
 	z.setCoordX(b.getCoordZ());
 	z.setCoordY(c.getCoordZ());
+	System.out.println(z.toString());
 
 	return z;
     }
@@ -156,9 +150,64 @@ public final class Gauss {
     @Deprecated
     public Vector3Frac gaussElimination(Vector3Frac l1, Vector3Frac l2,
 	    Vector3Frac target) {
-	return gaussElimination2(Vector3Frac.ZERO, l1, l2, target);
+    	
+    	Vector3Frac a, b, c, z;
+    	Fractional temp, factor;
+
+    		a = Vector3FracFactory.getInstance().clone();
+    		b = l1.clone();
+    		c = l2.clone();
+    		z = target.clone();
+    	
+    	if (isZero(c.getCoordX()) && isZero(b.getCoordY())) {
+    	    z.setCoordX(z.getCoordX().div(b.getCoordX()));
+    	    z.setCoordY(z.getCoordY().div(c.getCoordY()));
+    	    temp = z.getCoordX();
+    	    z.setCoordX(z.getCoordY());
+    	    z.setCoordY(temp);
+    	} else if (isZero(c.getCoordY()) && isZero(b.getCoordX())) {
+    	    z.setCoordX(z.getCoordX().div(c.getCoordX()));
+    	    z.setCoordY(z.getCoordY().div(b.getCoordY()));
+    	} else if (isZero(c.getCoordX())) {
+    	    z.setCoordX(z.getCoordX().div(b.getCoordX()));
+    	    z.setCoordY((z.getCoordY().sub(b.getCoordY().mul(z.getCoordX())))
+    		    .div(c.getCoordY()));
+    	    temp = z.getCoordX();
+    	    z.setCoordX(z.getCoordY());
+    	    z.setCoordY(temp);
+    	} else if (isZero(c.getCoordY())) {
+    	    z.setCoordY(z.getCoordY().div(b.getCoordY()));
+    	    z.setCoordX((z.getCoordX().sub(b.getCoordX().mul(z.getCoordY())))
+    		    .div(c.getCoordX()));
+    	} else if (isZero(b.getCoordX())) {
+    	    z.setCoordX(z.getCoordX().div(c.getCoordX()));
+    	    z.setCoordY((z.getCoordY().sub(c.getCoordY().mul(z.getCoordX())))
+    		    .div(b.getCoordY()));
+    	} else if (isZero(b.getCoordY())) {
+    	    z.setCoordY(z.getCoordY().div(c.getCoordY()));
+    	    z.setCoordX((z.getCoordX().sub(c.getCoordX().mul(z.getCoordY())))
+    		    .div(b.getCoordX()));
+    	    temp = z.getCoordX();
+    	    z.setCoordX(z.getCoordY());
+    	    z.setCoordY(temp);
+    	} else {
+    	    factor = Fractional.ZERO.sub(b.getCoordY().div(c.getCoordY()));
+    	    temp = b.getCoordX().add(factor.mul(c.getCoordX()));
+    	    b.setCoordZ(b.getCoordZ().add(factor.mul(c.getCoordZ())).div(temp));
+    	    c.setCoordZ((c.getCoordZ().sub(b.getCoordZ().mul(c.getCoordX()))).div(c.getCoordY()));
+    	}
+
+    	z.setCoordZ(((b.getCoordZ().mul(z.getCoordX())).add((c.getCoordZ().mul(z
+    		.getCoordY())))).add(a.getCoordZ()));
+    	z.setCoordX(b.getCoordZ());
+    	z.setCoordY(c.getCoordZ());
+
+    	return z;
     }
 
+	private boolean isZero(Fractional frac) {
+		return frac.getNumerator() == 0;
+	}
     /**
      * Use static method.
      * 
