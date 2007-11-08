@@ -33,7 +33,6 @@
 package info.kriese.soPra.math;
 
 import info.kriese.soPra.math.impl.FractionalFactory;
-import info.kriese.soPra.math.impl.Vector3FracFactory;
 
 /**
  * Klasse zur Berechnung des Loesungsraumes

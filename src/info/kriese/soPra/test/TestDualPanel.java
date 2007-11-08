@@ -13,6 +13,7 @@ import info.kriese.soPra.lop.LOPEditor;
 import info.kriese.soPra.lop.impl.LOPFactory;
 import info.kriese.soPra.lop.LOPSolution;
 import info.kriese.soPra.math.Fractional;
+import info.kriese.soPra.math.Gauss;
 import info.kriese.soPra.math.LOPSolver;
 import info.kriese.soPra.math.Vector3Frac;
 
@@ -48,7 +49,7 @@ public class TestDualPanel extends JPanel {
 
     private static JPanel panel;
 
-    private static float scale, dash1[] = { 1.5f }, dash2[] = { 10.0f };
+    private static float scale, scaleFactor, dash1[] = { 1.5f }, dash2[] = { 10.0f };
 
     /**
      * 
@@ -57,9 +58,7 @@ public class TestDualPanel extends JPanel {
 
     private static LOPSolution solution;
 
-    private static Fractional solX, solY;
-
-    private static Vector3Frac target;
+    private static Vector3Frac target, vec1, vec2, tmp;
 
     private static List<Vector3Frac> vectors;
 
@@ -80,28 +79,9 @@ public class TestDualPanel extends JPanel {
 	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 	} catch (Exception e) {
 	}
-
-	LOP lop = LOPFactory.newLinearOptimizingProblem();
-	LOPEditor editor = LOPFactory.newLOPEditor(lop);
-	LOPSolver solver = new LOPSolver();
-	solver.setEditor(editor);
-	editor.open(IOUtils.getURL("problems/testDual.lop"));
-	ActionHandler.INSTANCE.setLOP(lop);
-	SoPraLOP.EDITOR = editor;
-	editor.update();
-
-	vectors = editor.getLOP().getVectors();
-	target = editor.getLOP().getTarget();
-	// operators = editor.getLOP().getOperators();
-	numVar = editor.getLOP().getVectors().size();
-	solution = editor.getLOP().getSolution();
-	if (solution.getSpecialCase() != LOPSolution.NO_SOLUTION) {
-	    solX = solution.getAreas().get(0).getL1Amount();
-	    solY = solution.getAreas().get(0).getL2Amount();
-	}
-
-	setScale();
-
+	
+	generateData();
+	
 	frame = new JFrame("SoPra LOP - Visualisierung des Dualen Problems");
 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -115,22 +95,70 @@ public class TestDualPanel extends JPanel {
 	frame.setVisible(true);
 
     }
+    
+    private static void generateData() {
+    	
+    	LOP lop = LOPFactory.newLinearOptimizingProblem();
+    	LOPEditor editor = LOPFactory.newLOPEditor(lop);
+    	LOPSolver solver = new LOPSolver();
+    	solver.setEditor(editor);
+    	editor.open(IOUtils.getURL("problems/unlimited_low.lop"));
+    	ActionHandler.INSTANCE.setLOP(lop);
+    	SoPraLOP.EDITOR = editor;
+    	editor.update();
+    	
+    	vectors = editor.getLOP().getVectors();
+    	target = editor.getLOP().getTarget();
+    	// operators = editor.getLOP().getOperators();
+    	numVar = editor.getLOP().getVectors().size();
+    	solution = editor.getLOP().getSolution();
+    	if (solution.getSpecialCase() != LOPSolution.NO_SOLUTION) {
+    		vec1 = solution.getAreas().get(0).getL1();
+    		vec2 = solution.getAreas().get(0).getL2();
+    	}
+    	
+    	Vector3Frac newVector1 = Vector3Frac.ZERO.clone();
+    	Vector3Frac newVector2 = Vector3Frac.ZERO.clone();
+    	Vector3Frac newVector3 = Vector3Frac.ZERO.clone();
+    	
+    	newVector1.setCoordX(vec1.getCoordX());
+    	newVector1.setCoordY(vec2.getCoordX());
+    	newVector1.setCoordZ(target.getCoordX());
+    	
+    	newVector2.setCoordX(vec1.getCoordY());
+    	newVector2.setCoordY(vec2.getCoordY());
+    	newVector2.setCoordZ(target.getCoordY());
+    	
+    	newVector3.setCoordX(vec1.getCoordZ());
+    	newVector3.setCoordY(vec2.getCoordZ());
+    	newVector3.setCoordZ(target.getCoordZ());
+
+    	tmp = Gauss.gaussElimination2(newVector1, newVector2, newVector3);
+    	System.out.println(tmp.toString());
+    	
+    	setScale();
+    }
 
     private static void setScale() {
-	float temp = 0;
+		float temp = 0;
 
-	for (int i = 0; i < numVar; i++) {
-	    float scaleTemp1 = vectors.get(i).getCoordZ().div(
-		    vectors.get(i).getCoordX()).toFloat();
-	    float scaleTemp2 = vectors.get(i).getCoordZ().div(
-		    vectors.get(i).getCoordY()).toFloat();
-	    if (scaleTemp1 > temp)
-		temp = scaleTemp1;
-	    if (scaleTemp2 > temp)
-		temp = scaleTemp2;
+		for (int i = 0; i < numVar; i++) {
+			float scaleTemp1 = vectors.get(i).getCoordZ().div(
+					vectors.get(i).getCoordX()).toFloat();
+			float scaleTemp2 = vectors.get(i).getCoordZ().div(
+					vectors.get(i).getCoordY()).toFloat();
+			if (scaleTemp1 > temp)
+				temp = scaleTemp1;
+			if (scaleTemp2 > temp)
+				temp = scaleTemp2;
+		}
+		if (temp > 1) {
+			scale = temp + 2;
+			scaleFactor = 1;
+		}
+		scale = (float) 1.2;
+		scaleFactor = (float) 0.1;
 	}
-	scale = temp + 2;
-    }
 
     /**
      * @param args
@@ -163,18 +191,18 @@ public class TestDualPanel extends JPanel {
 	// Hilfslinien und Koordinaten der X-Achse
 	g2.setStroke(dashed);
 	g2.setPaint(grey);
-	for (int step = offsetX; step <= d.width - 50; step += stepWidth) {
+	for (int step = offsetX; step <= d.width - 50; step += (stepWidth * scaleFactor)) {
 	    g2.drawLine(step, d.height - offsetY, step, offsetY);
 	    g2.setPaint(fg);
-	    g2.drawString((step - offsetX) / stepWidth + "", step - 3,
+	    g2.drawString((((float) (step - offsetX) / stepWidth)) + "", step - 3,
 		    d.height - 15);
 	}
 
 	// Hilfslinien und Koordinaten der Y-Achse
-	for (int step = d.height - offsetY; step >= 40; step -= stepWidth) {
+	for (int step = d.height - offsetY; step >= 40; step -= (stepWidth * scaleFactor)) {
 	    g2.drawLine(offsetX, step, d.width - 30, step);
 	    g2.setPaint(fg);
-	    g2.drawString((d.height - offsetY - step) / stepWidth + "", 13,
+	    g2.drawString((((float) (d.height - offsetY - step) / stepWidth))+ "", 13,
 		    step + 5);
 	}
 
@@ -182,7 +210,7 @@ public class TestDualPanel extends JPanel {
 	g2.setPaint(element);
 	g2.setStroke(stroke);
 	for (int i = 0; i < numVar; i++) {
-	    System.out.println(vectors.get(i).toString());
+	    // System.out.println(vectors.get(i).toString());
 
 	    int localCoordX1 = offsetX
 		    + (Math.round(vectors.get(i).getCoordZ().mul(stepWidth)
@@ -216,8 +244,10 @@ public class TestDualPanel extends JPanel {
 
 	// TODO: Richtungvektoren der Vektorengeraden (abhängig vom
 	// Relationszeichen)
+    if (tmp.getCoordX().toFloat() >= 0
+		    && tmp.getCoordY().toFloat() >= 0) {
 	if (solution.getSpecialCase() != LOPSolution.NO_SOLUTION) {
-	    System.out.println("Lösung: x1 = " + solX + ", x2 = " + solY);
+	    // System.out.println("Lösung: x1 = " + solX + ", x2 = " + solY);
 
 	    // Zeichnen des Strahls, der durch das Optimum geht
 	    g2.setPaint(optimum);
@@ -246,13 +276,15 @@ public class TestDualPanel extends JPanel {
 		g2.drawString("Gerade der Zielfunktion", offsetX + 5,
 			localOptimumY2 - 5);
 	    }
+	    
 	    g2.fillOval(
-		    Math.round(offsetX + solX.mul(stepWidth).toFloat()) - 3,
-		    localOptimumY1 - Math.round(solY.mul(stepWidth).toFloat())
+		    Math.round(offsetX + tmp.getCoordX().mul(stepWidth).toFloat()) - 3,
+		    localOptimumY1 - Math.round(tmp.getCoordY().mul(stepWidth).toFloat())
 			    - 3, 9, 9);
-	    g2.drawString("Optimum (" + solX + ", " + solY + ")", offsetX
-		    + solX.mul(stepWidth).toFloat() + 5, localOptimumY1
-		    - Math.round(solY.mul(stepWidth).toFloat()) - 3);
+	    g2.drawString("Optimum (" + tmp.getCoordX() + ", " + tmp.getCoordY() + ")", offsetX
+		    + tmp.getCoordX().mul(stepWidth).toFloat() + 5, localOptimumY1
+		    - Math.round(tmp.getCoordY().mul(stepWidth).toFloat()) - 3);
+	    }
 
 	    // TODO: Richtungvektoren der Lösungsgeraden (abhängig vom
 	    // Relationszeichen)
