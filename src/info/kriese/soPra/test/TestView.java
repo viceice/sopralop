@@ -65,7 +65,7 @@ public final class TestView {
 	engine.addConnection(view);
 	engine.setLOP(lop);
 
-	editor.open(IOUtils.getURL("problems/unlimited_high2.lop"));
+	editor.open(IOUtils.getURL("problems/line_solution.lop"));
 
 	System.err.flush();
 	System.out.println("Problem: ");

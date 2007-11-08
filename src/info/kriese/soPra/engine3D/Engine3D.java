@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 08.11.2007 - Version 0.5.1
+ * - LOP wird an Kegel weitergeben
  * 01.11.2007 - Version 0.5
  * - An neue Oberflächenstruktur angepasst
  * 30.10.2007 - Version 0.4.1
@@ -102,7 +104,7 @@ import com.sun.j3d.utils.universe.ViewingPlatform;
  * Stellt Methoden zur Berechnung der 3D-Szene bereit.
  * 
  * @author Michael Kriese
- * @version 0.5
+ * @version 0.5.1
  * @since 26.04.2007
  */
 public final class Engine3D {
@@ -221,6 +223,8 @@ public final class Engine3D {
 		Engine3D.this.showSolution(lop);
 	    }
 	});
+
+	this.cone.setLOP(lop);
 
     }
 

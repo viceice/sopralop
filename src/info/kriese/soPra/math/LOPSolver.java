@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 08.11.2007 - Version 0.5.2
+ * - solve() nochmals überarbeitet, sollte jetzt korrekt funktionieren
  * 07.11.2007 - Version 0.5.1
  * - An neues GaussVerfahren angepasst
  * 01.11.2007 - Version 0.5
@@ -92,7 +94,7 @@ import org.xml.sax.SAXParseException;
 
 /**
  * @author Michael Kriese
- * @version 0.5.1
+ * @version 0.5.2
  * @since 10.05.2007
  * 
  */
@@ -250,8 +252,6 @@ public final class LOPSolver {
 
 	for (Vertex vertex : this.hull.getVerticesList()) {
 	    sln = Gauss.eliminate(vertex, lop.getTarget());
-	    // TODO: remove that later
-	    System.err.println(vertex + " = " + sln);
 
 	    if (vertex.p1.equals(Vector3Frac.ZERO)) {
 		opt_vector.setCoordZ(sln.getCoordZ());
@@ -318,10 +318,7 @@ public final class LOPSolver {
 
 		opt_vector.setCoordZ(sln.getCoordZ());
 
-		if (sln.getCoordX().is(Fractional.GEQUAL_ZERO)
-			&& sln.getCoordY().is(Fractional.GEQUAL_ZERO)
-			&& sln.getCoordX().add(sln.getCoordY()).is(
-				Fractional.LEQUAL_ONE)) {
+		if (vertex.isPointInVertex(opt_vector)) {
 		    unlimited = true;
 		    value_unlimit = sln.getCoordZ();
 		}
@@ -352,8 +349,5 @@ public final class LOPSolver {
 
 	lop.problemSolved();
 	lop.showSolution();
-
-	// TODO: remove that later
-	IOUtils.print(lop, System.err);
     }
 }

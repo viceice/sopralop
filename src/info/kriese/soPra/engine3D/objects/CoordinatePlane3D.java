@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 08.11.2007 - Version 0.4.2
+ * - Methode createAxisName nach Tools3D verschoben
  * 02.10.2007 - Version 0.4.1
  * - Methode createTransform in Tools3D verschoben
  * - Einheiten an Achsen hinzugefügt
@@ -42,21 +44,14 @@ package info.kriese.soPra.engine3D.objects;
 
 import info.kriese.soPra.engine3D.Tools3D;
 
-import java.awt.Font;
-
 import javax.media.j3d.Appearance;
 import javax.media.j3d.BranchGroup;
-import javax.media.j3d.Font3D;
-import javax.media.j3d.FontExtrusion;
 import javax.media.j3d.Link;
 import javax.media.j3d.Material;
 import javax.media.j3d.Node;
-import javax.media.j3d.OrientedShape3D;
 import javax.media.j3d.SharedGroup;
-import javax.media.j3d.Text3D;
 import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransformGroup;
-import javax.vecmath.Point3f;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 
@@ -69,33 +64,9 @@ import com.sun.j3d.utils.geometry.Sphere;
  * 
  * @author Michael Kriese
  * @since 11.04.2007
- * @version 0.4.1
+ * @version 0.4.2
  */
 public final class CoordinatePlane3D extends TransformGroup {
-
-    private static TransformGroup createAxisName(String textString,
-	    Material material) {
-	Font3D f3d;
-	Text3D txt;
-	OrientedShape3D sh = new OrientedShape3D();
-	Appearance appearance = Tools3D.generateApperance();
-	appearance.setMaterial(material);
-
-	f3d = new Font3D(new Font("Arial", Font.PLAIN, 1), 0.1,
-		new FontExtrusion());
-
-	txt = new Text3D(f3d, textString);
-
-	sh.addGeometry(txt);
-	sh.setAppearance(appearance);
-	sh.setRotationPoint(new Point3f());
-	sh.setAlignmentMode(OrientedShape3D.ROTATE_ABOUT_POINT);
-
-	TransformGroup tg = new TransformGroup();
-	tg.addChild(sh);
-	tg.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-	return tg;
-    }
 
     private static TransformGroup createCone(Material material) {
 	Appearance apr = Tools3D.generateApperance(material);
@@ -145,7 +116,7 @@ public final class CoordinatePlane3D extends TransformGroup {
 	this.xCone = createCone(Tools3D.MATERIAL_RED);
 	addChild(this.xCone);
 
-	this.xName = createAxisName("x", Tools3D.MATERIAL_RED);
+	this.xName = Tools3D.createAxisName("x", Tools3D.MATERIAL_RED);
 	addChild(this.xName);
 
 	this.markX = new SharedGroup();
@@ -160,7 +131,7 @@ public final class CoordinatePlane3D extends TransformGroup {
 	this.yCone = createCone(Tools3D.MATERIAL_GREEN);
 	addChild(this.yCone);
 
-	this.yName = createAxisName("y", Tools3D.MATERIAL_GREEN);
+	this.yName = Tools3D.createAxisName("y", Tools3D.MATERIAL_GREEN);
 	addChild(this.yName);
 
 	this.markY = new SharedGroup();
@@ -175,7 +146,7 @@ public final class CoordinatePlane3D extends TransformGroup {
 	this.zCone = createCone(Tools3D.MATERIAL_BLUE);
 	addChild(this.zCone);
 
-	this.zName = createAxisName("z", Tools3D.MATERIAL_BLUE);
+	this.zName = Tools3D.createAxisName("z", Tools3D.MATERIAL_BLUE);
 	addChild(this.zName);
 
 	this.markZ = new SharedGroup();
@@ -227,7 +198,7 @@ public final class CoordinatePlane3D extends TransformGroup {
 	    tg.addChild(new Link(this.markX));
 	    bg.addChild(tg);
 
-	    tg = createAxisName("" + x, Tools3D.MATERIAL_RED);
+	    tg = Tools3D.createAxisName("" + x, Tools3D.MATERIAL_RED);
 	    trans = new Transform3D();
 	    rot = new Vector3d();
 	    scale = new Vector3d(0.2, 0.2, 0.2);
@@ -263,7 +234,7 @@ public final class CoordinatePlane3D extends TransformGroup {
 	    tg.addChild(new Link(this.markY));
 	    bg.addChild(tg);
 
-	    tg = createAxisName("" + x, Tools3D.MATERIAL_GREEN);
+	    tg = Tools3D.createAxisName("" + x, Tools3D.MATERIAL_GREEN);
 	    trans = new Transform3D();
 	    rot = new Vector3d();
 	    scale = new Vector3d(0.2, 0.2, 0.2);
@@ -299,7 +270,7 @@ public final class CoordinatePlane3D extends TransformGroup {
 	    tg.addChild(new Link(this.markZ));
 	    bg.addChild(tg);
 
-	    tg = createAxisName("" + x, Tools3D.MATERIAL_BLUE);
+	    tg = Tools3D.createAxisName("" + x, Tools3D.MATERIAL_BLUE);
 	    trans = new Transform3D();
 	    rot = new Vector3d();
 	    scale = new Vector3d(0.2, 0.2, 0.2);

@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 08.11.2007 - Version 0.3.2
+ * - Wenn ein Beispiel geladen wird, wird die Nummer in der Titelzeile angezeigt
  * 04.11.2007 - Version 0.3.1
  * - BugFix: NullPointer abgefangen, wenn MainFrame nicht existiert
  * - BugFix: Fehler bei der Übergabe der zu speichernden Datei behoben. Das
@@ -57,7 +59,7 @@ import javax.swing.JOptionPane;
  * Klasse zum handeln aller Actions in SoPraLOP
  * 
  * @author Michael Kriese
- * @version 0.3.1
+ * @version 0.3.2
  * @since 24.10.2007
  * 
  */
@@ -168,7 +170,8 @@ public final class ActionHandler {
 	    this.file = null;
 	    SoPraLOP.EDITOR.open(IOUtils.getURL("problems/"
 		    + Lang.getString(cmd + ".File") + ".lop"));
-	    SoPraLOP.MAIN.setTitle(Lang.getString("Strings.Sample"));
+	    SoPraLOP.MAIN.setTitle(Lang.getString("Strings.Sample") + " "
+		    + cmd.substring(cmd.lastIndexOf('.') + 1));
 	} else if (cmd.equals("Input.Menu.AddVar"))
 	    SoPraLOP.EDITOR.addVariable();
 	else if (cmd.equals("Input.Menu.DelVar"))

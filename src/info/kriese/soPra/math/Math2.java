@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 08.11.2007 - Version 0.3.2
+ * - isPointInTriangle überarbeitet, sollte jetzt korrekt funktionieren
  * 07.11.2007 - Version 0.3.1
  * - isPointinTriangle benutzt jetzt Gauß zur Bestimmung
  * 30.10.2007 - Version 0.3
@@ -44,7 +46,7 @@ import javax.vecmath.Vector3f;
  * 
  * @author Michael Kriese
  * @since 13.04.2007
- * @version 0.3.1
+ * @version 0.3.2
  */
 public final class Math2 {
 
@@ -94,22 +96,27 @@ public final class Math2 {
     }
 
     public static boolean isPointInTriangle(Vector3Frac a, Vector3Frac b,
-	    Vector3Frac p) {
-	return isPointInTriangle(Vector3Frac.ZERO, a, b, p);
-    }
-
-    public static boolean isPointInTriangle(Vector3Frac a, Vector3Frac b,
 	    Vector3Frac c, Vector3Frac p) {
 
 	Vector3Frac sol = Gauss.gaussElimination2(a, b, c, p);
 
-	Fractional u = sol.getCoordX();
-	Fractional v = sol.getCoordY();
+	Fractional u = sol.getCoordX().mul(b.getCoordZ().sub(a.getCoordZ()));
+	Fractional v = sol.getCoordY().mul(c.getCoordZ().sub(a.getCoordZ()));
 
-	// Check if point is in triangle
-	boolean res = ((u.compareTo(Fractional.ZERO) >= 0)
-		&& (v.compareTo(Fractional.ZERO) >= 0) && (u.add(v).compareTo(
-		Fractional.ONE) <= 0));
+	boolean res = false;
+
+	if (u.add(v).add(a.getCoordZ()).equals(p.getCoordZ())) {
+	    u = sol.getCoordX();
+	    v = sol.getCoordY();
+	    if (a.equals(Vector3Frac.ZERO))
+		res = ((u.compareTo(Fractional.ZERO) > 0) && (v
+			.compareTo(Fractional.ZERO) > 0));
+	    else
+		res = ((u.compareTo(Fractional.ZERO) > 0)
+			&& (v.compareTo(Fractional.ZERO) > 0) && (u.add(v)
+			.compareTo(Fractional.ONE) <= 0));
+	} else
+	    System.err.print("! ");
 
 	System.err.println("[ " + a + ", " + b + ", " + c + " ] = " + p
 		+ "\t\t\t[ u=" + u + ", v=" + v + " | "

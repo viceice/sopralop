@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 08.11.2007 - Version 0.5
+ * - Kegelkanten haben jetzt ihre Beschriftung bekommen
  * 23.10.2007 - Version 0.4
  * - An neuen Quickhull-Algorithmus angepasst
  * 14.09.2007 - Version 0.3
@@ -35,6 +37,7 @@
 package info.kriese.soPra.engine3D.objects;
 
 import info.kriese.soPra.engine3D.Tools3D;
+import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.math.Math2;
 import info.kriese.soPra.math.Vector3Frac;
 import info.kriese.soPra.math.Vertex;
@@ -43,13 +46,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.media.j3d.Appearance;
+import javax.media.j3d.BranchGroup;
 import javax.media.j3d.LineArray;
 import javax.media.j3d.Material;
 import javax.media.j3d.Shape3D;
+import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransformGroup;
 import javax.media.j3d.TransparencyAttributes;
 import javax.vecmath.Color3f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 import com.sun.j3d.utils.geometry.GeometryInfo;
 
@@ -57,7 +63,7 @@ import com.sun.j3d.utils.geometry.GeometryInfo;
  * Erstellt aus den Vektoren des LOP's einen konvexen Kegel im Raum.
  * 
  * @author Michael Kriese
- * @version 0.4
+ * @version 0.5
  * @since 12.05.2007
  * 
  */
@@ -66,9 +72,22 @@ public class Cone3D extends TransformGroup {
     private Shape3D front, back, lines;
 
     private int[] indices;
+    private LOP lop;
+
+    private final TransformGroup names;
+
     private Point3f[] vertices;
+    private final List<Vector3Frac> verticesOrig;
 
     public Cone3D() {
+
+	this.names = new TransformGroup();
+	this.names.setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
+	this.names.setCapability(TransformGroup.ALLOW_CHILDREN_WRITE);
+
+	this.verticesOrig = new ArrayList<Vector3Frac>();
+
+	addChild(this.names);
 
 	initFront();
 	initBack();
@@ -76,12 +95,15 @@ public class Cone3D extends TransformGroup {
     }
 
     public void compute(List<Vertex> vertices, float size) {
+	this.verticesOrig.clear();
+
 	List<Integer> tidx = new ArrayList<Integer>();
 	List<Point3f> tvtx = new ArrayList<Point3f>();
 	Point3f p2, p3;
 	int idx;
 
 	tvtx.add(new Point3f());
+	this.verticesOrig.add(Vector3Frac.ZERO);
 
 	for (Vertex v : vertices) {
 	    if (!v.p1.equals(Vector3Frac.ZERO))
@@ -94,6 +116,7 @@ public class Cone3D extends TransformGroup {
 	    idx = tvtx.indexOf(p2);
 	    if (idx == -1) {
 		tvtx.add(p2);
+		this.verticesOrig.add(v.p2);
 		idx = tvtx.indexOf(p2);
 	    }
 	    tidx.add(idx);
@@ -101,6 +124,7 @@ public class Cone3D extends TransformGroup {
 	    idx = tvtx.indexOf(p3);
 	    if (idx == -1) {
 		tvtx.add(p3);
+		this.verticesOrig.add(v.p3);
 		idx = tvtx.indexOf(p3);
 	    }
 	    tidx.add(idx);
@@ -117,6 +141,11 @@ public class Cone3D extends TransformGroup {
 	computeFront();
 	computeBack();
 	computeLines();
+	computeNames();
+    }
+
+    public void setLOP(LOP lop) {
+	this.lop = lop;
     }
 
     private void computeBack() {
@@ -174,6 +203,31 @@ public class Cone3D extends TransformGroup {
 
 	lineArray.setCoordinates(0, coords);
 	this.lines.setGeometry(lineArray);
+    }
+
+    private void computeNames() {
+	this.names.removeAllChildren();
+	BranchGroup bg = new BranchGroup();
+	bg.setCapability(BranchGroup.ALLOW_DETACH);
+
+	for (int i = 0; i < this.vertices.length; i++) {
+	    Vector3Frac vec = this.verticesOrig.get(i);
+	    if (!vec.equals(Vector3Frac.ZERO)) {
+		TransformGroup name = Tools3D.createAxisName("L"
+			+ (this.lop.getVectors().indexOf(vec) + 1),
+			Tools3D.MATERIAL_GOLD);
+		Transform3D tr = new Transform3D();
+		Vector3f v = new Vector3f(this.vertices[i]);
+		v.scale(1.05f);
+		tr.setTranslation(v);
+		tr.setScale(0.3);
+		name.setTransform(tr);
+		bg.addChild(name);
+	    }
+	}
+
+	bg.compile();
+	this.names.addChild(bg);
     }
 
     private void initBack() {

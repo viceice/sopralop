@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 08.11.2007 - Verison 0.4.2
+ * - Methode createAxisName hinzugefügt
  * 02.10.2007 - Version 0.4.1
  * - Neue Material-Konstante
  * - Methode createTransform hinzugefügt (aus CoordinatePlane3D)
@@ -36,15 +38,22 @@
 package info.kriese.soPra.engine3D;
 
 import java.awt.Color;
+import java.awt.Font;
 
 import javax.media.j3d.Appearance;
 import javax.media.j3d.BoundingSphere;
+import javax.media.j3d.Font3D;
+import javax.media.j3d.FontExtrusion;
 import javax.media.j3d.LineAttributes;
 import javax.media.j3d.Material;
+import javax.media.j3d.OrientedShape3D;
+import javax.media.j3d.Text3D;
 import javax.media.j3d.Transform3D;
+import javax.media.j3d.TransformGroup;
 import javax.media.j3d.TransparencyAttributes;
 import javax.vecmath.Color3f;
 import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 
@@ -56,7 +65,7 @@ import com.sun.j3d.utils.geometry.Stripifier;
  * Einige Hilfskonstanten und Funktionen für Berechnungen im Raum.
  * 
  * @author Michael Kriese
- * @version 0.4.1
+ * @version 0.4.2
  * @since 12.05.2007
  * 
  */
@@ -98,6 +107,30 @@ public final class Tools3D {
     private static NormalGenerator NORMAL = new NormalGenerator();
 
     private static Stripifier STRIP = new Stripifier();
+
+    public static TransformGroup createAxisName(String textString,
+	    Material material) {
+	Font3D f3d;
+	Text3D txt;
+	OrientedShape3D sh = new OrientedShape3D();
+	Appearance appearance = generateApperance();
+	appearance.setMaterial(material);
+
+	f3d = new Font3D(new Font("Arial", Font.PLAIN, 1), 0.1,
+		new FontExtrusion());
+
+	txt = new Text3D(f3d, textString);
+
+	sh.addGeometry(txt);
+	sh.setAppearance(appearance);
+	sh.setRotationPoint(new Point3f());
+	sh.setAlignmentMode(OrientedShape3D.ROTATE_ABOUT_POINT);
+
+	TransformGroup tg = new TransformGroup();
+	tg.addChild(sh);
+	tg.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+	return tg;
+    }
 
     public static Transform3D createTransform(Vector3f pos, Vector3d rot,
 	    Vector3d scale) {

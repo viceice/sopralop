@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 08.11.2007 - Version 0.2
+ * - isPointInTriangle überarbeitet
  * 23.10.2007 - Version 0.1
  *  - Datei hinzugefuegt
  */
@@ -28,7 +30,7 @@ package info.kriese.soPra.math;
  * Stellt ein Dreieck im Raum dar.
  * 
  * @author Michael Kriese
- * @version 0.1
+ * @version 0.2
  * @since 23.10.2007
  * 
  */
@@ -61,11 +63,6 @@ public class Vertex {
 
     public boolean isPointInVertex(Vector3Frac pnt) {
 	return Math2.isPointInTriangle(this.p1, this.p2, this.p3, pnt);
-    }
-
-    public boolean isPointInVertex(Vector3Frac pnt, int scale) {
-	return Math2.isPointInTriangle(this.p1.scale(scale), this.p2
-		.scale(scale), this.p3.scale(scale), pnt);
     }
 
     @Override
