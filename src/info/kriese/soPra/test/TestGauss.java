@@ -70,7 +70,7 @@ public class TestGauss {
 	vert.p3 = Vector3FracFactory.getInstance(0, 1, 2);
 	vertices.add(vert);
 	pnts.add(Vector3FracFactory.getInstance(10, 10, 0));
-	sols.add(Vector3FracFactory.getInstance("5/4", "-11/4", "129/2"));
+	sols.add(Vector3FracFactory.getInstance("1/2", "-5/2", "71"));
 
 	vert = new Vertex();
 	vert.p1 = Vector3FracFactory.getInstance(0, 0, 0);
@@ -86,7 +86,7 @@ public class TestGauss {
 	vert.p3 = Vector3FracFactory.getInstance(2, 2, 2);
 	vertices.add(vert);
 	pnts.add(Vector3FracFactory.getInstance(-2, 0, 0));
-	sols.add(Vector3FracFactory.getInstance("-1/2", "1/2", "0"));
+	sols.add(Vector3FracFactory.getInstance("1/2", "-1/2", "0"));
 
 	vert = new Vertex();
 	vert.p1 = Vector3FracFactory.getInstance(0, 0, 0);
@@ -95,6 +95,22 @@ public class TestGauss {
 	vertices.add(vert);
 	pnts.add(Vector3FracFactory.getInstance(1, 1, 0));
 	sols.add(Vector3FracFactory.getInstance(-1, -1, 0));
+
+	vert = new Vertex();
+	vert.p1 = Vector3FracFactory.getInstance(0, 1, 2);
+	vert.p2 = Vector3FracFactory.getInstance(2, 1, 8);
+	vert.p3 = Vector3FracFactory.getInstance(3, 4, 24);
+	vertices.add(vert);
+	pnts.add(Vector3FracFactory.getInstance(10, 10, 0));
+	sols.add(Vector3FracFactory.getInstance("1/2", "3", "71"));
+
+	vert = new Vertex();
+	vert.p1 = Vector3FracFactory.getInstance(2, 1, 8);
+	vert.p2 = Vector3FracFactory.getInstance(0, 1, 2);
+	vert.p3 = Vector3FracFactory.getInstance(3, 4, 24);
+	vertices.add(vert);
+	pnts.add(Vector3FracFactory.getInstance(10, 10, 0));
+	sols.add(Vector3FracFactory.getInstance("-5/2", "3", "71"));
 
 	for (int i = 0; i < vertices.size(); i++) {
 	    vert = vertices.get(i);
