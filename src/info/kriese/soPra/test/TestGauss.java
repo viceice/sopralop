@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 08.11.2007 - Version 0.2.1
+ * - Neue Testgleichung
+ * - An Vereinfachte Vector3Frac Erstallung angepasst
  * 07.11.2007 - Version 0.2
  * - Tests erweitert, Lösungen werden mit handgerechneten Lösungen verglichen
  * 16.10.2007 - Version 0.1.1
@@ -28,19 +31,18 @@
  */
 package info.kriese.soPra.test;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import info.kriese.soPra.io.impl.SettingsFactory;
 import info.kriese.soPra.math.Gauss;
 import info.kriese.soPra.math.Vector3Frac;
 import info.kriese.soPra.math.Vertex;
-import info.kriese.soPra.math.impl.FractionalFactory;
 import info.kriese.soPra.math.impl.Vector3FracFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Peer Sterner
- * @version 0.2
+ * @version 0.2.1
  * @since 02.05.2007
  */
 public class TestGauss {
@@ -68,9 +70,7 @@ public class TestGauss {
 	vert.p3 = Vector3FracFactory.getInstance(0, 1, 2);
 	vertices.add(vert);
 	pnts.add(Vector3FracFactory.getInstance(10, 10, 0));
-	sols.add(Vector3FracFactory.getInstance(FractionalFactory
-		.getInstance("7/2"), FractionalFactory.getInstance("5/2"),
-		FractionalFactory.getInstance(57)));
+	sols.add(Vector3FracFactory.getInstance("5/4", "-11/4", "129/2"));
 
 	vert = new Vertex();
 	vert.p1 = Vector3FracFactory.getInstance(0, 0, 0);
@@ -86,9 +86,15 @@ public class TestGauss {
 	vert.p3 = Vector3FracFactory.getInstance(2, 2, 2);
 	vertices.add(vert);
 	pnts.add(Vector3FracFactory.getInstance(-2, 0, 0));
-	sols.add(Vector3FracFactory.getInstance(FractionalFactory
-		.getInstance("-1/2"), FractionalFactory.getInstance("1/2"),
-		FractionalFactory.getInstance(0)));
+	sols.add(Vector3FracFactory.getInstance("-1/2", "1/2", "0"));
+
+	vert = new Vertex();
+	vert.p1 = Vector3FracFactory.getInstance(0, 0, 0);
+	vert.p2 = Vector3FracFactory.getInstance(1, 0, 0);
+	vert.p3 = Vector3FracFactory.getInstance(0, 0, 1);
+	vertices.add(vert);
+	pnts.add(Vector3FracFactory.getInstance(1, 1, 0));
+	sols.add(Vector3FracFactory.getInstance(-1, -1, 0));
 
 	for (int i = 0; i < vertices.size(); i++) {
 	    vert = vertices.get(i);
