@@ -48,7 +48,7 @@ public class LOPTableCellRenderer implements TableCellRenderer {
 
     private final JLabel content;
     private final Border noBorder = BorderFactory.createEmptyBorder(1, 1, 1, 1);
-    private final Border nomal;
+    private final Border normal;
     private final Border selected;
 
     public LOPTableCellRenderer() {
@@ -61,7 +61,7 @@ public class LOPTableCellRenderer implements TableCellRenderer {
 
 	outer = BorderFactory.createEtchedBorder();
 	inner = BorderFactory.createEmptyBorder(2, 2, 2, 2);
-	this.nomal = BorderFactory.createCompoundBorder(outer, inner);
+	this.normal = BorderFactory.createCompoundBorder(outer, inner);
 
 	outer = BorderFactory.createLineBorder(new Color(0, 128, 0), 2);
 	this.selected = BorderFactory.createCompoundBorder(outer, inner);
@@ -86,7 +86,7 @@ public class LOPTableCellRenderer implements TableCellRenderer {
 	    if (hasFocus && table.isCellEditable(row, column))
 		this.content.setBorder(this.selected);
 	    else
-		this.content.setBorder(this.nomal);
+		this.content.setBorder(this.normal);
 	} else
 	    this.content.setBorder(this.noBorder);
 
