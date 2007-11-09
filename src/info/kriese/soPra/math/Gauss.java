@@ -34,6 +34,8 @@
  */
 package info.kriese.soPra.math;
 
+import com.sun.corba.se.spi.extension.ZeroPortPolicy;
+
 import info.kriese.soPra.math.impl.FractionalFactory;
 
 /**
@@ -127,6 +129,13 @@ public final class Gauss {
 	} else {
 	    factor = Fractional.ZERO.sub(c.getCoordX().div(c.getCoordY()));
 	    b.setCoordX(b.getCoordX().add(factor.mul(b.getCoordY())));
+	    if (b.getCoordX().equals(Fractional.ZERO)) {
+	    	z.setCoordX(FractionalFactory.getInstance(-1));
+	    	z.setCoordY(FractionalFactory.getInstance(-1));
+	    	z.setCoordZ(FractionalFactory.getInstance());
+	    	return z;
+	    }
+	    else 
 	    z.setCoordX(z.getCoordX().add(factor.mul(z.getCoordY())));
 	    z.setCoordX((z.getCoordX().div(b.getCoordX())));
 	    z.setCoordY((z.getCoordY().sub(b.getCoordY().mul(z.getCoordX())))

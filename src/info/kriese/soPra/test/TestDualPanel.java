@@ -99,7 +99,7 @@ public class TestDualPanel extends JPanel {
 		LOPEditor editor = LOPFactory.newLOPEditor(lop);
 		LOPSolver solver = new LOPSolver();
 		solver.setEditor(editor);
-		editor.open(IOUtils.getURL("problems/s1.lop"));
+		editor.open(IOUtils.getURL("problems/minEqualsMax.lop"));
 		ActionHandler.INSTANCE.setLOP(lop);
 		SoPraLOP.EDITOR = editor;
 		editor.update();
@@ -244,15 +244,17 @@ public class TestDualPanel extends JPanel {
 					g2.drawString("NB" + (i + 1), localCoordX1,
 							localCoordY1 - 5);
 				}
+			
+			// TODO: Richtungvektoren der Lösungsgeraden (abhängig vom
+			// Relationszeichen)
+			
 		}
 
-		// TODO: Richtungvektoren der Vektorengeraden (abhängig vom
-		// Relationszeichen)
+		// Zeichnen des Strahls, der durch das Optimum geht (nur, wenn es mindestens eine Lösung gibt)
 		if (solution.getSpecialCase() == LOPSolution.SIMPLE) {
 			if (tmp.getCoordX().toFloat() >= 0
 					&& tmp.getCoordY().toFloat() >= 0) {
 
-				// Zeichnen des Strahls, der durch das Optimum geht
 				g2.setPaint(optimum);
 				int localOptimumX1 = offsetX
 						+ (Math.round((solution.getVector().getCoordZ().mul(
@@ -286,7 +288,10 @@ public class TestDualPanel extends JPanel {
 					g2.drawString("Gerade der Zielfunktion", offsetX + 5,
 							localOptimumY2 - 5);
 				}
-
+				
+				// TODO: Richtungvektoren der Lösungsgeraden (abhängig vom
+				// Relationszeichen)
+				
 				g2.fillOval(Math.round((offsetX + tmp.getCoordX()
 						.mul(stepWidth).toFloat())
 						/ scaleFactor) - 3, localOptimumY1
@@ -300,8 +305,6 @@ public class TestDualPanel extends JPanel {
 										.toFloat()) - 3);
 			}
 
-			// TODO: Richtungvektoren der Lösungsgeraden (abhängig vom
-			// Relationszeichen)
 		}
 	}
 
