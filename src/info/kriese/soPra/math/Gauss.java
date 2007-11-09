@@ -21,6 +21,8 @@
  * 
  * 09.11.2007 - Version 0.4.1
  * - BugFix: Falsche Lösung für Fall c.y = 0 behoben
+ * - BugFix: Lineare Abhängigkeit wurde nicht erkannt, führte zu falschen
+ *    Lösungen
  * 07.11.2007 - Version 0.4
  * - Gauss statisch gemacht, Instanz ist unnötig
  * 16.10.2007 - Version 0.3.1
@@ -33,8 +35,6 @@
  * - Datei hinzugefuegt
  */
 package info.kriese.soPra.math;
-
-import com.sun.corba.se.spi.extension.ZeroPortPolicy;
 
 import info.kriese.soPra.math.impl.FractionalFactory;
 
@@ -74,7 +74,7 @@ public final class Gauss {
 	    Vector3Frac l1, Vector3Frac l2, Vector3Frac target) {
 
 	Vector3Frac a, b, c, z;
-	Fractional temp, factor;
+	Fractional temp;
 
 	if (!constant.equals(Vector3Frac.ZERO)) {
 	    a = constant.clone();
@@ -108,15 +108,10 @@ public final class Gauss {
 	    z.setCoordY((z.getCoordY().sub(b.getCoordY().mul(z.getCoordX())))
 		    .div(c.getCoordY()));
 	} else if (c.getCoordY().isZero()) {
-	    // Hier war ein Fehler, den ich korrigiert hab
 	    temp = z.getCoordX();
 	    z.setCoordX(z.getCoordY().div(b.getCoordY()));
 	    z.setCoordY(temp.sub(b.getCoordX().mul(z.getCoordX())).div(
 		    c.getCoordX()));
-	    // temp = z.getCoordX();
-	    // z.setCoordX(z.getCoordY().sub(b.getCoordY()));
-	    // z.setCoordY((temp.sub(b.getCoordX().mul(z.getCoordX()))).div(c
-	    // .getCoordX()));
 	} else if (b.getCoordX().isZero()) {
 	    temp = z.getCoordY();
 	    z.setCoordY(z.getCoordX().div(c.getCoordX()));
@@ -127,16 +122,15 @@ public final class Gauss {
 	    z.setCoordX((z.getCoordX().sub(c.getCoordX().mul(z.getCoordY())))
 		    .div(b.getCoordX()));
 	} else {
-	    factor = Fractional.ZERO.sub(c.getCoordX().div(c.getCoordY()));
-	    b.setCoordX(b.getCoordX().add(factor.mul(b.getCoordY())));
+	    temp = Fractional.ZERO.sub(c.getCoordX().div(c.getCoordY()));
+	    b.setCoordX(b.getCoordX().add(temp.mul(b.getCoordY())));
 	    if (b.getCoordX().equals(Fractional.ZERO)) {
-	    	z.setCoordX(FractionalFactory.getInstance(-1));
-	    	z.setCoordY(FractionalFactory.getInstance(-1));
-	    	z.setCoordZ(FractionalFactory.getInstance());
-	    	return z;
-	    }
-	    else 
-	    z.setCoordX(z.getCoordX().add(factor.mul(z.getCoordY())));
+		z.setCoordX(FractionalFactory.getInstance(-1));
+		z.setCoordY(FractionalFactory.getInstance(-1));
+		z.setCoordZ(FractionalFactory.getInstance());
+		return z;
+	    } else
+		z.setCoordX(z.getCoordX().add(temp.mul(z.getCoordY())));
 	    z.setCoordX((z.getCoordX().div(b.getCoordX())));
 	    z.setCoordY((z.getCoordY().sub(b.getCoordY().mul(z.getCoordX())))
 		    .div(c.getCoordY()));
