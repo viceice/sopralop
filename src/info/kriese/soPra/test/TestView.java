@@ -28,6 +28,7 @@ package info.kriese.soPra.test;
 
 import info.kriese.soPra.engine3D.Engine3D;
 import info.kriese.soPra.gui.Visual3DFrame;
+import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.io.IOUtils;
 import info.kriese.soPra.io.impl.SettingsFactory;
 import info.kriese.soPra.lop.LOP;
@@ -43,6 +44,8 @@ import info.kriese.soPra.math.LOPSolver;
  * 
  */
 public final class TestView {
+
+    private static final String SAMPLE = "S04";
 
     /**
      * @param args
@@ -65,7 +68,9 @@ public final class TestView {
 	engine.addConnection(view);
 	engine.setLOP(lop);
 
-	editor.open(IOUtils.getURL("problems/line_solution.lop"));
+	editor.open(IOUtils.getURL("problems/"
+		+ Lang.getString("Menu.File.Samples." + SAMPLE + ".File")
+		+ ".lop"));
 
 	System.err.flush();
 	System.out.println("Problem: ");

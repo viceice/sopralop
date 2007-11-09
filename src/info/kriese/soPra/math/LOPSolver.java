@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 09.11.2007 - Version 0.5.3
+ * - Aufruf von showSolution entfernt, da nicht mehr nötig
  * 08.11.2007 - Version 0.5.2
  * - solve() nochmals überarbeitet, sollte jetzt korrekt funktionieren
  * 07.11.2007 - Version 0.5.1
@@ -237,7 +239,6 @@ public final class LOPSolver {
     }
 
     private void solve(LOP lop) {
-
 	LOPSolution sol = lop.getSolution();
 
 	this.hull.build(lop.getVectors());
@@ -348,6 +349,5 @@ public final class LOPSolver {
 	sol.setValue(opt);
 
 	lop.problemSolved();
-	lop.showSolution();
     }
 }

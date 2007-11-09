@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 09.11.2007 - Version 0.7.1
+ * - ShowSolution-Button entfernt, da überflüssig
  * 01.11.2007 - Version 0.7
  * - 3D-Visualisierung integriert
  * - An LOPEditor angepasst
@@ -88,7 +90,7 @@ import javax.swing.border.Border;
 
 /**
  * @author Michael Kriese
- * @version 0.7
+ * @version 0.7.1
  * @since 12.05.2007
  * 
  */
@@ -232,7 +234,7 @@ public final class MainFrame extends JFrame implements Virtual3DFrame {
 	menu.add(MenuMaker.getMenuItem("Menu.View.Reset"));
 	menu.addSeparator();
 	menu.add(MenuMaker.getMenuItem("Menu.View.Show"));
-	menu.add(MenuMaker.getMenuItem("Menu.View.ShowSolution"));
+	// menu.add(MenuMaker.getMenuItem("Menu.View.ShowSolution"));
 	this.primale = MenuMaker.getMenuItem("Menu.View.ShowPrimalProblem");
 	this.duale = MenuMaker.getMenuItem("Menu.View.ShowDualProblem");
 

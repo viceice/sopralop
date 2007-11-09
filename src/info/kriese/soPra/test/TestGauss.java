@@ -112,6 +112,14 @@ public class TestGauss {
 	pnts.add(Vector3FracFactory.getInstance(10, 10, 0));
 	sols.add(Vector3FracFactory.getInstance("-5/2", "3", "71"));
 
+	vert = new Vertex();
+	vert.p1 = Vector3FracFactory.getInstance(-2, 2, 2);
+	vert.p2 = Vector3FracFactory.getInstance(2, -2, 2);
+	vert.p3 = Vector3FracFactory.getInstance(2, 2, 2);
+	vertices.add(vert);
+	pnts.add(Vector3FracFactory.getInstance(1, 1, 0));
+	sols.add(Vector3FracFactory.getInstance("1/4", "1/2", "2"));
+
 	for (int i = 0; i < vertices.size(); i++) {
 	    vert = vertices.get(i);
 	    pnt = pnts.get(i);

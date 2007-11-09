@@ -19,6 +19,10 @@
  * 
  * ChangeLog:
  * 
+ * 09.11.2007 - Version 0.5.2
+ * - Lösung nicht mehr unsichtbar
+ * - Änderung der Scene nur noch bei problemsolved, da nach problemChanged das
+ *    Problem sofort gelöst wird (Performancegewinn)
  * 08.11.2007 - Version 0.5.1
  * - LOP wird an Kegel weitergeben
  * 01.11.2007 - Version 0.5
@@ -103,8 +107,10 @@ import com.sun.j3d.utils.universe.ViewingPlatform;
 /**
  * Stellt Methoden zur Berechnung der 3D-Szene bereit.
  * 
+ * TODO: Beleuchtung verbessern
+ * 
  * @author Michael Kriese
- * @version 0.5.1
+ * @version 0.5.2
  * @since 26.04.2007
  */
 public final class Engine3D {
@@ -207,20 +213,10 @@ public final class Engine3D {
 
     public void setLOP(LOP lop) {
 	lop.addProblemListener(new LOPAdapter() {
-	    @Override
-	    public void problemChanged(LOP lop) {
-		Engine3D.this.intersection.setVisible(false);
-		Engine3D.this.computeProblem(lop);
-	    }
 
 	    @Override
 	    public void problemSolved(LOP lop) {
 		Engine3D.this.computeSolution(lop);
-	    }
-
-	    @Override
-	    public void showSolution(LOP lop) {
-		Engine3D.this.showSolution(lop);
 	    }
 	});
 
@@ -228,44 +224,18 @@ public final class Engine3D {
 
     }
 
-    public void showSolution(LOP lop) {
-	if (lop.isSolved())
-	    this.intersection.setVisible(true);
-    }
-
-    private void computeProblem(LOP lop) {
-
+    private void computeSolution(LOP lop) {
 	Vector3Frac vec = lop.getTarget();
+	int sCase = lop.getSolution().getSpecialCase();
 
 	this.size = (vec.getCoordX().toFloat() > vec.getCoordY().toFloat() ? vec
 		.getCoordX().toFloat()
 		: vec.getCoordY().toFloat()) + 3.0f;
 
-	this.intersection.setVisible(false);
-
-	this.hull.build(lop.getVectors());
-
-	// fuege Koordinatensystem hinzu
-	this.coordsPlane.compute(this.size);
-
-	// fuege Kegel hinzu
-	this.cone.compute(this.hull.getVerticesList(), this.size);
-
-	// fuege ZielVektor hinzu
-	this.targetLine.compute(lop.getTarget().toVector3f(), this.size);
-
-	resetScene();
-    }
-
-    private void computeSolution(LOP lop) {
-	int sCase = lop.getSolution().getSpecialCase();
-
 	if (sCase == LOPSolution.SIMPLE
 		|| sCase == LOPSolution.MORE_THAN_ONE_SOLUTION)
 	    this.size = (this.size > lop.getSolution().getValue() + 3.0f ? this.size
 		    : (float) lop.getSolution().getValue()) + 3.0f;
-
-	this.intersection.setVisible(false);
 
 	this.hull.build(lop.getVectors());
 

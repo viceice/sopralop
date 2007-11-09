@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 08.11.2007 - Version 0.3.3.2
+ * - BugFix: NullPointer in print behoben (falls lop nicht gelöst)
  * 04.11.2007 - Version 0.3.3.1
  * - BugFix: Doppelte Anführungszeichen bei den Operatoren entfernt.
  * 09.10.2007 - Version 0.3.3
@@ -69,7 +71,7 @@ import org.xml.sax.SAXException;
 /**
  * 
  * @author Michael Kriese
- * @version 0.3.3.1
+ * @version 0.3.3.2
  * @since 29.07.2007
  * 
  */
@@ -292,6 +294,11 @@ public final class IOUtils {
 	out.println(y.toString());
 	out.println(z.toString());
 
+	if (!lop.isSolved()) {
+	    System.out.println("LOP is not solved.");
+	    return;
+	}
+
 	LOPSolution sol = lop.getSolution();
 
 	out.println();
@@ -304,12 +311,13 @@ public final class IOUtils {
 	    case LOPSolution.MORE_THAN_ONE_SOLUTION:
 		out.println(Lang.getString("Strings.MoreSolutions").replace(
 			"{0}", sol.countAreas() + ""));
+		out.println(sol.getAreas());
 		break;
 	    case LOPSolution.UNLIMITED:
 		out.println(Lang.getString("Strings.UnlimitedSol"));
 		break;
 	    case LOPSolution.SIMPLE:
-		out.println(Lang.getString("Strings.Simple"));
+		out.println(Lang.getString("Strings.SimpleSolution"));
 		break;
 	    default:
 		out.println("Error! Wrong special case. ("

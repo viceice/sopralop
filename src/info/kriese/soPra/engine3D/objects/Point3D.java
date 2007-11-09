@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 09.11.2007 - Version 0.4
+ * - Lösung ist jetzt immer sichtbar
  * 12.10.2007 - Version 0.3.1
  * - BugFix: Fehlerhafte Rotation führte zur Exception, wenn Zielfunktion auf der Z-Achse liegt
  * 02.10.2007 - Version 0.3
@@ -47,7 +49,7 @@ import com.sun.j3d.utils.geometry.Sphere;
 /**
  * 
  * @author Michael Kriese
- * @version 0.3.1
+ * @version 0.4
  * @since 10.09.2007
  * 
  */
@@ -69,9 +71,8 @@ public class Point3D extends TransformGroup {
 	this.grpZ = new TransformGroup();
 
 	this.ap = Tools3D.generateApperance(Tools3D.MATERIAL_PINK);
-	this.ap.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_WRITE);
 	this.ap.setTransparencyAttributes(new TransparencyAttributes(
-		TransparencyAttributes.NICEST, 1.0f));
+		TransparencyAttributes.NONE, 0.0f));
 
 	int flags = Primitive.GENERATE_NORMALS;
 
@@ -127,15 +128,4 @@ public class Point3D extends TransformGroup {
 	trans = new Vector3f(pos.x / 2.0f, pos.y / 2.0f, pos.z);
 	this.grpZ.setTransform(Tools3D.createTransform(trans, rot, scale));
     }
-
-    public void setVisible(boolean visible) {
-	if (visible)
-	    this.ap.setTransparencyAttributes(new TransparencyAttributes(
-		    TransparencyAttributes.NONE, 0.0f));
-	else
-	    this.ap.setTransparencyAttributes(new TransparencyAttributes(
-		    TransparencyAttributes.NICEST, 1.0f));
-
-    }
-
 }

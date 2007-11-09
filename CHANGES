@@ -4,17 +4,18 @@ SoPraLOP
 -------------------------------------------------------------------------------
 Version 0.5 - 10.11.2007  (voraussichtlicher Termin)
 -------------------------------------------------------------------------------
-- Oberfläche runderneuert (Nutzerfreundlicher gemacht)
+- Oberfläche runderneuert (nutzerfreundlicher gemacht)
 - Menüs überarbeitet (Multisprachfähikeit, Icons)
 - Splash-Screen hinzugefügt
 - Logo mit höherer Auflösung hinzugefügt
 - Quickhull-Algorithmus überarbeitet, Vektoren, welche in einer Ebene
    liegen, werden nicht mehr gefiltert
- - Eingabefenster in Hauptfenster integriert
+ - Eingabe- und 3D-Fenster in Hauptfenster integriert
  - Multisprachfähigkeit verbessert
  - BugFix: 2 Lösungen für ein LOP wurden nur als eine erkannt
  - BugFix: Einige NullPointer Exceptions abgefangen
  - BugFix: Doppelte Quotes beim Speichern der Operatoren entfernt
+ - BugFix: Lösungverfahren optimiert / berichtigt
 -	TODO:
 	+ Hilfe einbauen
 	+ Nutzerinteraktion

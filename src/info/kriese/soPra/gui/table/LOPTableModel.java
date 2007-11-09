@@ -141,11 +141,7 @@ public final class LOPTableModel extends AbstractTableModel {
 		case 3:
 		    return this.target.getCoordY();
 		default:
-		    return this.sol; // TODO:
-		    // Lösung
-		    // ein-
-		    // /
-		    // ausgeben
+		    return this.sol;
 	    }
 
 	Vector3Frac vec = this.vectors.get(col - 1);
@@ -158,8 +154,7 @@ public final class LOPTableModel extends AbstractTableModel {
 	    case 3:
 		return vec.getCoordY();
 	    case 5:
-		return this.values.get(col - 1); // TODO: Lösungen für X1 ...
-		// Xn ein- / asugeben
+		return this.values.get(col - 1);
 	}
 
 	return "";

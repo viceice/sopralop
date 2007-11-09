@@ -116,11 +116,11 @@ public final class Math2 {
 			&& (v.compareTo(Fractional.ZERO) > 0) && (u.add(v)
 			.compareTo(Fractional.ONE) <= 0));
 	} else
-	    System.err.print("! ");
+	    System.err.print("? ");
 
 	System.err.println("[ " + a + ", " + b + ", " + c + " ] = " + p
 		+ "\t\t\t[ u=" + u + ", v=" + v + " | "
-		+ (res ? "true" : "false") + " |  " + sol + " ]");
+		+ (res ? "true" : "false") + " | " + sol + " ]");
 	return res;
     }
 
