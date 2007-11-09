@@ -45,7 +45,7 @@ import info.kriese.soPra.math.LOPSolver;
  */
 public final class TestView {
 
-    private static final String SAMPLE = "S04";
+    private static final String SAMPLE = "S06";
 
     /**
      * @param args

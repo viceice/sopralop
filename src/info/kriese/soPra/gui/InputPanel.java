@@ -19,6 +19,10 @@
  * 
  * ChangeLog:
  * 
+ * 09.11.2007 - Version 0.6.2
+ * - z-Spalte etwas breiter gemacht, dadurch sind keine Punkte mehr im
+ *    MinMaxDropDownFeld
+ * - Das duale Problem kann jetzt wieder angezeigt werden
  * 04.11.2007 - Version 0.6.1
  * - CellEditoren funktionieren jetzt auch wieder
  * 03.11.2007 - Version 0.6
@@ -57,11 +61,14 @@
 package info.kriese.soPra.gui;
 
 import info.kriese.soPra.gui.lang.Lang;
+import info.kriese.soPra.gui.table.DualLOPTableModel;
 import info.kriese.soPra.gui.table.FractionalTableCellEditor;
 import info.kriese.soPra.gui.table.LOPMinMax;
 import info.kriese.soPra.gui.table.LOPOperator;
 import info.kriese.soPra.gui.table.LOPTableCellRenderer;
 import info.kriese.soPra.gui.table.LOPTableModel;
+import info.kriese.soPra.lop.LOP;
+import info.kriese.soPra.lop.LOPAdapter;
 import info.kriese.soPra.lop.LOPEditor;
 import info.kriese.soPra.math.Fractional;
 
@@ -86,14 +93,15 @@ import javax.swing.table.TableColumn;
  * 
  * @author Peer Sterner
  * @since 13.05.2007
- * @version 0.6
+ * @version 0.6.2
  */
 public final class InputPanel extends JPanel {
 
     /** */
     private static final long serialVersionUID = 4944381133035213540L;
 
-    private final LOPTableModel model;
+    private final DualLOPTableModel dualModel;
+    private final LOPTableModel primalModel;
 
     private final JComboBox opEditor, maxEditor;
 
@@ -118,14 +126,19 @@ public final class InputPanel extends JPanel {
 	this.maxEditor.addItem("max");
 	this.maxEditor.addItem("min");
 
-	this.model = new LOPTableModel();
-	this.model.addTableModelListener(new TableModelListener() {
-
+	this.primalModel = new LOPTableModel();
+	this.primalModel.addTableModelListener(new TableModelListener() {
 	    public void tableChanged(TableModelEvent e) {
 		setSaveBtn();
 		initColumnSizes();
 	    }
+	});
 
+	this.dualModel = new DualLOPTableModel();
+	this.dualModel.addTableModelListener(new TableModelListener() {
+	    public void tableChanged(TableModelEvent e) {
+		initColumnSizes();
+	    }
 	});
 
 	this.table = new JTable() {
@@ -160,8 +173,6 @@ public final class InputPanel extends JPanel {
 
 	this.table.getTableHeader().setReorderingAllowed(false);
 
-	this.model.setTable(this.table);
-
 	JScrollPane scrollPane = new JScrollPane(this.table);
 
 	generateEditToolbar();
@@ -170,7 +181,20 @@ public final class InputPanel extends JPanel {
     }
 
     public void setEditor(LOPEditor editor) {
-	this.model.setEditor(editor);
+	this.primalModel.setEditor(editor);
+	this.dualModel.setEditor(editor);
+	editor.getLOP().addProblemListener(new LOPAdapter() {
+
+	    @Override
+	    public void showDualProblem(LOP lop) {
+		InputPanel.this.dualModel.setTable(InputPanel.this.table);
+	    }
+
+	    @Override
+	    public void showPrimalProblem(LOP lop) {
+		InputPanel.this.primalModel.setTable(InputPanel.this.table);
+	    }
+	});
     }
 
     /**
@@ -199,6 +223,9 @@ public final class InputPanel extends JPanel {
     private void initColumnSizes() {
 	TableColumn column = null;
 
+	if (this.table.getColumnCount() == 0)
+	    return;
+
 	column = this.table.getColumnModel().getColumn(0);
 	column.setPreferredWidth(40);
 
@@ -212,11 +239,11 @@ public final class InputPanel extends JPanel {
 	column.setPreferredWidth(60);
 	column = this.table.getColumnModel().getColumn(
 		this.table.getColumnCount() - 1);
-	column.setPreferredWidth(40);
+	column.setPreferredWidth(50);
     }
 
     private void setSaveBtn() {
-	if (this.model.isEdited())
+	if (this.primalModel.isEdited())
 	    this.take.setEnabled(true);
 	else
 	    this.take.setEnabled(false);

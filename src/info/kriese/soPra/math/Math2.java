@@ -112,15 +112,16 @@ public final class Math2 {
 		res = ((u.compareTo(Fractional.ZERO) > 0) && (v
 			.compareTo(Fractional.ZERO) > 0));
 	    else
-		res = ((u.compareTo(Fractional.ZERO) > 0)
-			&& (v.compareTo(Fractional.ZERO) > 0) && (u.add(v)
+		res = ((u.compareTo(Fractional.ZERO) >= 0)
+			&& (v.compareTo(Fractional.ZERO) >= 0) && (u.add(v)
 			.compareTo(Fractional.ONE) <= 0));
-	} else
-	    System.err.print("? ");
-
-	System.err.println("[ " + a + ", " + b + ", " + c + " ] = " + p
-		+ "\t\t\t[ u=" + u + ", v=" + v + " | "
-		+ (res ? "true" : "false") + " | " + sol + " ]");
+	}
+	// else
+	// System.err.print("? ");
+	//
+	// System.err.println("[ " + a + ", " + b + ", " + c + " ] = " + p
+	// + "\t\t\t[ u=" + u + ", v=" + v + " | "
+	// + (res ? "true" : "false") + " | " + sol + " ]");
 	return res;
     }
 

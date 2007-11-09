@@ -19,8 +19,12 @@
  * 
  * ChangeLog:
  * 
+ * 09.11.2007 - Version 0.2.3
+ * - Nachdem ein Problem gelöst wird, wird automatisch wieder das primale
+ *    Problem angezeigt
  * 07.10.2007 - Version 0.2.2
- * - OptimalVectors hinzugefügt (Rückgabe der Vektoren, die das Optimum aufspannen)
+ * - OptimalVectors hinzugefügt (Rückgabe der Vektoren, die das Optimum
+ *    aufspannen)
  * 03.10.2007 - Version 0.2.1
  * - showDualProblem hinzugefügt
  * - showPrimalProblem hinzugefügt
@@ -45,7 +49,7 @@ import java.util.List;
 /**
  * 
  * @author Michael Kriese
- * @version 0.2.1
+ * @version 0.2.3
  * @since 23.08.2007
  * 
  */
@@ -119,6 +123,7 @@ final class LOPImpl implements LOP {
     public void problemSolved() {
 	for (LOPListener listener : this.listeners)
 	    listener.problemSolved(this);
+	showPrimalProblem();
     }
 
     public void removeProblemListener(LOPListener listener) {

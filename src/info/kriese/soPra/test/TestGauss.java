@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 09.11.2007 - Version 0.2.2
+ * - Neue Testgleichung
  * 08.11.2007 - Version 0.2.1
  * - Neue Testgleichung
  * - An Vereinfachte Vector3Frac Erstallung angepasst
@@ -42,7 +44,7 @@ import java.util.List;
 
 /**
  * @author Peer Sterner
- * @version 0.2.1
+ * @version 0.2.2
  * @since 02.05.2007
  */
 public class TestGauss {
@@ -119,6 +121,14 @@ public class TestGauss {
 	vertices.add(vert);
 	pnts.add(Vector3FracFactory.getInstance(1, 1, 0));
 	sols.add(Vector3FracFactory.getInstance("1/4", "1/2", "2"));
+
+	vert = new Vertex();
+	vert.p1 = Vector3FracFactory.getInstance(2, -2, 2);
+	vert.p2 = Vector3FracFactory.getInstance(4, 4, 4);
+	vert.p3 = Vector3FracFactory.getInstance(4, 4, 8);
+	vertices.add(vert);
+	pnts.add(Vector3FracFactory.getInstance(2, 2, 0));
+	sols.add(Vector3FracFactory.getInstance(-1, -1, 0));
 
 	for (int i = 0; i < vertices.size(); i++) {
 	    vert = vertices.get(i);

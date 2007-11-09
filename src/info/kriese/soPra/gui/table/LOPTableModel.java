@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 09.11.2007 - Version 0.2.3
+ * - Nachdem das Model aktiviert wurde wird structureChanged aufgerufen,
+ *    damit sich die Tabelle neuzeichnet
  * 04.11.2007 - Version 0.2.2
  * - An neue CellEditoren angepasst
  * 03.10.2007 - Version 0.2.1
@@ -51,7 +54,7 @@ import javax.swing.table.AbstractTableModel;
  * Wandelt das LOP in ein von JTable lesbares Format um.
  * 
  * @author Peer Sterner
- * @version 0.2.2
+ * @version 0.2.3
  * @since 01.11.2007
  * 
  */
@@ -214,6 +217,7 @@ public final class LOPTableModel extends AbstractTableModel {
     public void setTable(JTable table) {
 	this.table = table;
 	table.setModel(this);
+	fireTableStructureChanged();
     }
 
     @Override
