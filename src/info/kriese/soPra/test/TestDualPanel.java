@@ -50,6 +50,8 @@ public class TestDualPanel extends JPanel {
 
 	private static float scale, scaleFactor, dash1[] = { 1.5f },
 			dash2[] = { 10.0f };
+	
+	private static boolean minMax;
 
 	private static final long serialVersionUID = 1769367299092520935L;
 
@@ -58,8 +60,6 @@ public class TestDualPanel extends JPanel {
 	private static Vector3Frac target, vec1, vec2, tmp;
 
 	private static List<Vector3Frac> vectors;
-
-	// private static String[] operators;
 
 	final static BasicStroke dashed = new BasicStroke(1.0f,
 			BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash1, 0.0f);
@@ -99,14 +99,14 @@ public class TestDualPanel extends JPanel {
 		LOPEditor editor = LOPFactory.newLOPEditor(lop);
 		LOPSolver solver = new LOPSolver();
 		solver.setEditor(editor);
-		editor.open(IOUtils.getURL("problems/minEqualsMax.lop"));
+		editor.open(IOUtils.getURL("problems/testDual.lop"));
 		ActionHandler.INSTANCE.setLOP(lop);
 		SoPraLOP.EDITOR = editor;
 		editor.update();
 
+		minMax = lop.isMaximum();
 		vectors = editor.getLOP().getVectors();
 		target = editor.getLOP().getTarget();
-		// operators = editor.getLOP().getOperators();
 		numVar = editor.getLOP().getVectors().size();
 		solution = editor.getLOP().getSolution();
 		if (solution.getSpecialCase() != LOPSolution.NO_SOLUTION) {
@@ -186,6 +186,12 @@ public class TestDualPanel extends JPanel {
 		g2.drawString("X", d.width - 34, d.height - 13);
 		g2.drawString("1", d.width - 27, d.height - 10);
 		g2.drawString(">", d.width - 35, d.height - 26);
+		g2.setPaint(element);
+		g2.drawLine(offsetX, 55, offsetX + 15, 55);
+		g2.drawString(">", offsetX + 10, 59);
+		g2.drawLine(d.width - 65, d.height - offsetY, d.width - 65, d.height - offsetY - 15);
+		g2.drawString("^", d.width - 68, d.height - offsetY - 8);
+		g2.setPaint(fg);
 
 		// Hilfslinien und Koordinaten der X-Achse
 		g2.setStroke(dashed);
@@ -207,6 +213,7 @@ public class TestDualPanel extends JPanel {
 					/ stepWidth)
 					/ (10.0 / scaleFactor) + "", 13, step + 5);
 		}
+		
 
 		// Zeichnen der der aus den Vektoren abgeleiteten Geraden
 		g2.setPaint(element);
@@ -226,8 +233,8 @@ public class TestDualPanel extends JPanel {
 									stepWidth).div(vectors.get(i).getCoordY())
 									.toFloat()) / scaleFactor));
 
-			if (localCoordX1 >= offsetX
-					&& localCoordY2 <= d.getHeight() - offsetY)
+			if (localCoordX1 > offsetX
+					&& localCoordY2 < d.getHeight() - offsetY) {
 				if (vectors.get(i).getCoordX().isZero()) {
 					g2.drawLine(offsetX, localCoordY2, localCoordX2,
 							localCoordY2);
@@ -244,10 +251,28 @@ public class TestDualPanel extends JPanel {
 					g2.drawString("NB" + (i + 1), localCoordX1,
 							localCoordY1 - 5);
 				}
-			
-			// TODO: Richtungvektoren der Lösungsgeraden (abhängig vom
-			// Relationszeichen)
-			
+				
+				double horizontal = localCoordX1 - offsetX;
+				double vertical = d.height - localCoordY2 - offsetY;
+				double lineLength = Math.sqrt((Math.pow(horizontal, 2) + Math.pow(vertical, 2)));
+				double angleA = (Math.PI / 2) - Math.cos((horizontal / lineLength));
+				double c = (15 / Math.sin(angleA));
+				double p = (225 / c);
+				double q = (c - p);
+				double h = Math.sqrt(p * q);
+				int dirVecX = (int) (horizontal / 2);
+				int dirVecY = (int) ((vertical * dirVecX) / horizontal);
+				
+				g2.setStroke(normal);
+				if (minMax) {
+				g2.drawLine(offsetX + dirVecX, d.height - offsetY - dirVecY, offsetX + dirVecX + (int) h,
+						d.height - offsetY - dirVecY - (int) p);
+				}
+				else
+					g2.drawLine(offsetX + dirVecX, d.height - offsetY - dirVecY, offsetX + dirVecX - (int) h,
+							d.height - offsetY - dirVecY + (int) p);
+				g2.setStroke(stroke);
+			}
 		}
 
 		// Zeichnen des Strahls, der durch das Optimum geht (nur, wenn es mindestens eine Lösung gibt)
@@ -289,8 +314,26 @@ public class TestDualPanel extends JPanel {
 							localOptimumY2 - 5);
 				}
 				
-				// TODO: Richtungvektoren der Lösungsgeraden (abhängig vom
-				// Relationszeichen)
+				double horizontal = localOptimumX1 - offsetX;
+				double vertical = d.height - localOptimumY2 - offsetY;
+				double lineLength = Math.sqrt((Math.pow(horizontal, 2) + Math.pow(vertical, 2)));
+				double angleA = (Math.PI / 2) - Math.cos((horizontal / lineLength));
+				double c = (15 / Math.sin(angleA));
+				double p = (225 / c);
+				double q = (c - p);
+				double h = Math.sqrt(p * q);
+				int dirVecX = (int) (horizontal / 2);
+				int dirVecY = (int) ((vertical * dirVecX) / horizontal);
+				
+				g2.setStroke(normal);
+				if (minMax) {
+				g2.drawLine(offsetX + dirVecX, d.height - offsetY - dirVecY, offsetX + dirVecX - (int) h,
+						d.height - offsetY - dirVecY + (int) p);
+				}
+				else
+				g2.drawLine(offsetX + dirVecX, d.height - offsetY - dirVecY, offsetX + dirVecX + (int) h,
+						d.height - offsetY - dirVecY - (int) p);
+				g2.setStroke(stroke);
 				
 				g2.fillOval(Math.round((offsetX + tmp.getCoordX()
 						.mul(stepWidth).toFloat())
