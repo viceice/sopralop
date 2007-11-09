@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 09.11.2007 - Version 0.2.1
+ * - Aufruf von update erst nach problemSolved
  * 06.11.2007 - Version 0.2
  * - Neue Interfacemethoden implementiert
  * 01.11.2007 - Version 0.1
@@ -38,7 +40,7 @@ import java.util.List;
 /**
  * 
  * @author Michael Kriese
- * @version 0.2
+ * @version 0.2.1
  * @since 01.11.2007
  * 
  */
@@ -52,7 +54,7 @@ public class LOPEditorImpl implements LOPEditor {
 	this.listeners = new LinkedList<LOPEditorListener>();
 	this.lop.addProblemListener(new LOPAdapter() {
 	    @Override
-	    public void problemChanged(LOP lop) {
+	    public void problemSolved(LOP lop) {
 		LOPEditorImpl.this.lop = lop;
 		LOPEditorImpl.this.update();
 	    }

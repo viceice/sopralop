@@ -28,6 +28,8 @@ import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPEditor;
 import info.kriese.soPra.lop.LOPEditorAdapter;
+import info.kriese.soPra.lop.LOPSolution;
+import info.kriese.soPra.math.Gauss;
 import info.kriese.soPra.math.Vector3Frac;
 
 import java.util.ArrayList;
@@ -51,6 +53,8 @@ public final class DualLOPTableModel extends AbstractTableModel {
     private final String[] columnNames;
     private boolean max;
 
+    private final Object sol[];
+
     private Vector3Frac target;
 
     private final List<Vector3Frac> vectors;
@@ -58,6 +62,7 @@ public final class DualLOPTableModel extends AbstractTableModel {
     public DualLOPTableModel() {
 	this.vectors = new ArrayList<Vector3Frac>();
 	this.target = Vector3Frac.ZERO;
+	this.sol = new Object[3];
 
 	this.columnNames = new String[5];
 	this.columnNames[0] = " ";
@@ -108,16 +113,14 @@ public final class DualLOPTableModel extends AbstractTableModel {
 		if (row == 0)
 		    return this.target.getCoordX();
 		else if (row == getRowCount() - 1)
-		    return "0";
-		// TODO: Lösung ausgeben
+		    return this.sol[0];
 		else
 		    return this.vectors.get(row - 2).getCoordX().toString();
 	    case 2:
 		if (row == 0)
 		    return this.target.getCoordY();
 		else if (row == getRowCount() - 1)
-		    return "0";
-		// TODO: Lösung ausgeben
+		    return this.sol[1];
 		else
 		    return this.vectors.get(row - 2).getCoordY().toString();
 	    case 3:
@@ -128,10 +131,9 @@ public final class DualLOPTableModel extends AbstractTableModel {
 		    return (this.max ? ">=" : "<=");
 	    case 4:
 		if (row == 0)
-		    return (this.max ? "max" : "min");
+		    return (this.max ? "min" : "max");
 		else if (row == getRowCount() - 1)
-		    return "0";
-		// TODO: Lösung ausgeben
+		    return this.sol[2];
 		else
 		    return this.vectors.get(row - 2).getCoordZ();
 
@@ -169,6 +171,42 @@ public final class DualLOPTableModel extends AbstractTableModel {
 	    this.vectors.add(vec.clone());
 	this.target = lop.getTarget().clone();
 	this.max = lop.isMaximum();
+
+	LOPSolution solution = lop.getSolution();
+	if (solution.getSpecialCase() == LOPSolution.NO_SOLUTION) {
+	    this.sol[0] = LOPInfinity.INFINITY;
+	    this.sol[1] = LOPInfinity.INFINITY;
+	    this.sol[2] = LOPInfinity.INFINITY;
+	} else if (solution.getSpecialCase() == LOPSolution.UNLIMITED) {
+	    this.sol[0] = LOPNotExsitent.NOT_EXISTENT;
+	    this.sol[1] = LOPNotExsitent.NOT_EXISTENT;
+	    this.sol[2] = LOPNotExsitent.NOT_EXISTENT;
+	} else {
+	    Vector3Frac vec1 = solution.getAreas().get(0).getL1();
+	    Vector3Frac vec2 = solution.getAreas().get(0).getL2();
+
+	    Vector3Frac Vector1 = Vector3Frac.ZERO.clone();
+	    Vector3Frac Vector2 = Vector3Frac.ZERO.clone();
+	    Vector3Frac Vector3 = Vector3Frac.ZERO.clone();
+
+	    Vector1.setCoordX(vec1.getCoordX());
+	    Vector1.setCoordY(vec2.getCoordX());
+	    Vector1.setCoordZ(this.target.getCoordX());
+
+	    Vector2.setCoordX(vec1.getCoordY());
+	    Vector2.setCoordY(vec2.getCoordY());
+	    Vector2.setCoordZ(this.target.getCoordY());
+
+	    Vector3.setCoordX(vec1.getCoordZ());
+	    Vector3.setCoordY(vec2.getCoordZ());
+	    Vector3.setCoordZ(this.target.getCoordZ());
+
+	    Vector3Frac tmp = Gauss
+		    .gaussElimination2(Vector1, Vector2, Vector3);
+	    this.sol[0] = tmp.getCoordX().toString();
+	    this.sol[1] = tmp.getCoordY().toString();
+	    this.sol[2] = tmp.getCoordZ().toString();
+	}
 
 	fireTableStructureChanged();
     }

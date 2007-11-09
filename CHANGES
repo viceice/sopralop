@@ -12,6 +12,7 @@ Version 0.5 - 10.11.2007  (voraussichtlicher Termin)
    liegen, werden nicht mehr gefiltert
  - Eingabe- und 3D-Fenster in Hauptfenster integriert
  - Multisprachfähigkeit verbessert
+ - Duales Problem wird angezeigt und gelöst
  - BugFix: 2 Lösungen für ein LOP wurden nur als eine erkannt
  - BugFix: Einige NullPointer Exceptions abgefangen
  - BugFix: Doppelte Quotes beim Speichern der Operatoren entfernt
@@ -19,7 +20,6 @@ Version 0.5 - 10.11.2007  (voraussichtlicher Termin)
 -	TODO:
 	+ Hilfe einbauen
 	+ Nutzerinteraktion
-	+ Lösung des Dualen Problems
 -------------------------------------------------------------------------------
 Version 0.4 - 18.10.2007
 -------------------------------------------------------------------------------

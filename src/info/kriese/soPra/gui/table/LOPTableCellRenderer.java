@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 09.11.2007 - Version 0.1.1
+ * - Neue Darstellung für Unendlich und nicht existent
  * 03.11.2007 - Version 0.1
  *  - Datei hinzugefuegt
  */
@@ -39,7 +41,7 @@ import javax.swing.table.TableCellRenderer;
  * Dient zur Visualisierung von Werte in einer Tabelle.
  * 
  * @author Michael Kriese
- * @version 0.1
+ * @version 0.1.1
  * @since 03.11.2007
  */
 public class LOPTableCellRenderer implements TableCellRenderer {
@@ -102,7 +104,11 @@ public class LOPTableCellRenderer implements TableCellRenderer {
 			.getString("Strings.Constraint"));
 	    else if (row == rows - 1)
 		this.content.setToolTipText(Lang.getString("Strings.Solution"));
-	} else
+	} else if (value instanceof LOPInfinity)
+	    this.content.setToolTipText(Lang.getString("Strings.Infinity"));
+	else if (value instanceof LOPNotExsitent)
+	    this.content.setToolTipText(Lang.getString("Strings.NotExistent"));
+	else
 	    this.content.setToolTipText(null);
 
 	// Wert
