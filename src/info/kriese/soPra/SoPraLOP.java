@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 26.11.2007 - Version 0.5.2
+ * - Panel zur Visualisierung des Dualen Problems hinzugefügt
  * 04.11.2007 - Version 0.5.1
  * - Unnötige Ausgabe entfernt
  * 31.10.2007 - Version 0.5
@@ -43,6 +45,7 @@ package info.kriese.soPra;
 import info.kriese.soPra.engine3D.Engine3D;
 import info.kriese.soPra.gui.AboutDialog;
 import info.kriese.soPra.gui.ActionHandler;
+import info.kriese.soPra.gui.DualLOPPanel;
 import info.kriese.soPra.gui.InputPanel;
 import info.kriese.soPra.gui.MainFrame;
 import info.kriese.soPra.gui.SplashDialog;
@@ -65,7 +68,7 @@ import javax.swing.filechooser.FileFilter;
 
 /**
  * @author Michael Kriese
- * @version 0.5.1
+ * @version 0.5.2
  * @since 12.05.2007
  * 
  */
@@ -73,14 +76,15 @@ public final class SoPraLOP {
 
     public static AboutDialog ABOUT;
 
+    public static DualLOPPanel DUAL;
+
     public static LOPEditor EDITOR;
 
     public static Engine3D ENGINE;
 
     public static JFileChooser FC;
-
-    // public static HTMLGenerator HTML;
     public static InputPanel INPUT;
+
     public static MainFrame MAIN;
 
     public static LOPSolver SOLVER;
@@ -144,6 +148,11 @@ public final class SoPraLOP {
 		ENGINE.addConnection(VISUAL);
 	    }
 	});
+
+	splash.setMessage(Lang.getString("Boot.DualPanel"));
+	DUAL = new DualLOPPanel();
+	DUAL.setLOP(lop);
+	MAIN.setDualPanel(DUAL);
 
 	splash.setMessage(Lang.getString("Boot.About"));
 	ABOUT = AboutDialog.getInstance(MAIN);

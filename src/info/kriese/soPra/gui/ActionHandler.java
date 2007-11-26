@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 26.11.2007 - Version 0.3.3
+ * - VisualFrame ausblenden beim Wechseln von Duale in Primale Ansicht
  * 08.11.2007 - Version 0.3.2
  * - Wenn ein Beispiel geladen wird, wird die Nummer in der Titelzeile angezeigt
  * 04.11.2007 - Version 0.3.1
@@ -59,7 +61,7 @@ import javax.swing.JOptionPane;
  * Klasse zum handeln aller Actions in SoPraLOP
  * 
  * @author Michael Kriese
- * @version 0.3.2
+ * @version 0.3.3
  * @since 24.10.2007
  * 
  */
@@ -161,9 +163,10 @@ public final class ActionHandler {
 	    else
 		JOptionPane.showMessageDialog(SoPraLOP.MAIN, Lang
 			.getString("Errors.OpenOrEdit"));
-	} else if (cmd.equals("Menu.View.ShowPrimalProblem"))
+	} else if (cmd.equals("Menu.View.ShowPrimalProblem")) {
 	    this.lop.showPrimalProblem();
-	else if (cmd.equals("Menu.Help.About")) {
+	    SoPraLOP.VISUAL.setVisible(false);
+	} else if (cmd.equals("Menu.Help.About")) {
 	    SoPraLOP.ABOUT.setLocationRelativeTo(SoPraLOP.MAIN);
 	    SoPraLOP.ABOUT.setVisible(true);
 	} else if (cmd.startsWith("Menu.File.Samples")) {

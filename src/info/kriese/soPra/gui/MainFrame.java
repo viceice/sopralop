@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 26.11.2007 - Version 0.7.2
+ * - Panel zur Visualisierung des Dualen Problems hinzugefügt
  * 09.11.2007 - Version 0.7.1
  * - ShowSolution-Button entfernt, da überflüssig
  * 01.11.2007 - Version 0.7
@@ -70,6 +72,7 @@ import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPAdapter;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -90,7 +93,7 @@ import javax.swing.border.Border;
 
 /**
  * @author Michael Kriese
- * @version 0.7.1
+ * @version 0.7.2
  * @since 12.05.2007
  * 
  */
@@ -114,9 +117,15 @@ public final class MainFrame extends JFrame implements Virtual3DFrame {
 
     private JMenu edit;
 
+    private Component pnDuale = null;
+
+    private Component pnPrimale = null;
+
     private JMenuItem primale, duale;
 
     private final Settings PROPS = SettingsFactory.getInstance();
+
+    private boolean showDuale = false;
 
     private final JLabel status;
 
@@ -157,6 +166,9 @@ public final class MainFrame extends JFrame implements Virtual3DFrame {
     }
 
     public void addCanvas(Canvas3D canvas) {
+	this.pnPrimale = canvas;
+	if (this.showDuale)
+	    return;
 	canvas.setMinimumSize(new Dimension(0, 0));
 	canvas.setPreferredSize(new Dimension(WIDTH / 2, 300));
 	this.body.setRightComponent(canvas);
@@ -179,18 +191,32 @@ public final class MainFrame extends JFrame implements Virtual3DFrame {
 	repaint();
     }
 
+    public void setDualPanel(DualLOPPanel dual) {
+	this.pnDuale = dual;
+    }
+
     public void setLOP(LOP lop) {
 	lop.addProblemListener(new LOPAdapter() {
 	    @Override
 	    public void showDualProblem(LOP lop) {
+		MainFrame.this.showDuale = true;
 		MainFrame.this.edit.remove(MainFrame.this.duale);
 		MainFrame.this.edit.add(MainFrame.this.primale);
+		MainFrame.this.body.setRightComponent(MainFrame.this.pnDuale);
+		MainFrame.this.body.setDividerLocation(WIDTH / 2);
+		validate();
+		repaint();
 	    }
 
 	    @Override
 	    public void showPrimalProblem(LOP lop) {
+		MainFrame.this.showDuale = false;
 		MainFrame.this.edit.remove(MainFrame.this.primale);
 		MainFrame.this.edit.add(MainFrame.this.duale);
+		MainFrame.this.body.setRightComponent(MainFrame.this.pnPrimale);
+		MainFrame.this.body.setDividerLocation(WIDTH / 2);
+		validate();
+		repaint();
 	    }
 	});
     }
