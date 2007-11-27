@@ -190,6 +190,7 @@ public final class DualLOPPanel extends JPanel {
 			    localCoordY1 - 5);
 		}
 
+		// Zeichnen der Senkrechten auf den Geraden (Visualisierung der Verschieberichtung)
 		double horizontal = localCoordX1 - this.offsetX;
 		double vertical = this.d.height - localCoordY2 - this.offsetY;
 		double lineLength = Math.sqrt((Math.pow(horizontal, 2) + Math
@@ -260,6 +261,7 @@ public final class DualLOPPanel extends JPanel {
 			    localOptimumY2 - 5);
 		}
 
+		// Zeichnen der Senkrechten auf der optimalen Geraden (Visualisierung der Verschieberichtung)
 		double horizontal = localOptimumX1 - this.offsetX;
 		double vertical = this.d.height - localOptimumY2 - this.offsetY;
 		double lineLength = Math.sqrt((Math.pow(horizontal, 2) + Math
