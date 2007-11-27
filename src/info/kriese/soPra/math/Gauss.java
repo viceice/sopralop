@@ -125,12 +125,12 @@ public final class Gauss {
 	    temp = Fractional.ZERO.sub(c.getCoordX().div(c.getCoordY()));
 	    b.setCoordX(b.getCoordX().add(temp.mul(b.getCoordY())));
 	    if (b.getCoordX().equals(Fractional.ZERO)) {
-		z.setCoordX(FractionalFactory.getInstance(-1));
-		z.setCoordY(FractionalFactory.getInstance(-1));
-		z.setCoordZ(FractionalFactory.getInstance());
-		return z;
-	    } else
-		z.setCoordX(z.getCoordX().add(temp.mul(z.getCoordY())));
+	    	z.setCoordX(FractionalFactory.getInstance(-1));
+	    	z.setCoordY(FractionalFactory.getInstance(-1));
+	    	z.setCoordZ(FractionalFactory.getInstance());
+	    	return z;
+	    } else 
+	    z.setCoordX(z.getCoordX().add(temp.mul(z.getCoordY())));
 	    z.setCoordX((z.getCoordX().div(b.getCoordX())));
 	    z.setCoordY((z.getCoordY().sub(b.getCoordY().mul(z.getCoordX())))
 		    .div(c.getCoordY()));

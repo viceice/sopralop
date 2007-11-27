@@ -18,7 +18,8 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * 
  * ChangeLog:
- * 
+ * 27.11.2007 - Version 0.2
+ * - Skalierungsfehler behoben
  * 10.11.2007 - Version 0.1
  *  - Aus TestDualPanel extrahiert
  */
@@ -131,12 +132,12 @@ public final class DualLOPPanel extends JPanel {
 	g2.setStroke(dashed);
 	g2.setPaint(grey);
 	for (int step = this.offsetX; step <= this.d.width - 50; step += this.stepWidth
-		* this.scaleFactor) {
+	* this.scaleFactor) {
 	    g2.drawLine(step, this.d.height - this.offsetY, step, this.offsetY);
 	    g2.setPaint(fg);
 	    g2.drawString(Math.round(((step - this.offsetX) * 10)
 		    / this.stepWidth)
-		    / (10.0 / this.scaleFactor) + "", step - 3,
+		    / 10.0 + "", step - 3,
 		    this.d.height - 15);
 	}
 
@@ -148,7 +149,7 @@ public final class DualLOPPanel extends JPanel {
 	    g2.drawString(Math
 		    .round(((this.d.height - this.offsetY - step) * 10)
 			    / this.stepWidth)
-		    / (10.0 / this.scaleFactor) + "", 13, step + 5);
+		    / 10.0 + "", 13, step + 5);
 	}
 
 	// Zeichnen der der aus den Vektoren abgeleiteten Geraden
