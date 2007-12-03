@@ -19,8 +19,10 @@
  * 
  * ChangeLog:
  * 
+ * 03.12.2007 - Verison 0.2
+ * - Methode check hinzugefügt
  * 01.11.2007 - Version 0.1
- *  - Datei hinzugefuegt
+ * - Datei hinzugefuegt
  */
 package info.kriese.soPra.lop;
 
@@ -29,13 +31,15 @@ import java.net.URL;
 /**
  * 
  * @author Michael Kriese
- * @version 0.1
+ * @version 0.2
  * @since 01.11.2007
  * 
  */
 public interface LOPEditorListener {
 
     void addVariable(LOP lop);
+
+    void check(LOP lop);
 
     void clear(LOP lop);
 

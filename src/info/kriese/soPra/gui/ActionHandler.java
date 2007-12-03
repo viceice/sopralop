@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 03.12.2007 - Version 0.4
+ * - An ErrorHandler angepasst
+ * - Abfrage für versehentliches verwerfen des LOP eingefügt
  * 26.11.2007 - Version 0.3.3
  * - VisualFrame ausblenden beim Wechseln von Duale in Primale Ansicht
  * 08.11.2007 - Version 0.3.2
@@ -61,7 +64,7 @@ import javax.swing.JOptionPane;
  * Klasse zum handeln aller Actions in SoPraLOP
  * 
  * @author Michael Kriese
- * @version 0.3.3
+ * @version 0.4
  * @since 24.10.2007
  * 
  */
@@ -141,32 +144,28 @@ public final class ActionHandler {
 
 	if (cmd.equals("Menu.File.Exit"))
 	    exit();
-	else if (cmd.equals("Menu.File.Open"))
-	    fileOpenClass();
-	else if (cmd.equals("Menu.File.Save"))
-	    fileSaveClass(false);
-	else if (cmd.equals("Menu.File.SaveAs"))
-	    fileSaveClass(true);
-	else if (cmd.equals("Menu.View.Reset"))
+	else if (cmd.equals("Menu.File.Open")) {
+	    if (askEdit())
+		fileOpenClass();
+	} else if (cmd.equals("Menu.File.Save")) {
+	    if (askEdit())
+		fileSaveClass(false);
+	} else if (cmd.equals("Menu.File.SaveAs")) {
+	    if (askEdit())
+		fileSaveClass(true);
+	} else if (cmd.equals("Menu.View.Reset"))
 	    SoPraLOP.ENGINE.resetScene();
 	else if (cmd.equals("Menu.View.Show"))
 	    SoPraLOP.VISUAL.setVisible(true);
-	else if (cmd.equals("Menu.View.ShowSolution")) {
-	    if (this.lop.isSolved())
-		this.lop.showSolution();
-	    else
-		JOptionPane.showMessageDialog(SoPraLOP.MAIN, Lang
-			.getString("Errors.OpenOrEdit"));
-	} else if (cmd.equals("Menu.View.ShowDualProblem")) {
-	    if (this.lop.isSolved())
+	else if (cmd.equals("Menu.View.ShowDualProblem")) {
+	    if (askEdit())
 		this.lop.showDualProblem();
-	    else
-		JOptionPane.showMessageDialog(SoPraLOP.MAIN, Lang
-			.getString("Errors.OpenOrEdit"));
 	} else if (cmd.equals("Menu.View.ShowPrimalProblem")) {
-	    this.lop.showPrimalProblem();
 	    SoPraLOP.VISUAL.setVisible(false);
-	} else if (cmd.equals("Menu.Help.About")) {
+	    this.lop.showPrimalProblem();
+	} else if (cmd.equals("Menu.Help.Help"))
+	    MessageHandler.showNotImplemented();
+	else if (cmd.equals("Menu.Help.About")) {
 	    SoPraLOP.ABOUT.setLocationRelativeTo(SoPraLOP.MAIN);
 	    SoPraLOP.ABOUT.setVisible(true);
 	} else if (cmd.startsWith("Menu.File.Samples")) {
@@ -181,10 +180,29 @@ public final class ActionHandler {
 	    SoPraLOP.EDITOR.removeVariable();
 	else if (cmd.equals("Input.Menu.Save"))
 	    SoPraLOP.EDITOR.take();
+	else if (cmd.equals("Input.Menu.Check"))
+	    SoPraLOP.EDITOR.check();
 	else if (cmd.equals("Input.Menu.Clear"))
 	    SoPraLOP.EDITOR.clear();
 	else if (cmd.equals("Input.Menu.Reset"))
 	    SoPraLOP.EDITOR.update();
+    }
+
+    private boolean askEdit() {
+	if (!SoPraLOP.EDITOR.isEdited())
+	    return true;
+
+	int res = MessageHandler.showConfirmDialog(Lang
+		.getString("Errors.IsEdited"), Lang
+		.getString("Errors.IsEdited.Title"),
+		JOptionPane.YES_NO_CANCEL_OPTION);
+
+	if (res == JOptionPane.NO_OPTION)
+	    SoPraLOP.EDITOR.take();
+	else if (res == JOptionPane.YES_OPTION)
+	    SoPraLOP.EDITOR.update();
+
+	return !SoPraLOP.EDITOR.isEdited();
     }
 
     /**
@@ -192,7 +210,7 @@ public final class ActionHandler {
      * 
      */
     private void fileOpenClass() {
-	if (SoPraLOP.FC.showOpenDialog(SoPraLOP.MAIN) == JFileChooser.APPROVE_OPTION) {
+	if (SoPraLOP.FC.showOpenDialog(MessageHandler.getParent()) == JFileChooser.APPROVE_OPTION) {
 	    this.file = SoPraLOP.FC.getSelectedFile().getAbsolutePath();
 
 	    try {
@@ -212,7 +230,7 @@ public final class ActionHandler {
      */
     private void fileSaveClass(boolean saveAs) {
 	if (saveAs || this.file == null)
-	    if (SoPraLOP.FC.showSaveDialog(SoPraLOP.MAIN) == JFileChooser.APPROVE_OPTION) {
+	    if (SoPraLOP.FC.showSaveDialog(MessageHandler.getParent()) == JFileChooser.APPROVE_OPTION) {
 		this.file = SoPraLOP.FC.getSelectedFile().getAbsolutePath();
 		if (!this.file.toLowerCase().endsWith(".lop"))
 		    this.file += ".lop";

@@ -19,6 +19,10 @@
  * 
  * ChangeLog:
  * 
+ * 03.12.2007 - Version 0.3
+ * - Lösungcheck implementiert
+ * - isEdited & setEdited an LOPEditor weitergeleitet
+ * - An ErrorHandler angepasst
  * 09.11.2007 - Version 0.2.3
  * - Nachdem das Model aktiviert wurde wird structureChanged aufgerufen,
  *    damit sich die Tabelle neuzeichnet
@@ -33,10 +37,12 @@
  */
 package info.kriese.soPra.gui.table;
 
+import info.kriese.soPra.gui.MessageHandler;
 import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPEditor;
 import info.kriese.soPra.lop.LOPEditorAdapter;
+import info.kriese.soPra.lop.LOPSolutionArea;
 import info.kriese.soPra.math.Fractional;
 import info.kriese.soPra.math.Vector3Frac;
 import info.kriese.soPra.math.impl.FractionalFactory;
@@ -46,7 +52,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
@@ -54,7 +59,7 @@ import javax.swing.table.AbstractTableModel;
  * Wandelt das LOP in ein von JTable lesbares Format um.
  * 
  * @author Peer Sterner
- * @version 0.2.3
+ * @version 0.3
  * @since 01.11.2007
  * 
  */
@@ -64,15 +69,13 @@ public final class LOPTableModel extends AbstractTableModel {
 
     private final Vector<String> columnNames;
 
-    private boolean edited = false;
+    private LOPEditor editor;
 
     private boolean max;
 
     private final String[] operators;
 
     private Fractional sol;
-
-    private JTable table;
 
     private Vector3Frac target;
 
@@ -85,6 +88,7 @@ public final class LOPTableModel extends AbstractTableModel {
 	this.operators = new String[2];
 	this.values = new ArrayList<Fractional>();
 	this.sol = FractionalFactory.getInstance();
+	this.editor = null;
 
 	setColumnCount();
     }
@@ -178,18 +182,28 @@ public final class LOPTableModel extends AbstractTableModel {
     }
 
     public boolean isEdited() {
-	return this.edited;
+	if (this.editor != null)
+	    return this.editor.isEdited();
+	else
+	    return false;
     }
 
     public void setEdited(boolean value) {
-	this.edited = value;
+	if (this.editor != null)
+	    this.editor.setEdited(value);
     }
 
     public void setEditor(LOPEditor editor) {
+	this.editor = editor;
 	editor.addListener(new LOPEditorAdapter() {
 	    @Override
 	    public void addVariable(LOP lop) {
 		LOPTableModel.this.addColumn();
+	    }
+
+	    @Override
+	    public void check(LOP lop) {
+		LOPTableModel.this.check(lop);
 	    }
 
 	    @Override
@@ -215,7 +229,6 @@ public final class LOPTableModel extends AbstractTableModel {
     }
 
     public void setTable(JTable table) {
-	this.table = table;
 	table.setModel(this);
 	fireTableStructureChanged();
     }
@@ -281,7 +294,8 @@ public final class LOPTableModel extends AbstractTableModel {
 		    break;
 	    }
 	}
-	setEdited(true);
+	if (row != 5)
+	    setEdited(true);
 	fireTableCellUpdated(row, col);
     }
 
@@ -304,7 +318,7 @@ public final class LOPTableModel extends AbstractTableModel {
     }
 
     /**
-     * erweitert die Tabelle um eine weitere Variable xi
+     * Erweitert die Tabelle um eine weitere Variable Xi.
      * 
      */
     private void addColumn() {
@@ -322,6 +336,51 @@ public final class LOPTableModel extends AbstractTableModel {
 	fireTableStructureChanged();
     }
 
+    /**
+     * Überprüft die eingegebene Lösung.
+     * 
+     * @param lop -
+     *                LOP, mit dem die Lösung überprüft werden soll.
+     */
+    private void check(LOP lop) {
+	int idx1, idx2, vals = 0;
+
+	for (Fractional frac : this.values)
+	    if (!frac.isZero())
+		vals++;
+
+	if (vals > 2) {
+	    MessageHandler.showError(Lang.getString("Strings.Solution"), Lang
+		    .getString("Strings.MoreThan2SolValues"));
+	    return;
+	}
+
+	if (!this.sol.equals(lop.getSolution().getVector().getCoordZ())) {
+	    MessageHandler.showError(Lang.getString("Strings.Solution"), Lang
+		    .getString("Strings.IncorrectSolution"));
+	    return;
+	}
+
+	for (LOPSolutionArea area : lop.getSolution().getAreas()) {
+	    idx1 = lop.getVectors().indexOf(area.getL1());
+	    idx2 = lop.getVectors().indexOf(area.getL2());
+
+	    if (area.getL1Amount().equals(this.values.get(idx1))
+		    && area.getL2Amount().equals(this.values.get(idx2))) {
+		MessageHandler.showInfo(Lang.getString("Strings.Solution"),
+			Lang.getString("Strings.CorrectSolution"));
+		return;
+	    }
+
+	}
+
+	MessageHandler.showError(Lang.getString("Strings.Solution"), Lang
+		.getString("Strings.IncorrectSolution"));
+    }
+
+    /**
+     * Löscht die Tabelle und stellt das Standard-Problem wieder her.
+     */
     private void clear() {
 	while (this.vectors.size() > LOP.MIN_VECTORS)
 	    removeColumn();
@@ -381,9 +440,8 @@ public final class LOPTableModel extends AbstractTableModel {
 	    if (!vec.equals(Vector3Frac.ZERO))
 		cnt++;
 	if (cnt < this.vectors.size()) {
-	    JOptionPane.showMessageDialog(this.table, Lang
-		    .getString("Errors.NoZeroVectors"), Lang
-		    .getString("Strings.Error"), JOptionPane.ERROR_MESSAGE);
+	    MessageHandler.showError(Lang.getString("Errors.NoZeroVectors"),
+		    Lang.getString("Strings.Error"));
 	    return false;
 	}
 

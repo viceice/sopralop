@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 03.12.2007 - Version 0.3
+ * - Methode check implementiert
  * 09.11.2007 - Version 0.2.1
  * - Aufruf von update erst nach problemSolved
  * 06.11.2007 - Version 0.2
@@ -40,13 +42,15 @@ import java.util.List;
 /**
  * 
  * @author Michael Kriese
- * @version 0.2.1
+ * @version 0.3
  * @since 01.11.2007
  * 
  */
 public class LOPEditorImpl implements LOPEditor {
 
+    private boolean edited = false;
     private final List<LOPEditorListener> listeners;
+
     private LOP lop;
 
     public LOPEditorImpl(LOP lop) {
@@ -70,6 +74,11 @@ public class LOPEditorImpl implements LOPEditor {
 	    l.addVariable(this.lop);
     }
 
+    public void check() {
+	for (LOPEditorListener l : this.listeners)
+	    l.check(this.lop);
+    }
+
     public void clear() {
 	for (LOPEditorListener l : this.listeners)
 	    l.clear(this.lop);
@@ -77,6 +86,10 @@ public class LOPEditorImpl implements LOPEditor {
 
     public LOP getLOP() {
 	return this.lop;
+    }
+
+    public boolean isEdited() {
+	return this.edited;
     }
 
     public void open(URL file) {
@@ -100,6 +113,10 @@ public class LOPEditorImpl implements LOPEditor {
     public void save(URL file) {
 	for (LOPEditorListener l : this.listeners)
 	    l.save(this.lop, file);
+    }
+
+    public void setEdited(boolean value) {
+	this.edited = value;
     }
 
     public void solve() {

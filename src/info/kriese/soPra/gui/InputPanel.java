@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 03.12.2007 - Version 0.6.3
+ * - Toolbar wird bei Anzeige des Dualen Problems deaktiviert
+ * - Reset-Button wird jetzt deaktiviert, wenn nichts zu resetten ist
  * 09.11.2007 - Version 0.6.2
  * - z-Spalte etwas breiter gemacht, dadurch sind keine Punkte mehr im
  *    MinMaxDropDownFeld
@@ -75,6 +78,8 @@ import info.kriese.soPra.math.Fractional;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
@@ -93,7 +98,7 @@ import javax.swing.table.TableColumn;
  * 
  * @author Peer Sterner
  * @since 13.05.2007
- * @version 0.6.2
+ * @version 0.6.3
  */
 public final class InputPanel extends JPanel {
 
@@ -101,13 +106,16 @@ public final class InputPanel extends JPanel {
     private static final long serialVersionUID = 4944381133035213540L;
 
     private final DualLOPTableModel dualModel;
-    private final LOPTableModel primalModel;
 
     private final JComboBox opEditor, maxEditor;
 
+    private final LOPTableModel primalModel;
+
     private final JTable table;
 
-    private Component take = null;
+    private Component take = null, check = null, reset = null;
+
+    private final List<Component> toolbarBtns;
 
     public InputPanel() {
 
@@ -175,6 +183,7 @@ public final class InputPanel extends JPanel {
 
 	JScrollPane scrollPane = new JScrollPane(this.table);
 
+	this.toolbarBtns = new ArrayList<Component>();
 	generateEditToolbar();
 
 	add(scrollPane, BorderLayout.CENTER);
@@ -188,11 +197,13 @@ public final class InputPanel extends JPanel {
 	    @Override
 	    public void showDualProblem(LOP lop) {
 		InputPanel.this.dualModel.setTable(InputPanel.this.table);
+		setToolbarEnabled(false);
 	    }
 
 	    @Override
 	    public void showPrimalProblem(LOP lop) {
 		InputPanel.this.primalModel.setTable(InputPanel.this.table);
+		setToolbarEnabled(true);
 	    }
 	});
     }
@@ -207,13 +218,19 @@ public final class InputPanel extends JPanel {
 
 	toolbar.setFloatable(false);
 
-	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.AddVar"));
-	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.DelVar"));
+	this.toolbarBtns.add(toolbar.add(MenuMaker
+		.getToolBarButton("Input.Menu.AddVar")));
+	this.toolbarBtns.add(toolbar.add(MenuMaker
+		.getToolBarButton("Input.Menu.DelVar")));
 	toolbar.addSeparator();
-	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.Reset"));
-	toolbar.add(MenuMaker.getToolBarButton("Input.Menu.Clear"));
+	this.reset = toolbar
+		.add(MenuMaker.getToolBarButton("Input.Menu.Reset"));
+	this.toolbarBtns.add(toolbar.add(MenuMaker
+		.getToolBarButton("Input.Menu.Clear")));
 	toolbar.addSeparator();
 	this.take = toolbar.add(MenuMaker.getToolBarButton("Input.Menu.Save"));
+	this.check = toolbar
+		.add(MenuMaker.getToolBarButton("Input.Menu.Check"));
     }
 
     /**
@@ -243,9 +260,27 @@ public final class InputPanel extends JPanel {
     }
 
     private void setSaveBtn() {
-	if (this.primalModel.isEdited())
+	if (this.primalModel.isEdited()) {
 	    this.take.setEnabled(true);
-	else
+	    this.check.setEnabled(false);
+	    this.reset.setEnabled(true);
+	} else {
 	    this.take.setEnabled(false);
+	    this.check.setEnabled(true);
+	    this.reset.setEnabled(false);
+	}
+    }
+
+    private void setToolbarEnabled(boolean value) {
+	for (Component c : this.toolbarBtns)
+	    c.setEnabled(value);
+
+	if (value)
+	    setSaveBtn();
+	else {
+	    this.take.setEnabled(false);
+	    this.check.setEnabled(false);
+	    this.reset.setEnabled(false);
+	}
     }
 }

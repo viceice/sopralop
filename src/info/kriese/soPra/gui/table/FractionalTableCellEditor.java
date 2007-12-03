@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 03.12.2007 - Version 0.1.1
+ * - Grünen Rahmen und gelben Hintergrund eingefügt
  * 04.11.2007 - Version 0.1
  *  - Datei hinzugefuegt
  */
@@ -29,15 +31,17 @@ import info.kriese.soPra.math.impl.FractionalFactory;
 import java.awt.Color;
 import java.awt.Component;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.border.Border;
 
 /**
  * Ein CellEditor zum bearbeiten von Fractionals in einer JTable.
  * 
  * @author Michael Kriese
- * @version 0.1
+ * @version 0.1.1
  * @since 04.11.2007
  * 
  */
@@ -52,8 +56,13 @@ public class FractionalTableCellEditor extends DefaultCellEditor {
 	super(new JTextField());
 	this.tf = (JTextField) getComponent();
 	this.tf.setHorizontalAlignment(JTextField.RIGHT);
-	this.bg = this.tf.getBackground();
+	this.bg = Color.YELLOW;
 	this.fg = this.tf.getForeground();
+
+	Border inner, outer;
+	inner = BorderFactory.createEmptyBorder(2, 2, 2, 2);
+	outer = BorderFactory.createLineBorder(new Color(0, 128, 0), 2);
+	this.tf.setBorder(BorderFactory.createCompoundBorder(outer, inner));
     }
 
     @Override

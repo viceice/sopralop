@@ -2,6 +2,5 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre1.5.0_11"/>
-	<classpathentry kind="lib" path="lib/core-renderer.jar" sourcepath="D:/users/kriese/Workspace/flyingsaucer-R7final-src/src/java"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

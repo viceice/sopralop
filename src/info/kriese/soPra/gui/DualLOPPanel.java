@@ -82,6 +82,7 @@ public final class DualLOPPanel extends JPanel {
     private Vector3Frac target;
 
     private Vector3Frac tmp;
+
     private List<Vector3Frac> vectors;
 
     public DualLOPPanel() {
@@ -135,12 +136,15 @@ public final class DualLOPPanel extends JPanel {
 	g2.setStroke(dashed);
 	g2.setPaint(grey);
 	for (int step = this.offsetX; step <= this.d.width - 50; step += this.stepWidth
-	* this.scaleFactor) {
+		* this.scaleFactor) {
 	    g2.drawLine(step, this.d.height - this.offsetY, step, this.offsetY);
 	    g2.setPaint(fg);
-	    g2.drawString(Math.round((((step - this.offsetX) / this.scaleFactor * 10)		// * 10)
-		    / this.stepWidth) * this.scaleFactor) / 10.0 + "", step - 3,
-		    this.d.height - 15);
+	    g2.drawString(Math
+		    .round((((step - this.offsetX) / this.scaleFactor * 10) // *
+												// 10)
+			    / this.stepWidth)
+			    * this.scaleFactor)
+		    / 10.0 + "", step - 3, this.d.height - 15);
 	}
 
 	// Hilfslinien und Koordinaten der Y-Achse
@@ -148,9 +152,11 @@ public final class DualLOPPanel extends JPanel {
 		* this.scaleFactor) {
 	    g2.drawLine(this.offsetX, step, this.d.width - 30, step);
 	    g2.setPaint(fg);
-	    g2.drawString(Math
-		    .round((((this.d.height - this.offsetY - step) / this.scaleFactor * 10)    // *10
-			    / this.stepWidth) * this.scaleFactor) / 10.0 + "", 13, step + 5);
+	    g2.drawString(Math.round((((this.d.height - this.offsetY - step)
+		    / this.scaleFactor * 10) // *10
+	    / this.stepWidth)
+		    * this.scaleFactor)
+		    / 10.0 + "", 13, step + 5);
 	}
 
 	// Zeichnen der der aus den Vektoren abgeleiteten Geraden
@@ -191,41 +197,46 @@ public final class DualLOPPanel extends JPanel {
 			    localCoordY1 - 5);
 		}
 
-		// Zeichnen der Senkrechten auf den Geraden (Visualisierung der Verschieberichtung)
+		// Zeichnen der Senkrechten auf den Geraden (Visualisierung der
+		// Verschieberichtung)
 		double horizontal, vertical;
 		int dirVecX, dirVecY;
 		g2.setStroke(this.normal);
-		if (this.vectors.get(i).getCoordX().isZero()) {
-			g2.drawLine((d.width - offsetX) / 2, localCoordY1, (d.width - offsetX) / 2, localCoordY1 + 15);
-		}
-		else if (this.vectors.get(i).getCoordY().isZero()) {
-			g2.drawLine(localCoordX1, (d.height - offsetX) / 2, localCoordX1 + 15, (d.height - offsetX) / 2);
-		}
+		if (this.vectors.get(i).getCoordX().isZero())
+		    g2.drawLine((this.d.width - this.offsetX) / 2,
+			    localCoordY1, (this.d.width - this.offsetX) / 2,
+			    localCoordY1 + 15);
+		else if (this.vectors.get(i).getCoordY().isZero())
+		    g2.drawLine(localCoordX1,
+			    (this.d.height - this.offsetX) / 2,
+			    localCoordX1 + 15,
+			    (this.d.height - this.offsetX) / 2);
 		else {
-		horizontal = localCoordX1 - this.offsetX;
-		vertical = this.d.height - localCoordY2 - this.offsetY;
-		double lineLength = Math.sqrt((Math.pow(horizontal, 2) + Math
-			.pow(vertical, 2)));
-		double angleA = (Math.PI / 2)
-			- Math.cos((horizontal / lineLength));
-		double c = (15 / Math.sin(angleA));
-		double p = (225 / c);
-		double q = (c - p);
-		double h = Math.sqrt(p * q);
-		dirVecX = (int) (horizontal / 2);
-		dirVecY = (int) ((vertical * dirVecX) / horizontal);
-	    
-		if (this.minMax)
-		    g2.drawLine(this.offsetX + dirVecX, this.d.height
-			    - this.offsetY - dirVecY, this.offsetX + dirVecX
-			    + (int) h, this.d.height - this.offsetY - dirVecY
-			    - (int) p);
-		else
-		    g2.drawLine(this.offsetX + dirVecX, this.d.height
-			    - this.offsetY - dirVecY, this.offsetX + dirVecX
-			    - (int) h, this.d.height - this.offsetY - dirVecY
-			    + (int) p);
-	    }
+		    horizontal = localCoordX1 - this.offsetX;
+		    vertical = this.d.height - localCoordY2 - this.offsetY;
+		    double lineLength = Math
+			    .sqrt((Math.pow(horizontal, 2) + Math.pow(vertical,
+				    2)));
+		    double angleA = (Math.PI / 2)
+			    - Math.cos((horizontal / lineLength));
+		    double c = (15 / Math.sin(angleA));
+		    double p = (225 / c);
+		    double q = (c - p);
+		    double h = Math.sqrt(p * q);
+		    dirVecX = (int) (horizontal / 2);
+		    dirVecY = (int) ((vertical * dirVecX) / horizontal);
+
+		    if (this.minMax)
+			g2.drawLine(this.offsetX + dirVecX, this.d.height
+				- this.offsetY - dirVecY, this.offsetX
+				+ dirVecX + (int) h, this.d.height
+				- this.offsetY - dirVecY - (int) p);
+		    else
+			g2.drawLine(this.offsetX + dirVecX, this.d.height
+				- this.offsetY - dirVecY, this.offsetX
+				+ dirVecX - (int) h, this.d.height
+				- this.offsetY - dirVecY + (int) p);
+		}
 		g2.setStroke(stroke);
 	    }
 	}
@@ -272,7 +283,8 @@ public final class DualLOPPanel extends JPanel {
 			    localOptimumY2 - 5);
 		}
 
-		// Zeichnen der Senkrechten auf der optimalen Geraden (Visualisierung der Verschieberichtung)
+		// Zeichnen der Senkrechten auf der optimalen Geraden
+		// (Visualisierung der Verschieberichtung)
 		double horizontal = localOptimumX1 - this.offsetX;
 		double vertical = this.d.height - localOptimumY2 - this.offsetY;
 		double lineLength = Math.sqrt((Math.pow(horizontal, 2) + Math

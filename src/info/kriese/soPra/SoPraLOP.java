@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 03.12.2007 - Version 0.5.3
+ * - An ErrorHandler angepasst
  * 26.11.2007 - Version 0.5.2
  * - Panel zur Visualisierung des Dualen Problems hinzugefügt
  * 04.11.2007 - Version 0.5.1
@@ -46,6 +48,7 @@ import info.kriese.soPra.engine3D.Engine3D;
 import info.kriese.soPra.gui.AboutDialog;
 import info.kriese.soPra.gui.ActionHandler;
 import info.kriese.soPra.gui.DualLOPPanel;
+import info.kriese.soPra.gui.MessageHandler;
 import info.kriese.soPra.gui.InputPanel;
 import info.kriese.soPra.gui.MainFrame;
 import info.kriese.soPra.gui.SplashDialog;
@@ -134,6 +137,7 @@ public final class SoPraLOP {
 		ActionHandler.exit();
 	    }
 	});
+	MessageHandler.setParent(MAIN);
 
 	splash.setMessage(Lang.getString("Boot.VisualFrame"));
 	VISUAL = new Visual3DFrame(MAIN);

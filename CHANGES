@@ -2,7 +2,11 @@ SoPraLOP
 (c)2007 Michael Kriese & Peer Sterner
 
 -------------------------------------------------------------------------------
-Version 0.5 - 10.11.2007  (voraussichtlicher Termin)
+Version 0.6 - 15.12.2007  (voraussichtlicher Termin)
+-------------------------------------------------------------------------------
+- Hilfe eingebaut
+-------------------------------------------------------------------------------
+Version 0.5 - 05.12.2007  (voraussichtlicher Termin)
 -------------------------------------------------------------------------------
 - Oberfläche runderneuert (nutzerfreundlicher gemacht)
 - Menüs überarbeitet (Multisprachfähikeit, Icons)
@@ -11,8 +15,10 @@ Version 0.5 - 10.11.2007  (voraussichtlicher Termin)
 - Quickhull-Algorithmus überarbeitet, Vektoren, welche in einer Ebene
    liegen, werden nicht mehr gefiltert
  - Eingabe- und 3D-Fenster in Hauptfenster integriert
- - Multisprachfähigkeit verbessert
+ - Mehrsprachfähigkeit verbessert
  - Duales Problem wird angezeigt und gelöst
+ - XHTML-Bibliothek entfernt, da überflüssig
+ - Eingegebene Lösung wird überprüft
  - BugFix: 2 Lösungen für ein LOP wurden nur als eine erkannt
  - BugFix: Einige NullPointer Exceptions abgefangen
  - BugFix: Doppelte Quotes beim Speichern der Operatoren entfernt

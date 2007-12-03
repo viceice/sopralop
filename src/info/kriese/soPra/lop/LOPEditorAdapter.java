@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 03.12.2007 - Version 0.2
+ * - Methode check implementiert
  * 01.11.2007 - Version 0.1
  *  - Datei hinzugefuegt
  */
@@ -29,13 +31,16 @@ import java.net.URL;
 /**
  * 
  * @author Michael Kriese
- * @version 0.1
+ * @version 0.2
  * @since 01.11.2007
  * 
  */
 public class LOPEditorAdapter implements LOPEditorListener {
 
     public void addVariable(LOP lop) {
+    }
+
+    public void check(LOP lop) {
     }
 
     public void clear(LOP lop) {
