@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 04.12.2007 - Version 0.6.4
+ * - An Lösungseditor angepasst, um unendlich und nicht exitent  als Lösung eingeben zu können.
  * 03.12.2007 - Version 0.6.3
  * - Toolbar wird bei Anzeige des Dualen Problems deaktiviert
  * - Reset-Button wird jetzt deaktiviert, wenn nichts zu resetten ist
@@ -68,8 +70,10 @@ import info.kriese.soPra.gui.table.DualLOPTableModel;
 import info.kriese.soPra.gui.table.FractionalTableCellEditor;
 import info.kriese.soPra.gui.table.LOPMinMax;
 import info.kriese.soPra.gui.table.LOPOperator;
+import info.kriese.soPra.gui.table.LOPSolutionWrapper;
 import info.kriese.soPra.gui.table.LOPTableCellRenderer;
 import info.kriese.soPra.gui.table.LOPTableModel;
+import info.kriese.soPra.gui.table.SolutionTableCellEditor;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPAdapter;
 import info.kriese.soPra.lop.LOPEditor;
@@ -78,6 +82,8 @@ import info.kriese.soPra.math.Fractional;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,7 +104,7 @@ import javax.swing.table.TableColumn;
  * 
  * @author Peer Sterner
  * @since 13.05.2007
- * @version 0.6.3
+ * @version 0.6.4
  */
 public final class InputPanel extends JPanel {
 
@@ -124,6 +130,18 @@ public final class InputPanel extends JPanel {
 	this.opEditor = new JComboBox();
 	this.opEditor.setFocusable(false);
 	this.opEditor.setToolTipText(Lang.getString("Input.Relation"));
+	this.opEditor.addMouseListener(new MouseAdapter() {
+	    @Override
+	    public void mouseEntered(MouseEvent e) {
+		MessageHandler.showHelp(InputPanel.this.opEditor
+			.getToolTipText());
+	    }
+
+	    @Override
+	    public void mouseExited(MouseEvent e) {
+		MessageHandler.showHelp();
+	    }
+	});
 	this.opEditor.addItem("=");
 	this.opEditor.addItem(">");
 	this.opEditor.addItem("<");
@@ -131,6 +149,18 @@ public final class InputPanel extends JPanel {
 	this.maxEditor = new JComboBox();
 	this.maxEditor.setFocusable(false);
 	this.maxEditor.setToolTipText(Lang.getString("Input.MinMax"));
+	this.maxEditor.addMouseListener(new MouseAdapter() {
+	    @Override
+	    public void mouseEntered(MouseEvent e) {
+		MessageHandler.showHelp(InputPanel.this.maxEditor
+			.getToolTipText());
+	    }
+
+	    @Override
+	    public void mouseExited(MouseEvent e) {
+		MessageHandler.showHelp();
+	    }
+	});
 	this.maxEditor.addItem("max");
 	this.maxEditor.addItem("min");
 
@@ -155,6 +185,9 @@ public final class InputPanel extends JPanel {
 
 	    @Override
 	    public TableCellEditor getCellEditor(int row, int column) {
+		if (row == getRowCount() - 1)
+		    return getDefaultEditor(LOPSolutionWrapper.class);
+
 		if (column > 0 && column < getColumnCount() - 2)
 		    return getDefaultEditor(Fractional.class);
 
@@ -178,6 +211,8 @@ public final class InputPanel extends JPanel {
 		this.maxEditor));
 	this.table.setDefaultEditor(Fractional.class,
 		new FractionalTableCellEditor());
+	this.table.setDefaultEditor(LOPSolutionWrapper.class,
+		new SolutionTableCellEditor());
 
 	this.table.getTableHeader().setReorderingAllowed(false);
 

@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 04.12.2007 - Version 0.1.1
+ * - An neues Hilfesystem angepasst
  * 03.12.2007 - Version 0.1
  *  - Datei hinzugefuegt
  */
@@ -34,16 +36,21 @@ import javax.swing.JOptionPane;
  * Klasse zum Anzeigen von Standard-Dialogen.
  * 
  * @author Michael Kriese
- * @version 0.1
+ * @version 0.1.1
  * @since 03.12.2007
  * 
  */
 public final class MessageHandler {
 
+    private static HelpProvider HELP = null;
     private static Component PARENT = null;
 
     public static Component getParent() {
 	return PARENT;
+    }
+
+    public static void setHelp(HelpProvider help) {
+	HELP = help;
     }
 
     public static void setParent(Component c) {
@@ -57,6 +64,15 @@ public final class MessageHandler {
     public static void showError(String title, String msg) {
 	JOptionPane.showMessageDialog(PARENT, msg, title,
 		JOptionPane.ERROR_MESSAGE);
+    }
+
+    public static void showHelp() {
+	showHelp(null);
+    }
+
+    public static void showHelp(String msg) {
+	if (HELP != null)
+	    HELP.showHelp(msg);
     }
 
     public static void showInfo(String title, String msg) {

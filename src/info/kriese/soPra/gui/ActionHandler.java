@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 04.12.2007 - Version 0.4.1
+ * - An neues Hilfesystem angepasst
  * 03.12.2007 - Version 0.4
  * - An ErrorHandler angepasst
  * - Abfrage für versehentliches verwerfen des LOP eingefügt
@@ -64,7 +66,7 @@ import javax.swing.JOptionPane;
  * Klasse zum handeln aller Actions in SoPraLOP
  * 
  * @author Michael Kriese
- * @version 0.4
+ * @version 0.4.1
  * @since 24.10.2007
  * 
  */
@@ -110,15 +112,13 @@ public final class ActionHandler {
 		    AbstractButton btn = (AbstractButton) c;
 		    String s = Lang.getString(btn.getActionCommand() + ".Help",
 			    null);
-		    if (s != null && SoPraLOP.MAIN != null)
-			SoPraLOP.MAIN.setStatus(s);
+		    MessageHandler.showHelp(s);
 		}
 	    }
 
 	    @Override
 	    public void mouseExited(MouseEvent e) {
-		if (SoPraLOP.MAIN != null)
-		    SoPraLOP.MAIN.setStatus("");
+		MessageHandler.showHelp();
 	    }
 	};
 

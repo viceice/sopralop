@@ -138,6 +138,7 @@ public final class SoPraLOP {
 	    }
 	});
 	MessageHandler.setParent(MAIN);
+	MessageHandler.setHelp(MAIN);
 
 	splash.setMessage(Lang.getString("Boot.VisualFrame"));
 	VISUAL = new Visual3DFrame(MAIN);

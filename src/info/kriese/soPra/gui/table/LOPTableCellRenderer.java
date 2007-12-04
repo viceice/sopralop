@@ -26,10 +26,13 @@
  */
 package info.kriese.soPra.gui.table;
 
+import info.kriese.soPra.gui.MessageHandler;
 import info.kriese.soPra.gui.lang.Lang;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -51,6 +54,7 @@ public class LOPTableCellRenderer implements TableCellRenderer {
     private final JLabel content;
     private final Border noBorder = BorderFactory.createEmptyBorder(1, 1, 1, 1);
     private final Border normal;
+
     private final Border selected;
 
     public LOPTableCellRenderer() {
@@ -58,6 +62,18 @@ public class LOPTableCellRenderer implements TableCellRenderer {
 	this.content.setOpaque(true);
 	this.content.setBorder(this.noBorder);
 	this.content.setBackground(Color.WHITE);
+	this.content.addMouseListener(new MouseAdapter() {
+	    @Override
+	    public void mouseEntered(MouseEvent e) {
+		MessageHandler.showHelp(LOPTableCellRenderer.this.content
+			.getToolTipText());
+	    }
+
+	    @Override
+	    public void mouseExited(MouseEvent e) {
+		MessageHandler.showHelp();
+	    }
+	});
 
 	Border inner, outer;
 

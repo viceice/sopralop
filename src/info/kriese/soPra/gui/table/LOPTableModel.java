@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 04.12.2007 - Version 0.3.1
+ * - An Lösungseditor angepasst, um unendlich und nicht exitent eingeben zu können.
+ * - Lösungcheck angepasst
  * 03.12.2007 - Version 0.3
  * - Lösungcheck implementiert
  * - isEdited & setEdited an LOPEditor weitergeleitet
@@ -59,7 +62,7 @@ import javax.swing.table.AbstractTableModel;
  * Wandelt das LOP in ein von JTable lesbares Format um.
  * 
  * @author Peer Sterner
- * @version 0.3
+ * @version 0.3.1
  * @since 01.11.2007
  * 
  */
@@ -75,19 +78,19 @@ public final class LOPTableModel extends AbstractTableModel {
 
     private final String[] operators;
 
-    private Fractional sol;
+    private LOPSolutionWrapper sol;
 
     private Vector3Frac target;
 
-    private final List<Fractional> values;
+    private final List<LOPSolutionWrapper> values;
     private final List<Vector3Frac> vectors;
 
     public LOPTableModel() {
 	this.columnNames = new Vector<String>();
 	this.vectors = new ArrayList<Vector3Frac>();
 	this.operators = new String[2];
-	this.values = new ArrayList<Fractional>();
-	this.sol = FractionalFactory.getInstance();
+	this.values = new ArrayList<LOPSolutionWrapper>();
+	this.sol = LOPSolutionWrapper.getInstance(null);
 	this.editor = null;
 
 	setColumnCount();
@@ -148,7 +151,7 @@ public final class LOPTableModel extends AbstractTableModel {
 		case 3:
 		    return this.target.getCoordY();
 		default:
-		    return this.sol;
+		    return this.sol.getValue();
 	    }
 
 	Vector3Frac vec = this.vectors.get(col - 1);
@@ -161,7 +164,7 @@ public final class LOPTableModel extends AbstractTableModel {
 	    case 3:
 		return vec.getCoordY();
 	    case 5:
-		return this.values.get(col - 1);
+		return this.values.get(col - 1).getValue();
 	}
 
 	return "";
@@ -264,38 +267,42 @@ public final class LOPTableModel extends AbstractTableModel {
 		    this.target.setCoordY((Fractional) value);
 		    break;
 		case 5:
-		    this.sol = (Fractional) value;
+		    this.sol = (LOPSolutionWrapper) value;
 		    break;
 	    }
 	else {
 	    Vector3Frac vec = this.vectors.get(col - 1);
 
-	    Fractional frac = (value != null ? (Fractional) value
-		    : FractionalFactory.getInstance());
+	    if (row == 5)
+		this.values.set(col - 1, (LOPSolutionWrapper) value);
+	    else {
 
-	    switch (row) {
-		case 0:
-		    if (vec.getCoordZ().equals(frac))
-			return;
-		    vec.setCoordZ(frac);
-		    break;
-		case 2:
-		    if (vec.getCoordX().equals(frac))
-			return;
-		    vec.setCoordX(frac);
-		    break;
-		case 3:
-		    if (vec.getCoordY().equals(frac))
-			return;
-		    vec.setCoordY(frac);
-		    break;
-		case 5:
-		    this.values.set(col - 1, (Fractional) value);
-		    break;
+		Fractional frac = (value != null ? (Fractional) value
+			: FractionalFactory.getInstance());
+
+		switch (row) {
+		    case 0:
+			if (vec.getCoordZ().equals(frac))
+			    return;
+			vec.setCoordZ(frac);
+			break;
+		    case 2:
+			if (vec.getCoordX().equals(frac))
+			    return;
+			vec.setCoordX(frac);
+			break;
+		    case 3:
+			if (vec.getCoordY().equals(frac))
+			    return;
+			vec.setCoordY(frac);
+			break;
+		}
 	    }
 	}
+
 	if (row != 5)
 	    setEdited(true);
+
 	fireTableCellUpdated(row, col);
     }
 
@@ -304,14 +311,14 @@ public final class LOPTableModel extends AbstractTableModel {
 	this.values.clear();
 	for (Vector3Frac vec : lop.getVectors()) {
 	    this.vectors.add(vec.clone());
-	    this.values.add(FractionalFactory.getInstance());
+	    this.values.add(LOPSolutionWrapper.getInstance());
 	}
 	this.target = lop.getTarget().clone();
 	this.operators[0] = lop.getOperators()[0];
 	this.operators[1] = lop.getOperators()[1];
 	this.max = lop.isMaximum();
 
-	this.sol = FractionalFactory.getInstance();
+	this.sol = LOPSolutionWrapper.getInstance();
 
 	setEdited(false);
 	setColumnCount();
@@ -328,7 +335,7 @@ public final class LOPTableModel extends AbstractTableModel {
 	    return;
 
 	this.vectors.add(Vector3FracFactory.getInstance());
-	this.values.add(FractionalFactory.getInstance());
+	this.values.add(LOPSolutionWrapper.getInstance());
 	num++;
 	this.columnNames.insertElementAt("<html><center><b>x<sub>" + num
 		+ "</sub></b></center></html>", num);
@@ -344,38 +351,81 @@ public final class LOPTableModel extends AbstractTableModel {
      */
     private void check(LOP lop) {
 	int idx1, idx2, vals = 0;
+	boolean res = true;
 
-	for (Fractional frac : this.values)
-	    if (!frac.isZero())
-		vals++;
+	if (lop.getSolution().getSpecialCase() == info.kriese.soPra.lop.LOPSolution.NO_SOLUTION) {
+	    for (LOPSolutionWrapper sol : this.values)
+		if (!sol.getType().equals(LOPNotExsitent.class))
+		    res = false;
+	    if (!this.sol.getType().equals(LOPNotExsitent.class))
+		res = false;
 
-	if (vals > 2) {
-	    MessageHandler.showError(Lang.getString("Strings.Solution"), Lang
-		    .getString("Strings.MoreThan2SolValues"));
-	    return;
-	}
-
-	if (!this.sol.equals(lop.getSolution().getVector().getCoordZ())) {
-	    MessageHandler.showError(Lang.getString("Strings.Solution"), Lang
-		    .getString("Strings.IncorrectSolution"));
-	    return;
-	}
-
-	for (LOPSolutionArea area : lop.getSolution().getAreas()) {
-	    idx1 = lop.getVectors().indexOf(area.getL1());
-	    idx2 = lop.getVectors().indexOf(area.getL2());
-
-	    if (area.getL1Amount().equals(this.values.get(idx1))
-		    && area.getL2Amount().equals(this.values.get(idx2))) {
+	    if (res)
 		MessageHandler.showInfo(Lang.getString("Strings.Solution"),
 			Lang.getString("Strings.CorrectSolution"));
+	    else
+		MessageHandler.showError(Lang.getString("Strings.Solution"),
+			Lang.getString("Strings.IncorrectSolution"));
+	    return;
+	}
+
+	else if (lop.getSolution().getSpecialCase() == info.kriese.soPra.lop.LOPSolution.UNLIMITED) {
+	    for (LOPSolutionWrapper sol : this.values)
+		if (!sol.getType().equals(LOPInfinity.class))
+		    res = false;
+	    if (!this.sol.getType().equals(LOPInfinity.class))
+		res = false;
+
+	    if (res)
+		MessageHandler.showInfo(Lang.getString("Strings.Solution"),
+			Lang.getString("Strings.CorrectSolution"));
+	    else
+		MessageHandler.showError(Lang.getString("Strings.Solution"),
+			Lang.getString("Strings.IncorrectSolution"));
+	    return;
+	} else {
+
+	    for (LOPSolutionWrapper sol : this.values)
+		if (sol.getType().equals(Fractional.class)) {
+		    if (!((Fractional) sol.getValue()).isZero())
+			vals++;
+		} else
+		    res = false;
+
+	    if (!res) {
+		MessageHandler.showError(Lang.getString("Strings.Solution"),
+			Lang.getString("Strings.IncorrectSolution"));
 		return;
 	    }
 
-	}
+	    if (vals > 2) {
+		MessageHandler.showError(Lang.getString("Strings.Solution"),
+			Lang.getString("Strings.MoreThan2SolValues"));
+		return;
+	    }
 
-	MessageHandler.showError(Lang.getString("Strings.Solution"), Lang
-		.getString("Strings.IncorrectSolution"));
+	    if (!this.sol.equals(lop.getSolution().getVector().getCoordZ())) {
+		MessageHandler.showError(Lang.getString("Strings.Solution"),
+			Lang.getString("Strings.IncorrectSolution"));
+		return;
+	    }
+
+	    for (LOPSolutionArea area : lop.getSolution().getAreas()) {
+		idx1 = lop.getVectors().indexOf(area.getL1());
+		idx2 = lop.getVectors().indexOf(area.getL2());
+
+		if (area.getL1Amount().equals(this.values.get(idx1))
+			&& area.getL2Amount().equals(this.values.get(idx2))) {
+		    MessageHandler.showInfo(Lang.getString("Strings.Solution"),
+			    Lang.getString("Strings.CorrectSolution"));
+		    return;
+		}
+
+	    }
+
+	    MessageHandler.showError(Lang.getString("Strings.Solution"), Lang
+		    .getString("Strings.IncorrectSolution"));
+	}
     }
 
     /**
@@ -399,7 +449,7 @@ public final class LOPTableModel extends AbstractTableModel {
 		    break;
 	    }
 	    this.vectors.set(i, vec);
-	    this.values.set(i, FractionalFactory.getInstance());
+	    this.values.set(i, LOPSolutionWrapper.getInstance());
 	}
 
 	this.target.getCoordX().setNumerator(0);
@@ -409,7 +459,7 @@ public final class LOPTableModel extends AbstractTableModel {
 	this.operators[1] = "=";
 	this.max = true;
 
-	this.sol = FractionalFactory.getInstance();
+	this.sol = LOPSolutionWrapper.getInstance();
 
 	setEdited(true);
 	fireTableDataChanged();

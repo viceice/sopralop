@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 04.12.2007 - Version 0.7.3
+ * - An neues Hilfesystem angepasst
  * 26.11.2007 - Version 0.7.2
  * - Panel zur Visualisierung des Dualen Problems hinzugefügt
  * 09.11.2007 - Version 0.7.1
@@ -97,7 +99,8 @@ import javax.swing.border.Border;
  * @since 12.05.2007
  * 
  */
-public final class MainFrame extends JFrame implements Virtual3DFrame {
+public final class MainFrame extends JFrame implements Virtual3DFrame,
+	HelpProvider {
 
     private static final int HEIGHT = 400;
 
@@ -221,8 +224,9 @@ public final class MainFrame extends JFrame implements Virtual3DFrame {
 	});
     }
 
+    @Deprecated
     public void setStatus(String msg) {
-	this.status.setText(msg);
+	showHelp(msg);
     }
 
     @Override
@@ -230,6 +234,10 @@ public final class MainFrame extends JFrame implements Virtual3DFrame {
 	this.title = title;
 	super.setTitle(title + " - " + this.PROPS.getName() + " - Version "
 		+ this.PROPS.getVersion());
+    }
+
+    public void showHelp(String msg) {
+	this.status.setText(msg != null ? msg : "");
     }
 
     private void generateMainMenu() {
