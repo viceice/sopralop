@@ -30,7 +30,7 @@
 
 	<target name="compile" depends="clean">
 		<mkdir dir="${classes.dir}" />
-		<javac srcdir="${src.dir}" destdir="${classes.dir}" source="1.5" target="1.5" classpath="lib/core-renderer.jar" />
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" source="1.5" target="1.5" classpath="lib/j3dcore.jar:lib/j3dutils.jar:lib/vecmath.jar" />
 	</target>
 
 	<target name="jar" depends="compile">
