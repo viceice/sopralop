@@ -18,6 +18,9 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * 
  * ChangeLog:
+ * 04.12.2007 - Version 0.2.2
+ * - Fehlerbereinigung bei den Richtungsvektoren
+ * - Änderung der Beschriftung an den Vektoren
  * 28.11.2007 - Version 0.2.1
  * - Skalierung nochmals angepasst
  * - Vektoren, die in x1 oder x2 gleich null sind, werden angezeigt
@@ -200,16 +203,21 @@ public final class DualLOPPanel extends JPanel {
 		// Zeichnen der Senkrechten auf den Geraden (Visualisierung der
 		// Verschieberichtung)
 		double horizontal, vertical;
-		int dirVecX, dirVecY;
+		int dirVecX, dirVecY, dirLength = 15;
+		
+		if (!this.minMax) {
+			dirLength = -15;
+		}
+		
 		g2.setStroke(this.normal);
 		if (this.vectors.get(i).getCoordX().isZero())
 		    g2.drawLine((this.d.width - this.offsetX) / 2,
-			    localCoordY1, (this.d.width - this.offsetX) / 2,
-			    localCoordY1 + 15);
+			    localCoordY2, (this.d.width - this.offsetX) / 2,
+			    localCoordY2 - dirLength);
 		else if (this.vectors.get(i).getCoordY().isZero())
 		    g2.drawLine(localCoordX1,
 			    (this.d.height - this.offsetX) / 2,
-			    localCoordX1 + 15,
+			    localCoordX1 + dirLength,
 			    (this.d.height - this.offsetX) / 2);
 		else {
 		    horizontal = localCoordX1 - this.offsetX;
@@ -279,8 +287,8 @@ public final class DualLOPPanel extends JPanel {
 		} else {
 		    g2.drawLine(localOptimumX1, localOptimumY1, this.offsetX,
 			    localOptimumY2);
-		    g2.drawString("Gerade der Zielfunktion", this.offsetX + 5,
-			    localOptimumY2 - 5);
+		    g2.drawString("Gerade der Zielfunktion", ((localOptimumX1 - this.offsetX) / 3) + this.offsetX + 5,
+			    localOptimumY2 + (this.d.height - this.offsetY - localOptimumY2) / 3);
 		}
 
 		// Zeichnen der Senkrechten auf der optimalen Geraden
