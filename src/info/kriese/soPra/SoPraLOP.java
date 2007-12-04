@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 04.12.2007 - Version 0.5.4
+ * - An neuen HelpProvider angepasst
  * 03.12.2007 - Version 0.5.3
  * - An ErrorHandler angepasst
  * 26.11.2007 - Version 0.5.2
@@ -71,7 +73,7 @@ import javax.swing.filechooser.FileFilter;
 
 /**
  * @author Michael Kriese
- * @version 0.5.2
+ * @version 0.5.4
  * @since 12.05.2007
  * 
  */
