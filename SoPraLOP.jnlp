@@ -27,7 +27,6 @@
 	<resources>
 		<j2se version="1.5+" />
 		<jar href="[codebase]SoPraLOP.jar" main="true" />
-		<jar href="[codebase]core-renderer.jar" />
 		<extension
 			href="http://download.java.net/media/java3d/webstart/release/java3d-latest.jnlp" />
 	</resources>
