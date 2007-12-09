@@ -6,7 +6,7 @@ Version 0.6 - 20.12.2007  (voraussichtlicher Termin)
 -------------------------------------------------------------------------------
 - Hilfe eingebaut
 -------------------------------------------------------------------------------
-Version 0.5 - 07.12.2007
+Version 0.5 - 09.12.2007 (Rev. 174)
 -------------------------------------------------------------------------------
 - Oberfläche runderneuert (nutzerfreundlicher gemacht)
 - Menüs überarbeitet (Mehrsprachfähikeit, Icons)
@@ -18,14 +18,11 @@ Version 0.5 - 07.12.2007
  - Mehrsprachfähigkeit verbessert
  - Duales Problem wird angezeigt und gelöst
  - XHTML-Bibliothek entfernt, da überflüssig
- - Eingegebene Lösung wird überprüft
+ - Nutzerinteraktion: Eingegebene Lösung wird überprüft
  - BugFix: 2 Lösungen für ein LOP wurden nur als eine erkannt
  - BugFix: Einige NullPointer Exceptions abgefangen
  - BugFix: Doppelte Quotes beim Speichern der Operatoren entfernt
  - BugFix: Lösungverfahren optimiert / berichtigt
--	TODO:
-	+ Hilfe einbauen
-	+ Nutzerinteraktion
 -------------------------------------------------------------------------------
 Version 0.4 - 18.10.2007
 -------------------------------------------------------------------------------
