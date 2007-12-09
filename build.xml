@@ -82,6 +82,8 @@
 				<exclude name="**/.svn/**" />
 			</fileset>
 			<fileset file="${basedir}/splash.png" />
+			<fileset file="${basedir}/CHANGES" />
+			<fileset file="${basedir}/COPYING" />
 		</copy>
 	</target>
 
