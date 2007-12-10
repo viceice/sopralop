@@ -75,6 +75,7 @@ import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPEditor;
 import info.kriese.soPra.lop.LOPEditorAdapter;
 import info.kriese.soPra.lop.LOPSolution;
+import info.kriese.soPra.lop.LOPSolutionArea;
 import info.kriese.soPra.math.quickhull.QuickHull;
 
 import java.io.FileOutputStream;
@@ -349,5 +350,9 @@ public final class LOPSolver {
 	sol.setValue(opt);
 
 	lop.problemSolved();
+	// DEBUG:
+	IOUtils.print(lop, System.err);
+	for(LOPSolutionArea area : lop.getSolution().getAreas())
+		System.err.println(area);
     }
 }
