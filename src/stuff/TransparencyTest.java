@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
@@ -34,7 +35,11 @@ public class TransparencyTest extends JFrame implements ChangeListener {
 	this.slider.addChangeListener(this);
 
 	JPanel panel = new JPanel(new BorderLayout());
-	panel.add(this.slider, BorderLayout.CENTER);
+	panel.add(this.slider, BorderLayout.NORTH);
+
+	JLabel l = new JLabel("Test");
+	l.setOpaque(true);
+	panel.add(l);
 	setContentPane(panel);
 	setSize(new Dimension(640, 480));
 	setLocationRelativeTo(null);
