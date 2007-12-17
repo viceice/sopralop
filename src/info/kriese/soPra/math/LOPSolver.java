@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 17.12.2007 - Version 0.5.4
+ * - BugFix: Fehler beim Speichern in Pfaden mit Leerzeichen behoben, LOP konnte dadurch nicht gespeichert werden.
  * 09.11.2007 - Version 0.5.3
  * - Aufruf von showSolution entfernt, da nicht mehr nötig
  * 08.11.2007 - Version 0.5.2
@@ -70,17 +72,19 @@
  */
 package info.kriese.soPra.math;
 
+import info.kriese.soPra.gui.MessageHandler;
 import info.kriese.soPra.io.IOUtils;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPEditor;
 import info.kriese.soPra.lop.LOPEditorAdapter;
 import info.kriese.soPra.lop.LOPSolution;
-import info.kriese.soPra.lop.LOPSolutionArea;
 import info.kriese.soPra.math.quickhull.QuickHull;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Vector;
 
@@ -97,7 +101,7 @@ import org.xml.sax.SAXParseException;
 
 /**
  * @author Michael Kriese
- * @version 0.5.2
+ * @version 0.5.4
  * @since 10.05.2007
  * 
  */
@@ -224,7 +228,8 @@ public final class LOPSolver {
 
     private boolean save(LOP lop, URL file) {
 	try {
-	    FileOutputStream fout = new FileOutputStream(file.getFile(), false);
+	    FileOutputStream fout = new FileOutputStream(
+		    new File(file.toURI()), false);
 	    PrintStream myOutput = new PrintStream(fout, false, "UTF-8");
 	    String out = IOUtils.generateXMLContent(lop);
 	    myOutput.println(out);
@@ -232,11 +237,16 @@ public final class LOPSolver {
 	    myOutput.close();
 	    fout.close();
 	    return true;
-	} catch (IOException ex) {
-	    System.out.println("Error writing to file: " + file);
-	    System.err.println(ex);
-	    return false;
+	} catch (IOException e) {
+	    MessageHandler.showError(e.getClass().getCanonicalName(), e
+		    .getLocalizedMessage());
+	    e.printStackTrace();
+	} catch (URISyntaxException e) {
+	    MessageHandler.showError(e.getClass().getCanonicalName(), e
+		    .getLocalizedMessage());
+	    e.printStackTrace();
 	}
+	return false;
     }
 
     private void solve(LOP lop) {
@@ -351,8 +361,6 @@ public final class LOPSolver {
 
 	lop.problemSolved();
 	// DEBUG:
-	IOUtils.print(lop, System.err);
-	for(LOPSolutionArea area : lop.getSolution().getAreas())
-		System.err.println(area);
+	// IOUtils.print(lop, System.err);
     }
 }

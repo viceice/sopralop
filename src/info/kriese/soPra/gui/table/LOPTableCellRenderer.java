@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 17.12.2007 - Version 0.1.2
+ * - SelectionBorder auch für nicht editierbare Felder
  * 09.11.2007 - Version 0.1.1
  * - Neue Darstellung für Unendlich und nicht existent
  * 03.11.2007 - Version 0.1
@@ -44,7 +46,7 @@ import javax.swing.table.TableCellRenderer;
  * Dient zur Visualisierung von Werte in einer Tabelle.
  * 
  * @author Michael Kriese
- * @version 0.1.1
+ * @version 0.1.2
  * @since 03.11.2007
  */
 public class LOPTableCellRenderer implements TableCellRenderer {
@@ -55,7 +57,7 @@ public class LOPTableCellRenderer implements TableCellRenderer {
     private final Border noBorder = BorderFactory.createEmptyBorder(1, 1, 1, 1);
     private final Border normal;
 
-    private final Border selected;
+    private final Border selected, selected2;
 
     public LOPTableCellRenderer() {
 	this.content = new JLabel();
@@ -84,6 +86,9 @@ public class LOPTableCellRenderer implements TableCellRenderer {
 	outer = BorderFactory.createLineBorder(new Color(0, 128, 0), 2);
 	this.selected = BorderFactory.createCompoundBorder(outer, inner);
 
+	outer = BorderFactory.createLineBorder(Color.BLACK, 1);
+	this.selected2 = BorderFactory.createCompoundBorder(outer, inner);
+
     }
 
     public Component getTableCellRendererComponent(JTable table, Object value,
@@ -103,9 +108,13 @@ public class LOPTableCellRenderer implements TableCellRenderer {
 	if (row != 1 && row != rows - 2) {
 	    if (hasFocus && table.isCellEditable(row, column))
 		this.content.setBorder(this.selected);
+	    else if (hasFocus)
+		this.content.setBorder(this.selected2);
 	    else
 		this.content.setBorder(this.normal);
-	} else
+	} else if (hasFocus)
+	    this.content.setBorder(this.selected2);
+	else
 	    this.content.setBorder(this.noBorder);
 
 	// ToolTips

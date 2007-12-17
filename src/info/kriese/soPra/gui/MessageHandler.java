@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 17.12.2007 - Version 0.1.2
+ * - BugFix: Bei NotImplemented Meldung waren Titel und Nachricht vertauscht.
  * 04.12.2007 - Version 0.1.1
  * - An neues Hilfesystem angepasst
  * 03.12.2007 - Version 0.1
@@ -36,7 +38,7 @@ import javax.swing.JOptionPane;
  * Klasse zum Anzeigen von Standard-Dialogen.
  * 
  * @author Michael Kriese
- * @version 0.1.1
+ * @version 0.1.2
  * @since 03.12.2007
  * 
  */
@@ -81,8 +83,8 @@ public final class MessageHandler {
     }
 
     public static void showNotImplemented() {
-	showInfo(Lang.getString("Errors.NotImplemented"), Lang
-		.getString("Errors.NotImplemented.Title"));
+	showInfo(Lang.getString("Errors.NotImplemented.Title"), Lang
+		.getString("Errors.NotImplemented"));
     }
 
     private MessageHandler() {

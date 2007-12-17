@@ -7,7 +7,7 @@ h1,h2,b,i,body,div,span,ul,ol,li,input {
 }
 
 h1 {
-	font-size:2.5ex;
+	font-size:1.5ex;
 	font-weight:bold;
 }
 
@@ -68,18 +68,6 @@ td {
 	padding: 0.8ex 0.8ex 0.8ex 0.8ex;
 	color: green;
 	font-size: small;
-}
-
-.problem {
-	
-}
-
-.problem_table {
-	
-}
-
-.solution {
-	border: 1px solid red;
 }
 
 .content {

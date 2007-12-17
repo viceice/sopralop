@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 17.12.2007 - Version 0.4.2
+ * - Fehlerausgaben verändert
  * 04.12.2007 - Version 0.4.1
  * - An neues Hilfesystem angepasst
  * 03.12.2007 - Version 0.4
@@ -66,7 +68,7 @@ import javax.swing.JOptionPane;
  * Klasse zum handeln aller Actions in SoPraLOP
  * 
  * @author Michael Kriese
- * @version 0.4.1
+ * @version 0.4.2
  * @since 24.10.2007
  * 
  */
@@ -218,8 +220,7 @@ public final class ActionHandler {
 			.toURL());
 		SoPraLOP.MAIN.setTitle(SoPraLOP.FC.getSelectedFile().getName());
 	    } catch (MalformedURLException e) {
-		System.err.println("Error: Coudn't open file! " + this.file);
-		System.err.println(e.getMessage());
+		e.printStackTrace();
 	    }
 	}
     }
@@ -240,7 +241,7 @@ public final class ActionHandler {
 		SoPraLOP.EDITOR.save(new File(this.file).toURI().toURL());
 		SoPraLOP.MAIN.setTitle(new File(this.file).getName());
 	    } catch (MalformedURLException e) {
-		System.err.println("Error: Coudn't save to file! " + this.file);
+		e.printStackTrace();
 	    }
     }
 

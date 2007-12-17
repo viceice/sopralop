@@ -4,12 +4,12 @@
 <jnlp spec="1.0+" codebase="http://math.kriese.info/" href="[codebase]SoPraLOP.jnlp">
 
 	<information>
-		<title>[name]</title>
+		<title>[name][debug]</title>
 		<vendor>[author]</vendor>
 		<homepage href="http://math.kriese.info" />
 		<description>[title]</description>
 		<description kind="short">[desc]</description>
-		<icon href="images/logo.gif" />
+		<icon href="images/logo.png" />
 		<icon kind="splash" href="[codebase]splash.png" />
 		<offline-allowed />
 		<shortcut online="false">

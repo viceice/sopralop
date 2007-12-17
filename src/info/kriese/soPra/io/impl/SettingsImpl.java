@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 17.12.2007 - Version 0.2.1
+ * - Unnötige Ausgabe entfernt
  * 09.10.2007 - Version 0.2
  * - Factory erstellt und unbenannte Klasse ausgelagert
  * 29.07.2007 - Version 0.1
@@ -38,7 +40,7 @@ import info.kriese.soPra.io.Settings;
  * 
  * 
  * @author Michael Kriese
- * @version 0.2
+ * @version 0.2.1
  * @since 29.07.2007
  * 
  */
@@ -56,7 +58,6 @@ final class SettingsImpl implements Settings {
 		is = new FileInputStream(file);
 	    this.props.load(is);
 	} catch (Exception e) {
-	    System.err.println(e);
 	    e.printStackTrace();
 	}
     }

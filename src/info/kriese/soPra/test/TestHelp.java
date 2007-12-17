@@ -5,9 +5,10 @@
  */
 package info.kriese.soPra.test;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
+import javax.swing.JDialog;
+
+import info.kriese.soPra.gui.HelpDialog;
+import info.kriese.soPra.io.impl.SettingsFactory;
 
 /**
  * @author pst
@@ -15,27 +16,24 @@ import javax.swing.JScrollPane;
  */
 public class TestHelp {
 
-    private static JFrame frame;
-    private static JLabel myHtmlHelp;
-    private static JScrollPane scrollPane;
-
     /**
      * @param args
      */
     public static void main(String[] args) {
 
-	frame = new JFrame("SoPra LOP Hilfefenster");
-	frame.setSize(600, 500);
-	myHtmlHelp = new JLabel();
-	frame.add(myHtmlHelp);
-	// TODO: hilfe laden
-	// myHtmlHelp.setDocument(IOUtils.getURL("gui/html/help/file_help.html").toString());
-	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	scrollPane = new JScrollPane(myHtmlHelp);
-	scrollPane.remove(scrollPane.getHorizontalScrollBar());
-	frame.add(scrollPane);
+	System.out.println("SoPraLOP HelpTest - Version "
+		+ SettingsFactory.getInstance().getVersion());
+	System.out.println("\t(c) 2007  "
+		+ SettingsFactory.getInstance().getAuthor());
+	System.out.println();
 
-	frame.setVisible(true);
+	HelpDialog help = HelpDialog.getInstance();
+
+	help.setHelp("gui/html/help/edit_help.html");
+
+	help.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+	help.setVisible(true);
 
     }
 

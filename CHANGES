@@ -6,13 +6,21 @@ Version 0.6 - 20.12.2007  (voraussichtlicher Termin)
 -------------------------------------------------------------------------------
 - TODO: Hilfe eingebaut
 -------------------------------------------------------------------------------
+Version 0.5.1 - 17.12.2007 (Rev. 183)
+-------------------------------------------------------------------------------
+ - BugFix: Fehler beim Speichern in Pfaden mit Leerzeichen behoben, LOP
+    konnte dadurch nicht gespeichert werden.
+ - BugFix: Bei NotImplemented Meldung waren Titel und Nachricht
+    vertauscht.
+ - Einige Fehlerausgaben verändert
+-------------------------------------------------------------------------------
 Version 0.5 - 09.12.2007 (Rev. 175)
 -------------------------------------------------------------------------------
-- Oberfläche runderneuert (nutzerfreundlicher gemacht)
-- Menüs überarbeitet (Mehrsprachfähikeit, Icons)
-- Splash-Screen hinzugefügt
-- Logo mit höherer Auflösung hinzugefügt
-- Quickhull-Algorithmus überarbeitet, Vektoren, welche in einer Ebene
+ - Oberfläche runderneuert (nutzerfreundlicher gemacht)
+ - Menüs überarbeitet (Mehrsprachfähikeit, Icons)
+ - Splash-Screen hinzugefügt
+ - Logo mit höherer Auflösung hinzugefügt
+ - Quickhull-Algorithmus überarbeitet, Vektoren, welche in einer Ebene
    liegen, werden nicht mehr gefiltert
  - Eingabe- und 3D-Fenster in Hauptfenster integriert
  - Mehrsprachfähigkeit verbessert

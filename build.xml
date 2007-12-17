@@ -24,6 +24,10 @@
 	<available property="lib-solaris-sparc" file="${java3d.dir}/solaris/sparc" />
 	<available property="lib-solaris-sparcv9" file="${java3d.dir}/solaris/sparcv9" />
 
+	<condition property="debug.txt" value=" Debug" else="">
+		<isset property="debug" />
+	</condition>
+
 	<target name="clean">
 		<delete dir="${build.dir}" />
 	</target>
@@ -31,6 +35,14 @@
 	<target name="compile" depends="clean">
 		<mkdir dir="${classes.dir}" />
 		<javac srcdir="${src.dir}" destdir="${classes.dir}" source="1.5" target="1.5" classpath="lib/j3dcore.jar:lib/j3dutils.jar:lib/vecmath.jar" />
+
+		<java classname="info.kriese.soPra.test.SplashGenerator" failonerror="true" fork="true" dir="${basedir}">
+			<classpath>
+				<pathelement path="${classes.dir}" />
+				<pathelement path="${src.dir}" />
+				<pathelement path="${java.class.path}" />
+			</classpath>
+		</java>
 	</target>
 
 	<target name="jar" depends="compile">
@@ -47,7 +59,10 @@
 					<attribute name="Implementation-Vendor" value="${sopra.author}" />
 				</section>
 			</manifest>
-			<fileset dir="${classes.dir}" includes="**/*.class" />
+			<fileset dir="${classes.dir}" includes="**/*.class">
+				<exclude name="**/test/*.class" />
+				<exclude name="**/stuff/*" />
+			</fileset>
 			<fileset dir="${src.dir}">
 				<include name="**/*.properties" />
 				<include name="**/*.conf" />
@@ -74,6 +89,7 @@
 			<replacefilter token="[author]" property="sopra.author" />
 			<replacefilter token="[desc]" property="sopra.desc" />
 			<replacefilter token="[version]" property="sopra.version" />
+			<replacefilter token="[debug]" value="${debug.txt}" />
 		</replace>
 
 

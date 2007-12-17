@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 17.12.2007 - version 0.3.4
+ * - Unnötige Ausgaben entfernt
+ * - Ausgabe der Lösungsflächen hinzugefügt
  * 08.11.2007 - Version 0.3.3.2
  * - BugFix: NullPointer in print behoben (falls lop nicht gelöst)
  * 04.11.2007 - Version 0.3.3.1
@@ -45,6 +48,7 @@ import info.kriese.soPra.SoPraLOP;
 import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPSolution;
+import info.kriese.soPra.lop.LOPSolutionArea;
 import info.kriese.soPra.math.Fractional;
 import info.kriese.soPra.math.Vector3Frac;
 import info.kriese.soPra.math.impl.FractionalFactory;
@@ -71,7 +75,7 @@ import org.xml.sax.SAXException;
 /**
  * 
  * @author Michael Kriese
- * @version 0.3.3.2
+ * @version 0.3.4
  * @since 29.07.2007
  * 
  */
@@ -131,7 +135,6 @@ public final class IOUtils {
 	    return Integer.parseInt(map.getNamedItem("case").getNodeValue());
 
 	} catch (Exception e) {
-	    System.err.println(e);
 	    e.printStackTrace();
 	}
 	return -1;
@@ -175,7 +178,6 @@ public final class IOUtils {
 	    if (res[0] != null && res[1] != null)
 		return res;
 	} catch (Exception e) {
-	    System.err.println(e);
 	    e.printStackTrace();
 	}
 	return null;
@@ -190,21 +192,19 @@ public final class IOUtils {
 		    .getNodeValue());
 
 	} catch (Exception e) {
-	    System.err.println(e);
 	    e.printStackTrace();
 	}
 	return null;
     }
 
     /**
-     * Findet eine Datei und gibt die URL zurueck.
+     * Findet eine Datei und gibt die URL zurück.
      * 
      * @param file
      * @return
      */
     public static URL getURL(String file) {
 	URL res = SoPraLOP.class.getResource(file);
-	// System.out.println("Url: " + res);
 	return res;
     }
 
@@ -231,7 +231,6 @@ public final class IOUtils {
 	    if (x != null && y != null && z != null)
 		return Vector3FracFactory.getInstance(x, y, z);
 	} catch (Exception e) {
-	    System.err.println(e);
 	    e.printStackTrace();
 	}
 	return null;
@@ -254,13 +253,21 @@ public final class IOUtils {
 	try {
 	    transformer.transform(source, result);
 	} catch (TransformerException e) {
-	    System.out.println("Error transform: " + e.getMessage());
+	    e.printStackTrace();
 	}
 	System.out.println();
 	System.out
 		.println("---------------------------------------------------------------------------");
     }
 
+    /**
+     * Dient zur Ausgabe eines LOP.
+     * 
+     * @param lop -
+     *                LOP, welches ausgegeben werden soll
+     * @param out -
+     *                PrintStream, auf dem das LOP ausgegeben werden soll.
+     */
     public static void print(LOP lop, PrintStream out) {
 	StringBuffer x = new StringBuffer(), y = new StringBuffer(), z = new StringBuffer();
 
@@ -324,6 +331,9 @@ public final class IOUtils {
 			+ sol.getSpecialCase() + ")");
 		break;
 	}
+
+	for (LOPSolutionArea area : lop.getSolution().getAreas())
+	    System.err.println(area);
     }
 
     /**
