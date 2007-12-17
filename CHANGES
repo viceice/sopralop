@@ -6,13 +6,14 @@ Version 0.6 - 20.12.2007  (voraussichtlicher Termin)
 -------------------------------------------------------------------------------
 - TODO: Hilfe eingebaut
 -------------------------------------------------------------------------------
-Version 0.5.1 - 17.12.2007 (Rev. 183)
+Version 0.5.1 - 17.12.2007 (Rev. 184)
 -------------------------------------------------------------------------------
  - BugFix: Fehler beim Speichern in Pfaden mit Leerzeichen behoben, LOP
     konnte dadurch nicht gespeichert werden.
  - BugFix: Bei NotImplemented Meldung waren Titel und Nachricht
     vertauscht.
  - Einige Fehlerausgaben verändert
+ - About-Fenster optisch etwas verändert
 -------------------------------------------------------------------------------
 Version 0.5 - 09.12.2007 (Rev. 175)
 -------------------------------------------------------------------------------

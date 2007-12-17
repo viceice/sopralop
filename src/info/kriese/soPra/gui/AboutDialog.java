@@ -109,16 +109,18 @@ public class AboutDialog extends JDialog {
 	pn.add(this.pictureLabel, BorderLayout.CENTER);
 
 	JLabel info = new JLabel(
-		"<html><font color=\"#FFFFFF\"><center><font size=\"5\">"
-			+ this.props.getTitle() + "</font><br><br> Version: "
+		"<html><body style=\"width:180px\"><font color=\"#FFFFFF\"><center><font size=\"5\">"
+			+ this.props.getTitle()
+			+ "</font><br><br> Version: "
 			+ this.props.getVersion()
 			+ "<br><br>Copyright: &copy; 2007 <br> "
-			+ this.props.getAuthor() + " <br><br>" + "eMail: "
-			+ this.props.getMail() + "<br>Web: "
-			+ this.props.getWeb() + "</center></font></html>");
-
-	info.setPreferredSize(new Dimension(250, 200));
-	info.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+			+ this.props.getAuthor()
+			+ " <br><br>"
+			+ "eMail: "
+			+ this.props.getMail()
+			+ "<br>Web: "
+			+ this.props.getWeb()
+			+ "</center></font></body></html>");
 	pn.add(info, BorderLayout.EAST);
 
 	pack();
