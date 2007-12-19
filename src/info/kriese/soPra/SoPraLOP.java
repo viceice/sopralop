@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 19.12.2007 - Version 0.5.5
+ * - StartParameter werden verarbeitet
  * 04.12.2007 - Version 0.5.4
  * - An neuen HelpProvider angepasst
  * 03.12.2007 - Version 0.5.3
@@ -56,6 +58,7 @@ import info.kriese.soPra.gui.MainFrame;
 import info.kriese.soPra.gui.SplashDialog;
 import info.kriese.soPra.gui.Visual3DFrame;
 import info.kriese.soPra.gui.lang.Lang;
+import info.kriese.soPra.io.impl.SettingsFactory;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPEditor;
 import info.kriese.soPra.lop.impl.LOPFactory;
@@ -73,7 +76,7 @@ import javax.swing.filechooser.FileFilter;
 
 /**
  * @author Michael Kriese
- * @version 0.5.4
+ * @version 0.5.5
  * @since 12.05.2007
  * 
  */
@@ -86,8 +89,8 @@ public final class SoPraLOP {
     public static LOPEditor EDITOR;
 
     public static Engine3D ENGINE;
-
     public static JFileChooser FC;
+
     public static InputPanel INPUT;
 
     public static MainFrame MAIN;
@@ -100,6 +103,11 @@ public final class SoPraLOP {
      * @param args
      */
     public static void main(String[] args) {
+
+	// Parse Parameters
+	for (String arg : args)
+	    if (arg.toLowerCase().contains("debug"))
+		SettingsFactory.setDebug(true);
 
 	try { // use the local look and feel
 	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -117,11 +125,19 @@ public final class SoPraLOP {
 
 	System.setProperty("file.encoding", "UTF-8");
 
+	System.out.println("SoPraLOP - Version "
+		+ SettingsFactory.getInstance().getVersion());
+	System.out.println("\t(c) 2007  "
+		+ SettingsFactory.getInstance().getAuthor());
+	System.out.println();
+
 	String os = System.getProperty("os.name");
-	System.out.println("OS: " + os);
+	if (SettingsFactory.getInstance().isDebug())
+	    System.out.println("OS: " + os);
 	if (os != null && os.toLowerCase().contains("vista")) {
 	    System.setProperty("j3d.rend", "d3d");
-	    System.out.println("On Vista we have to use D3D Renderer! :-(");
+	    if (SettingsFactory.getInstance().isDebug())
+		System.out.println("On Vista we have to use D3D Renderer! :-(");
 	} else
 	    System.setProperty("j3d.rend", "ogl");
 

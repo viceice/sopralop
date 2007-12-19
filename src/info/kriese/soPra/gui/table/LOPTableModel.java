@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 19.12.2007 - Version 0.3.2
+ * - BugFix: Lösungcheck gab immer falsch zurück, da der Typ-Vergleich fehlerhaft implementiert war 
  * 04.12.2007 - Version 0.3.1
  * - An Lösungseditor angepasst, um unendlich und nicht exitent eingeben zu können.
  * - Lösungcheck angepasst
@@ -62,7 +64,7 @@ import javax.swing.table.AbstractTableModel;
  * Wandelt das LOP in ein von JTable lesbares Format um.
  * 
  * @author Peer Sterner
- * @version 0.3.1
+ * @version 0.3.2
  * @since 01.11.2007
  * 
  */
@@ -355,9 +357,9 @@ public final class LOPTableModel extends AbstractTableModel {
 
 	if (lop.getSolution().getSpecialCase() == info.kriese.soPra.lop.LOPSolution.NO_SOLUTION) {
 	    for (LOPSolutionWrapper sol : this.values)
-		if (!sol.getType().equals(LOPNotExsitent.class))
+		if (!(sol.getValue() instanceof LOPInfinity))
 		    res = false;
-	    if (!this.sol.getType().equals(LOPNotExsitent.class))
+	    if (!(this.sol.getValue() instanceof LOPInfinity))
 		res = false;
 
 	    if (res)
@@ -367,13 +369,11 @@ public final class LOPTableModel extends AbstractTableModel {
 		MessageHandler.showError(Lang.getString("Strings.Solution"),
 			Lang.getString("Strings.IncorrectSolution"));
 	    return;
-	}
-
-	else if (lop.getSolution().getSpecialCase() == info.kriese.soPra.lop.LOPSolution.UNLIMITED) {
+	} else if (lop.getSolution().getSpecialCase() == info.kriese.soPra.lop.LOPSolution.UNLIMITED) {
 	    for (LOPSolutionWrapper sol : this.values)
-		if (!sol.getType().equals(LOPInfinity.class))
+		if (!(sol.getValue() instanceof LOPInfinity))
 		    res = false;
-	    if (!this.sol.getType().equals(LOPInfinity.class))
+	    if (!(this.sol.getValue() instanceof LOPInfinity))
 		res = false;
 
 	    if (res)
@@ -386,7 +386,7 @@ public final class LOPTableModel extends AbstractTableModel {
 	} else {
 
 	    for (LOPSolutionWrapper sol : this.values)
-		if (sol.getType().equals(Fractional.class)) {
+		if (sol.getValue() instanceof Fractional) {
 		    if (!((Fractional) sol.getValue()).isZero())
 			vals++;
 		} else
@@ -414,8 +414,9 @@ public final class LOPTableModel extends AbstractTableModel {
 		idx1 = lop.getVectors().indexOf(area.getL1());
 		idx2 = lop.getVectors().indexOf(area.getL2());
 
-		if (area.getL1Amount().equals(this.values.get(idx1))
-			&& area.getL2Amount().equals(this.values.get(idx2))) {
+		if (area.getL1Amount().equals(this.values.get(idx1).getValue())
+			&& area.getL2Amount().equals(
+				this.values.get(idx2).getValue())) {
 		    MessageHandler.showInfo(Lang.getString("Strings.Solution"),
 			    Lang.getString("Strings.CorrectSolution"));
 		    return;

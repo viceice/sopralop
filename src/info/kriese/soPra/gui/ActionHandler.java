@@ -113,7 +113,7 @@ public final class ActionHandler {
 		if (c instanceof AbstractButton) {
 		    AbstractButton btn = (AbstractButton) c;
 		    String s = Lang.getString(btn.getActionCommand() + ".Help",
-			    null);
+			    (String) null);
 		    MessageHandler.showHelp(s);
 		}
 	    }

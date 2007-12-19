@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 19.12.2007 - Version 0.3.5
+ * - Auf neues ExceptionHandling umgestellt
+ * - DebugAusgabe optimiert
  * 17.12.2007 - version 0.3.4
  * - Unnötige Ausgaben entfernt
  * - Ausgabe der Lösungsflächen hinzugefügt
@@ -45,6 +48,7 @@
 package info.kriese.soPra.io;
 
 import info.kriese.soPra.SoPraLOP;
+import info.kriese.soPra.gui.MessageHandler;
 import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPSolution;
@@ -54,13 +58,11 @@ import info.kriese.soPra.math.Vector3Frac;
 import info.kriese.soPra.math.impl.FractionalFactory;
 import info.kriese.soPra.math.impl.Vector3FracFactory;
 
-import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -70,12 +72,11 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
-import org.xml.sax.SAXException;
 
 /**
  * 
  * @author Michael Kriese
- * @version 0.3.4
+ * @version 0.3.5
  * @since 29.07.2007
  * 
  */
@@ -133,9 +134,8 @@ public final class IOUtils {
 
 	try {
 	    return Integer.parseInt(map.getNamedItem("case").getNodeValue());
-
 	} catch (Exception e) {
-	    e.printStackTrace();
+	    MessageHandler.exceptionThrown(e);
 	}
 	return -1;
     }
@@ -149,12 +149,8 @@ public final class IOUtils {
 	    builder = factory.newDocumentBuilder();
 	    doc = builder.parse(BASE_URL.openStream());
 	    doc.setDocumentURI(BASE_URL.toString());
-	} catch (SAXException e) {
-	    e.printStackTrace();
-	} catch (IOException e) {
-	    e.printStackTrace();
-	} catch (ParserConfigurationException e) {
-	    e.printStackTrace();
+	} catch (Exception e) {
+	    MessageHandler.exceptionThrown(e);
 	}
 
 	return doc;
@@ -178,7 +174,7 @@ public final class IOUtils {
 	    if (res[0] != null && res[1] != null)
 		return res;
 	} catch (Exception e) {
-	    e.printStackTrace();
+	    MessageHandler.exceptionThrown(e);
 	}
 	return null;
     }
@@ -190,9 +186,8 @@ public final class IOUtils {
 	try {
 	    return FractionalFactory.getInstance(map.getNamedItem("value")
 		    .getNodeValue());
-
 	} catch (Exception e) {
-	    e.printStackTrace();
+	    MessageHandler.exceptionThrown(e);
 	}
 	return null;
     }
@@ -231,7 +226,7 @@ public final class IOUtils {
 	    if (x != null && y != null && z != null)
 		return Vector3FracFactory.getInstance(x, y, z);
 	} catch (Exception e) {
-	    e.printStackTrace();
+	    MessageHandler.exceptionThrown(e);
 	}
 	return null;
     }
@@ -245,15 +240,14 @@ public final class IOUtils {
 	try {
 	    transformer = transformerFactory.newTransformer();
 	} catch (TransformerConfigurationException e) {
-	    System.out.println("Transformer configuration error: "
-		    + e.getMessage());
+	    MessageHandler.exceptionThrown(e);
 	}
 	DOMSource source = new DOMSource(doc);
 	StreamResult result = new StreamResult(System.out);
 	try {
 	    transformer.transform(source, result);
 	} catch (TransformerException e) {
-	    e.printStackTrace();
+	    MessageHandler.exceptionThrown(e);
 	}
 	System.out.println();
 	System.out
@@ -316,8 +310,8 @@ public final class IOUtils {
 		out.println(Lang.getString("Strings.NoSolution"));
 		break;
 	    case LOPSolution.MORE_THAN_ONE_SOLUTION:
-		out.println(Lang.getString("Strings.MoreSolutions").replace(
-			"{0}", sol.countAreas() + ""));
+		out.println(Lang.getString("Strings.MoreSolutions",
+			new Object[] { sol.countAreas() }));
 		out.println(sol.getAreas());
 		break;
 	    case LOPSolution.UNLIMITED:
@@ -333,7 +327,12 @@ public final class IOUtils {
 	}
 
 	for (LOPSolutionArea area : lop.getSolution().getAreas())
-	    System.err.println(area);
+	    out.println("[ X" + (lop.getVectors().indexOf(area.getL1()) + 1)
+		    + ", X" + (lop.getVectors().indexOf(area.getL2()) + 1)
+		    + " ] = [ " + area.getL1Amount() + ", "
+		    + area.getL2Amount() + " ]");
+
+	out.println();
     }
 
     /**

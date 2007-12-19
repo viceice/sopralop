@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 19.12.2007 - Version 0.3
+ * - isDebug implementiert
  * 17.12.2007 - Version 0.2.1
  * - Unnötige Ausgabe entfernt
  * 09.10.2007 - Version 0.2
@@ -40,14 +42,15 @@ import info.kriese.soPra.io.Settings;
  * 
  * 
  * @author Michael Kriese
- * @version 0.2.1
+ * @version 0.3
  * @since 29.07.2007
  * 
  */
 final class SettingsImpl implements Settings {
+    private final boolean debug;
     private final Properties props = new Properties();
 
-    public SettingsImpl(String file) {
+    public SettingsImpl(String file, boolean debug) {
 	URL url = IOUtils.getURL(file);
 	InputStream is = null;
 
@@ -60,6 +63,8 @@ final class SettingsImpl implements Settings {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}
+
+	this.debug = debug;
     }
 
     public String getAuthor() {
@@ -92,6 +97,10 @@ final class SettingsImpl implements Settings {
 
     public String getWeb() {
 	return getProp("sopra.web");
+    }
+
+    public boolean isDebug() {
+	return this.debug;
     }
 
     private String getProp(String key) {

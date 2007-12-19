@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 19.12.2007 - Version 0.2
+ * - isDebug hinzugefügt
  * 29.07.2007 - Version 0.1
  *  - Datei hinzugefuegt
  */
@@ -27,25 +29,27 @@ package info.kriese.soPra.io;
 /**
  * 
  * @author Michael Kriese
- * @version 0.1
+ * @version 0.2
  * @since 29.07.2007
  * 
  */
 public interface Settings {
 
-	String getName();
+    String getAuthor();
 
-	String getTitle();
+    String getDescription();
 
-	String getVersion();
+    String getGPG();
 
-	String getAuthor();
+    String getMail();
 
-	String getMail();
+    String getName();
 
-	String getWeb();
+    String getTitle();
 
-	String getGPG();
+    String getVersion();
 
-	String getDescription();
+    String getWeb();
+
+    boolean isDebug();
 }

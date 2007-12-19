@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 19.12.2007 - Version 0.5.5
+ * - Auf neues ExceptionHandling umgestellt
  * 17.12.2007 - Version 0.5.4
  * - BugFix: Fehler beim Speichern in Pfaden mit Leerzeichen behoben, LOP konnte dadurch nicht gespeichert werden.
  * 09.11.2007 - Version 0.5.3
@@ -74,6 +76,7 @@ package info.kriese.soPra.math;
 
 import info.kriese.soPra.gui.MessageHandler;
 import info.kriese.soPra.io.IOUtils;
+import info.kriese.soPra.io.impl.SettingsFactory;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPEditor;
 import info.kriese.soPra.lop.LOPEditorAdapter;
@@ -90,18 +93,15 @@ import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 /**
  * @author Michael Kriese
- * @version 0.5.4
+ * @version 0.5.5
  * @since 10.05.2007
  * 
  */
@@ -207,21 +207,8 @@ public final class LOPSolver {
 	    return true;
 
 	    // ---- Error handling ----
-	} catch (SAXParseException spe) {
-	    System.out.println("\n** Parsing error, line "
-		    + spe.getLineNumber() + ", uri " + spe.getSystemId());
-	    System.out.println("   " + spe.getMessage());
-	    Exception e = (spe.getException() != null) ? spe.getException()
-		    : spe;
-	    e.printStackTrace();
-	} catch (SAXException sxe) {
-	    Exception e = (sxe.getException() != null) ? sxe.getException()
-		    : sxe;
-	    e.printStackTrace();
-	} catch (ParserConfigurationException pce) {
-	    pce.printStackTrace();
-	} catch (IOException ioe) {
-	    ioe.printStackTrace();
+	} catch (Exception e) {
+	    MessageHandler.exceptionThrown(e);
 	}
 	return false;
     }
@@ -238,13 +225,9 @@ public final class LOPSolver {
 	    fout.close();
 	    return true;
 	} catch (IOException e) {
-	    MessageHandler.showError(e.getClass().getCanonicalName(), e
-		    .getLocalizedMessage());
-	    e.printStackTrace();
+	    MessageHandler.exceptionThrown(e);
 	} catch (URISyntaxException e) {
-	    MessageHandler.showError(e.getClass().getCanonicalName(), e
-		    .getLocalizedMessage());
-	    e.printStackTrace();
+	    MessageHandler.exceptionThrown(e);
 	}
 	return false;
     }
@@ -360,7 +343,8 @@ public final class LOPSolver {
 	sol.setValue(opt);
 
 	lop.problemSolved();
-	// DEBUG:
-	// IOUtils.print(lop, System.err);
+
+	if (SettingsFactory.getInstance().isDebug())
+	    IOUtils.print(lop, System.err);
     }
 }

@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 19.12.2007 - Version 0.2
+ * - Debug Handling hinzugefügt
  * 09.10.2007 - Version 0.1
  *  - Datei hinzugefuegt
  */
@@ -29,18 +31,25 @@ import info.kriese.soPra.io.Settings;
 /**
  * 
  * @author Michael Kriese
- * @version 0.1
+ * @version 0.2
  * @since 09.10.2007
  * 
  */
 public final class SettingsFactory {
 
+    private static boolean DEBUG = false;
     private static final String FILE = "sopra.properties";
 
-    private static Settings props = new SettingsImpl(FILE);
+    private static Settings props = null;
 
     public static Settings getInstance() {
+	if (props == null)
+	    props = new SettingsImpl(FILE, DEBUG);
 	return props;
+    }
+
+    public static void setDebug(boolean value) {
+	DEBUG = value;
     }
 
     private SettingsFactory() {

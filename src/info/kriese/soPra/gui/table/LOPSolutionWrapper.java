@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 19.12.2007 - Version 0.1.1
+ * - equals überladen.
  * 04.12.2007 - Version 0.1
  *  - Datei hinzugefuegt
  */
@@ -30,7 +32,7 @@ import info.kriese.soPra.math.impl.FractionalFactory;
 /**
  * 
  * @author Michael Kriese
- * @version 0.1
+ * @version 0.1.1
  * @since 04.12.2007
  * 
  */
@@ -64,6 +66,11 @@ public final class LOPSolutionWrapper {
 
     private LOPSolutionWrapper(Object value) {
 	this.value = value;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+	return this.value.equals(obj);
     }
 
     public Class<?> getType() {

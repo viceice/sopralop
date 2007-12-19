@@ -6,6 +6,11 @@ Version 0.6 - 20.12.2007  (voraussichtlicher Termin)
 -------------------------------------------------------------------------------
 - TODO: Hilfe eingebaut
 -------------------------------------------------------------------------------
+Version 0.5.2 - 19.12.2007 (Rev. 185)
+-------------------------------------------------------------------------------
+- BugFix: Lösungcheck gab immer falsch zurück, da der Typ-Vergleich fehlerhaft implementiert war
+- Neues ExceptionHandling implementiert
+-------------------------------------------------------------------------------
 Version 0.5.1 - 17.12.2007 (Rev. 184)
 -------------------------------------------------------------------------------
  - BugFix: Fehler beim Speichern in Pfaden mit Leerzeichen behoben, LOP

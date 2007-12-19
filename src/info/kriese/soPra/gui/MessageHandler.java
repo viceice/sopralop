@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 19.12.2007 - Version 0.2
+ * - getString mit Ersetzungsparametern hinzugefügt
  * 17.12.2007 - Version 0.1.2
  * - BugFix: Bei NotImplemented Meldung waren Titel und Nachricht vertauscht.
  * 04.12.2007 - Version 0.1.1
@@ -29,6 +31,7 @@
 package info.kriese.soPra.gui;
 
 import info.kriese.soPra.gui.lang.Lang;
+import info.kriese.soPra.io.impl.SettingsFactory;
 
 import java.awt.Component;
 
@@ -38,7 +41,7 @@ import javax.swing.JOptionPane;
  * Klasse zum Anzeigen von Standard-Dialogen.
  * 
  * @author Michael Kriese
- * @version 0.1.2
+ * @version 0.2
  * @since 03.12.2007
  * 
  */
@@ -46,6 +49,16 @@ public final class MessageHandler {
 
     private static HelpProvider HELP = null;
     private static Component PARENT = null;
+
+    public static void exceptionThrown(Exception e) {
+	if (SettingsFactory.getInstance().isDebug())
+	    e.printStackTrace();
+	else
+	    MessageHandler.showError(Lang.getString("Strings.Error"), Lang
+		    .getString("Errors.Exception", new Object[] {
+			    e.getClass().getSimpleName(),
+			    e.getLocalizedMessage() }));
+    }
 
     public static Component getParent() {
 	return PARENT;

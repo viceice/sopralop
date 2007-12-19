@@ -33,6 +33,7 @@
 package info.kriese.soPra.gui.lang;
 
 import java.io.UnsupportedEncodingException;
+import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -61,6 +62,17 @@ public final class Lang {
 
     public static String getString(String key) {
 	return getString(key, "!" + key + "!");
+    }
+
+    public static String getString(String key, Object[] args) {
+
+	try {
+	    return MessageFormat.format(getString(key), args);
+	} catch (Exception e) {
+	    // Sollte niemals auftreten!!!
+	    e.printStackTrace();
+	    return "!" + key + "!";
+	}
     }
 
     public static String getString(String key, String def) {
