@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 27.12.2007 - Version 0.4.3
+ * - Hilfe-Fenster hinzugefügt
+ * - BugFix: Bei einer Fehlermeldung waren Titel und Nachricht vertauscht
  * 17.12.2007 - Version 0.4.2
  * - Fehlerausgaben verändert
  * 04.12.2007 - Version 0.4.1
@@ -68,7 +71,7 @@ import javax.swing.JOptionPane;
  * Klasse zum handeln aller Actions in SoPraLOP
  * 
  * @author Michael Kriese
- * @version 0.4.2
+ * @version 0.4.3
  * @since 24.10.2007
  * 
  */
@@ -140,7 +143,8 @@ public final class ActionHandler {
 	String cmd = e.getActionCommand();
 
 	if (this.lop == null) {
-	    System.err.println("ActionHandler: lop shoudn\'t be null!");
+	    MessageHandler.showError(Lang.getString("Strings.Error"),
+		    "ActionHandler: lop shoudn\'t be null!");
 	    exit(-1);
 	}
 
@@ -165,9 +169,10 @@ public final class ActionHandler {
 	} else if (cmd.equals("Menu.View.ShowPrimalProblem")) {
 	    SoPraLOP.VISUAL.setVisible(false);
 	    this.lop.showPrimalProblem();
-	} else if (cmd.equals("Menu.Help.Help"))
-	    MessageHandler.showNotImplemented();
-	else if (cmd.equals("Menu.Help.About")) {
+	} else if (cmd.equals("Menu.Help.Help")) {
+	    HelpDialog.getInstance().setHelp("index.htm");
+	    HelpDialog.getInstance().setVisible(true);
+	} else if (cmd.equals("Menu.Help.About")) {
 	    SoPraLOP.ABOUT.setLocationRelativeTo(SoPraLOP.MAIN);
 	    SoPraLOP.ABOUT.setVisible(true);
 	} else if (cmd.startsWith("Menu.File.Samples")) {
@@ -194,10 +199,10 @@ public final class ActionHandler {
 	if (!SoPraLOP.EDITOR.isEdited())
 	    return true;
 
-	int res = MessageHandler.showConfirmDialog(Lang
-		.getString("Errors.IsEdited"), Lang
-		.getString("Errors.IsEdited.Title"),
-		JOptionPane.YES_NO_CANCEL_OPTION);
+	int res = MessageHandler
+		.showConfirmDialog(Lang.getString("Errors.IsEdited.Title"),
+			Lang.getString("Errors.IsEdited"),
+			JOptionPane.YES_NO_CANCEL_OPTION);
 
 	if (res == JOptionPane.NO_OPTION)
 	    SoPraLOP.EDITOR.take();
@@ -208,7 +213,7 @@ public final class ActionHandler {
     }
 
     /**
-     * Ladefunktion fuer Daten im xml-Format.
+     * Ladefunktion für LOP-Dateien.
      * 
      */
     private void fileOpenClass() {
@@ -226,7 +231,7 @@ public final class ActionHandler {
     }
 
     /**
-     * Speicherfunktion fuer Daten im xml-Format
+     * Speicherfunktion für LOP-Dateien.
      * 
      */
     private void fileSaveClass(boolean saveAs) {

@@ -20,6 +20,7 @@ public class TestHelp {
      * @param args
      */
     public static void main(String[] args) {
+	SettingsFactory.setDebug(true);
 
 	System.out.println("SoPraLOP HelpTest - Version "
 		+ SettingsFactory.getInstance().getVersion());
@@ -29,7 +30,7 @@ public class TestHelp {
 
 	HelpDialog help = HelpDialog.getInstance();
 
-	help.setHelp("gui/html/help/edit_help.html");
+	help.setHelp("index.htm");
 
 	help.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 

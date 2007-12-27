@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 27.12.2007 - Version 0.8
+ * - setFunctions hizugefügt
  * 04.12.2007 - Version 0.7.3
  * - An neues Hilfesystem angepasst
  * 26.11.2007 - Version 0.7.2
@@ -78,6 +80,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.List;
 
 import javax.media.j3d.Canvas3D;
 import javax.swing.BorderFactory;
@@ -95,7 +98,7 @@ import javax.swing.border.Border;
 
 /**
  * @author Michael Kriese
- * @version 0.7.2
+ * @version 0.8
  * @since 12.05.2007
  * 
  */
@@ -118,7 +121,7 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 
     private final JSplitPane body;
 
-    private JMenu edit;
+    private JMenu edit, functions;
 
     private Component pnDuale = null;
 
@@ -198,6 +201,16 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 	this.pnDuale = dual;
     }
 
+    public void setFunctions(List<JMenuItem> items) {
+	this.functions.removeAll();
+
+	for (JMenuItem item : items)
+	    if (item.getText().equals(MenuMaker.SEPARATOR))
+		this.functions.addSeparator();
+	    else
+		this.functions.add(item);
+    }
+
     public void setLOP(LOP lop) {
 	lop.addProblemListener(new LOPAdapter() {
 	    @Override
@@ -263,12 +276,14 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 	menu.addSeparator();
 	menu.add(MenuMaker.getMenuItem("Menu.File.Exit"));
 
+	this.functions = MenuMaker.getMenu("Menu.Functions");
+	menubar.add(this.functions);
+
 	menu = MenuMaker.getMenu("Menu.View");
 	menubar.add(menu);
 	menu.add(MenuMaker.getMenuItem("Menu.View.Reset"));
 	menu.addSeparator();
 	menu.add(MenuMaker.getMenuItem("Menu.View.Show"));
-	// menu.add(MenuMaker.getMenuItem("Menu.View.ShowSolution"));
 	this.primale = MenuMaker.getMenuItem("Menu.View.ShowPrimalProblem");
 	this.duale = MenuMaker.getMenuItem("Menu.View.ShowDualProblem");
 

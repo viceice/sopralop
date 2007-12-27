@@ -4,7 +4,9 @@ SoPraLOP
 -------------------------------------------------------------------------------
 Version 0.6 - 20.12.2007  (voraussichtlicher Termin)
 -------------------------------------------------------------------------------
-- TODO: Hilfe eingebaut
+- Hilfe hinzugefügt
+- Menüeintrag Funktionen hinzugefügt
+- BugFix: Bei einer Fehlermeldung waren Titel und Nachricht vertauscht
 -------------------------------------------------------------------------------
 Version 0.5.2 - 19.12.2007 (Rev. 185)
 -------------------------------------------------------------------------------

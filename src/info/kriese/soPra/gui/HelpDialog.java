@@ -19,6 +19,10 @@
  * 
  * ChangeLog:
  * 
+ * 27.12.2007 - Version 0.1.1
+ * - HyperlinkListener hinzugefügt
+ * - Uneditierbar gesetzt
+ * - Mehrsprachfähigkeit hizugefügt
  * 11.12.2007 - Version 0.1
  *  - Datei hinzugefuegt
  */
@@ -29,30 +33,36 @@ import info.kriese.soPra.io.IOUtils;
 import info.kriese.soPra.io.Settings;
 import info.kriese.soPra.io.impl.SettingsFactory;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.util.Locale;
 
+import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
+import javax.swing.ToolTipManager;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLFrameHyperlinkEvent;
 
 /**
  * 
  * @author Michael Kriese
- * @version 0.1
+ * @version 0.1.1
  * @since 11.12.2007
  * 
  */
 public final class HelpDialog extends JDialog {
 
     private static final String DEFAULT = "<html><body bgcolor=\"#008000\">Test</body></html>";
-    private static HelpDialog INSTANCE = null;
 
+    private static HelpDialog INSTANCE = null;
     private static JFrame PARENT = null;
+
+    private static final String PATH = "gui/lang/";
 
     private static final Settings PROPS = SettingsFactory.getInstance();
 
@@ -61,6 +71,8 @@ public final class HelpDialog extends JDialog {
     public static HelpDialog getInstance() {
 	if (INSTANCE == null)
 	    INSTANCE = new HelpDialog();
+
+	INSTANCE.setLocationRelativeTo(PARENT);
 
 	return INSTANCE;
     }
@@ -76,47 +88,45 @@ public final class HelpDialog extends JDialog {
 		+ " - Version " + PROPS.getVersion(), true);
 
 	setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
-	setSize(400, 600);
+	setSize(400, 400);
 
-	this.content = new JEditorPane("text/html", DEFAULT);
-	// this.content.setOpaque(true);
-	// this.content.setBackground(new Color(0, 128, 0));
-	// this.content.setForeground(Color.WHITE);
+	this.content = new JEditorPane("text/html;charset=utf-8", DEFAULT);
+	this.content.setBorder(BorderFactory.createEmptyBorder());
+	this.content.setEditable(false);
+	ToolTipManager.sharedInstance().registerComponent(this.content);
+	this.content.addHyperlinkListener(new HyperlinkListener() {
+
+	    public void hyperlinkUpdate(HyperlinkEvent e) {
+		if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+		    JEditorPane pane = (JEditorPane) e.getSource();
+		    if (e instanceof HTMLFrameHyperlinkEvent) {
+			HTMLFrameHyperlinkEvent evt = (HTMLFrameHyperlinkEvent) e;
+			HTMLDocument doc = (HTMLDocument) pane.getDocument();
+			doc.processHTMLFrameHyperlinkEvent(evt);
+		    } else
+			try {
+			    pane.setPage(e.getURL());
+			} catch (Exception t) {
+			    MessageHandler.exceptionThrown(t);
+			}
+		}
+	    }
+	});
 	add(new JScrollPane(this.content));
-	// add(this.content);
     }
 
     public void setHelp(String file) {
 
-	URL url = IOUtils.getURL(file);
-	StringBuffer sb = new StringBuffer();
+	URL url = IOUtils.getURL(PATH + Locale.getDefault().getLanguage() + "/"
+		+ file);
 
-	try {
-	    InputStreamReader isr = new InputStreamReader(url.openStream(),
-		    Charset.forName("utf-8"));
-	    BufferedReader r = new BufferedReader(isr);
-	    String line;
-
-	    while ((line = r.readLine()) != null)
-		sb.append(line);
-
-	    r.close();
-	    isr.close();
-
-	} catch (IOException e) {
-	    MessageHandler.showError(Lang.getString("Strings.Error"), e
-		    .getLocalizedMessage());
-	} catch (Exception e) {
-	    MessageHandler.showError(Lang.getString("Strings.Error"), e
-		    .getClass().getCanonicalName()
-		    + ": " + e.getLocalizedMessage());
-	}
+	if (url == null)
+	    url = IOUtils.getURL(PATH + "de/" + file);
 
 	try {
 	    this.content.setPage(url);
 	} catch (IOException e) {
-	    MessageHandler.showError(Lang.getString("Strings.Error"), e
-		    .getLocalizedMessage());
+	    MessageHandler.exceptionThrown(e);
 	}
     }
 }

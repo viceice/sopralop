@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 27.12.2007 - Version 0.5.6
+ * - Hilfe-Fenster hinzugefügt
+ * - Übergabe für Funktionsmenü hinzugefügt
  * 19.12.2007 - Version 0.5.5
  * - StartParameter werden verarbeitet
  * 04.12.2007 - Version 0.5.4
@@ -52,6 +55,7 @@ import info.kriese.soPra.engine3D.Engine3D;
 import info.kriese.soPra.gui.AboutDialog;
 import info.kriese.soPra.gui.ActionHandler;
 import info.kriese.soPra.gui.DualLOPPanel;
+import info.kriese.soPra.gui.HelpDialog;
 import info.kriese.soPra.gui.MessageHandler;
 import info.kriese.soPra.gui.InputPanel;
 import info.kriese.soPra.gui.MainFrame;
@@ -76,7 +80,7 @@ import javax.swing.filechooser.FileFilter;
 
 /**
  * @author Michael Kriese
- * @version 0.5.5
+ * @version 0.5.6
  * @since 12.05.2007
  * 
  */
@@ -180,6 +184,10 @@ public final class SoPraLOP {
 	splash.setMessage(Lang.getString("Boot.About"));
 	ABOUT = AboutDialog.getInstance(MAIN);
 
+	splash.setMessage(Lang.getString("Boot.Help"));
+	HelpDialog.setParent(MAIN);
+	HelpDialog.getInstance().setHelp("index.htm");
+
 	splash.setMessage(Lang.getString("Boot.FileChooser"));
 	FC = new JFileChooser();
 	FC.addChoosableFileFilter(new FileFilter() {
@@ -201,6 +209,7 @@ public final class SoPraLOP {
 	INPUT = new InputPanel();
 	INPUT.setEditor(EDITOR);
 	MAIN.setContent(SoPraLOP.INPUT);
+	MAIN.setFunctions(INPUT.getFunctions());
 
 	splash.setMessage(Lang.getString("Boot.3DEngine"));
 	ENGINE = new Engine3D();

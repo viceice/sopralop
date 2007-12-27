@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 27.12.2007 - Version 0.3.2
+ * - Konstante SEPARATOR hinzugefügt
  * 04.11.2007 - Version 0.3.1
  * - BugFix: NullPointer falls ActionHandler null behoben
  * 01.11.2007 - Version 0.3
@@ -44,11 +46,13 @@ import javax.swing.KeyStroke;
 /**
  * 
  * @author Michael Kriese
- * @version 0.3.1
+ * @version 0.3.2
  * @since 29.07.2007
  * 
  */
 public final class MenuMaker {
+
+    public static final String SEPARATOR = "SEPARATOR";
 
     private static ActionHandler AC = null;
 

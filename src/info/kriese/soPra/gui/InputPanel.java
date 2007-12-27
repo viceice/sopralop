@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 27.12.2007 - Version 0.7
+ * - Funktionsmenü hinzugefügt
  * 04.12.2007 - Version 0.6.4
  * - An Lösungseditor angepasst, um unendlich und nicht exitent  als Lösung eingeben zu können.
  * 03.12.2007 - Version 0.6.3
@@ -88,7 +90,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.DefaultCellEditor;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -104,7 +108,7 @@ import javax.swing.table.TableColumn;
  * 
  * @author Peer Sterner
  * @since 13.05.2007
- * @version 0.6.4
+ * @version 0.7
  */
 public final class InputPanel extends JPanel {
 
@@ -113,13 +117,16 @@ public final class InputPanel extends JPanel {
 
     private final DualLOPTableModel dualModel;
 
+    private final List<JMenuItem> functions;
+
     private final JComboBox opEditor, maxEditor;
 
     private final LOPTableModel primalModel;
 
     private final JTable table;
 
-    private Component take = null, check = null, reset = null;
+    private JButton take = null, check = null, reset = null;
+    private JMenuItem take2, check2, reset2;
 
     private final List<Component> toolbarBtns;
 
@@ -219,9 +226,14 @@ public final class InputPanel extends JPanel {
 	JScrollPane scrollPane = new JScrollPane(this.table);
 
 	this.toolbarBtns = new ArrayList<Component>();
+	this.functions = new ArrayList<JMenuItem>();
 	generateEditToolbar();
 
 	add(scrollPane, BorderLayout.CENTER);
+    }
+
+    public List<JMenuItem> getFunctions() {
+	return this.functions;
     }
 
     public void setEditor(LOPEditor editor) {
@@ -255,17 +267,36 @@ public final class InputPanel extends JPanel {
 
 	this.toolbarBtns.add(toolbar.add(MenuMaker
 		.getToolBarButton("Input.Menu.AddVar")));
+	this.functions.add(MenuMaker.getMenuItem("Input.Menu.AddVar"));
+
 	this.toolbarBtns.add(toolbar.add(MenuMaker
 		.getToolBarButton("Input.Menu.DelVar")));
+	this.functions.add(MenuMaker.getMenuItem("Input.Menu.DelVar"));
+
 	toolbar.addSeparator();
-	this.reset = toolbar
-		.add(MenuMaker.getToolBarButton("Input.Menu.Reset"));
+	this.functions.add(new JMenuItem(MenuMaker.SEPARATOR));
+
+	this.reset = MenuMaker.getToolBarButton("Input.Menu.Reset");
+	toolbar.add(this.reset);
+	this.reset2 = MenuMaker.getMenuItem("Input.Menu.Reset");
+	this.functions.add(this.reset2);
+
 	this.toolbarBtns.add(toolbar.add(MenuMaker
 		.getToolBarButton("Input.Menu.Clear")));
+	this.functions.add(MenuMaker.getMenuItem("Input.Menu.Clear"));
+
 	toolbar.addSeparator();
-	this.take = toolbar.add(MenuMaker.getToolBarButton("Input.Menu.Save"));
-	this.check = toolbar
-		.add(MenuMaker.getToolBarButton("Input.Menu.Check"));
+	this.functions.add(new JMenuItem(MenuMaker.SEPARATOR));
+
+	this.take = MenuMaker.getToolBarButton("Input.Menu.Save");
+	toolbar.add(this.take);
+	this.take2 = MenuMaker.getMenuItem("Input.Menu.Save");
+	this.functions.add(this.take2);
+
+	this.check = MenuMaker.getToolBarButton("Input.Menu.Check");
+	toolbar.add(this.check);
+	this.check2 = MenuMaker.getMenuItem("Input.Menu.Check");
+	this.functions.add(this.check2);
     }
 
     /**
@@ -297,12 +328,18 @@ public final class InputPanel extends JPanel {
     private void setSaveBtn() {
 	if (this.primalModel.isEdited()) {
 	    this.take.setEnabled(true);
+	    this.take2.setEnabled(true);
 	    this.check.setEnabled(false);
+	    this.check2.setEnabled(false);
 	    this.reset.setEnabled(true);
+	    this.reset2.setEnabled(true);
 	} else {
 	    this.take.setEnabled(false);
+	    this.take2.setEnabled(false);
 	    this.check.setEnabled(true);
+	    this.check2.setEnabled(true);
 	    this.reset.setEnabled(false);
+	    this.reset2.setEnabled(false);
 	}
     }
 
@@ -310,12 +347,10 @@ public final class InputPanel extends JPanel {
 	for (Component c : this.toolbarBtns)
 	    c.setEnabled(value);
 
+	for (Component c : this.functions)
+	    c.setEnabled(value);
+
 	if (value)
 	    setSaveBtn();
-	else {
-	    this.take.setEnabled(false);
-	    this.check.setEnabled(false);
-	    this.reset.setEnabled(false);
-	}
     }
 }
