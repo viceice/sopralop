@@ -1,0 +1,48 @@
+body {
+	color: white;
+	background-color: green;
+	margin: 0px;
+	padding: 0px;
+	font-size: 12;
+}
+
+h1 {
+	text-align: center;
+}
+
+h2 {
+	text-align: center;
+}
+
+h3 {
+	margin: 5px;
+	font-size: medium;
+}
+
+a {
+	color: white;
+}
+
+p {
+	margin: 0px 10px 0px 10px;
+	font-size: medium;
+}
+
+.line {
+	background-color: white;
+	font-size: 1px;
+	margin-top: 10px;
+}
+
+li {
+	font-size: medium;
+}
+
+.back {
+	text-align: center;
+	font-size: medium;
+}
+
+.spacer {
+	list-style-type: none;
+}

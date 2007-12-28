@@ -2,15 +2,18 @@ SoPraLOP
 (c)2007 Michael Kriese & Peer Sterner
 
 -------------------------------------------------------------------------------
-Version 0.6 - 20.12.2007  (voraussichtlicher Termin)
+Version 0.6 - 01.01.2008  (voraussichtlicher Termin)
 -------------------------------------------------------------------------------
-- Hilfe hinzugefügt
+- Hilfe hinzugefügt (Deutsch / Englisch)
+- Programm jetzt auch in Englisch
 - Menüeintrag Funktionen hinzugefügt
+- Komandozeilenparameter hinzugefügt (debug, lang=XX)
 - BugFix: Bei einer Fehlermeldung waren Titel und Nachricht vertauscht
 -------------------------------------------------------------------------------
 Version 0.5.2 - 19.12.2007 (Rev. 185)
 -------------------------------------------------------------------------------
-- BugFix: Lösungcheck gab immer falsch zurück, da der Typ-Vergleich fehlerhaft implementiert war
+- BugFix: Lösungcheck gab immer falsch zurück, da der Typ-Vergleich
+   fehlerhaft implementiert war
 - Neues ExceptionHandling implementiert
 -------------------------------------------------------------------------------
 Version 0.5.1 - 17.12.2007 (Rev. 184)

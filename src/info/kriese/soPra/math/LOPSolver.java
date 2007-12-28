@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 28.12.2007 - Version 0.5.6
+ * - Speichern des LOP an IOUtils weitergereicht
  * 19.12.2007 - Version 0.5.5
  * - Auf neues ExceptionHandling umgestellt
  * 17.12.2007 - Version 0.5.4
@@ -84,9 +86,7 @@ import info.kriese.soPra.lop.LOPSolution;
 import info.kriese.soPra.math.quickhull.QuickHull;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Vector;
@@ -101,7 +101,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author Michael Kriese
- * @version 0.5.5
+ * @version 0.5.6
  * @since 10.05.2007
  * 
  */
@@ -213,16 +213,18 @@ public final class LOPSolver {
 	return false;
     }
 
+    /**
+     * Speichert das LOP in die angegebene Datei
+     * 
+     * @param lop -
+     *                LOP, welches gespeichert werden soll.
+     * @param file -
+     *                Datei, in die gespeichert werden soll.
+     * @return true, falls das Speichern erfolgreich war, sonst false.
+     */
     private boolean save(LOP lop, URL file) {
 	try {
-	    FileOutputStream fout = new FileOutputStream(
-		    new File(file.toURI()), false);
-	    PrintStream myOutput = new PrintStream(fout, false, "UTF-8");
-	    String out = IOUtils.generateXMLContent(lop);
-	    myOutput.println(out);
-	    myOutput.flush();
-	    myOutput.close();
-	    fout.close();
+	    IOUtils.saveLOP(lop, new File(file.toURI()));
 	    return true;
 	} catch (IOException e) {
 	    MessageHandler.exceptionThrown(e);

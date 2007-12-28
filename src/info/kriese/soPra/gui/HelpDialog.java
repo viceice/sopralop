@@ -18,7 +18,9 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * 
  * ChangeLog:
- * 
+ * 28.12.2007 - Version 0.1.2
+ * - Standart-Text geändert
+ * - ResourceLoading in IOUtils ausgelagert
  * 27.12.2007 - Version 0.1.1
  * - HyperlinkListener hinzugefügt
  * - Uneditierbar gesetzt
@@ -34,6 +36,7 @@ import info.kriese.soPra.io.Settings;
 import info.kriese.soPra.io.impl.SettingsFactory;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
 
@@ -45,24 +48,23 @@ import javax.swing.JScrollPane;
 import javax.swing.ToolTipManager;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import javax.swing.text.html.HTMLDocument;
-import javax.swing.text.html.HTMLFrameHyperlinkEvent;
 
 /**
  * 
  * @author Michael Kriese
- * @version 0.1.1
+ * @version 0.1.2
  * @since 11.12.2007
  * 
  */
 public final class HelpDialog extends JDialog {
 
-    private static final String DEFAULT = "<html><body bgcolor=\"#008000\">Test</body></html>";
+    private static final String DEFAULT = "<html><body style=\"background-color:"
+	    + "green;color:white;text-align:center\"><h1>Error</h1></body></html>";
 
     private static HelpDialog INSTANCE = null;
     private static JFrame PARENT = null;
 
-    private static final String PATH = "gui/lang/";
+    private static final String PATH = "gui/lang/help";
 
     private static final Settings PROPS = SettingsFactory.getInstance();
 
@@ -94,34 +96,37 @@ public final class HelpDialog extends JDialog {
 	this.content.setBorder(BorderFactory.createEmptyBorder());
 	this.content.setEditable(false);
 	ToolTipManager.sharedInstance().registerComponent(this.content);
+	this.content.setDoubleBuffered(true);
 	this.content.addHyperlinkListener(new HyperlinkListener() {
 
 	    public void hyperlinkUpdate(HyperlinkEvent e) {
-		if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-		    JEditorPane pane = (JEditorPane) e.getSource();
-		    if (e instanceof HTMLFrameHyperlinkEvent) {
-			HTMLFrameHyperlinkEvent evt = (HTMLFrameHyperlinkEvent) e;
-			HTMLDocument doc = (HTMLDocument) pane.getDocument();
-			doc.processHTMLFrameHyperlinkEvent(evt);
-		    } else
-			try {
-			    pane.setPage(e.getURL());
-			} catch (Exception t) {
-			    MessageHandler.exceptionThrown(t);
-			}
-		}
+		if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED)
+		    try {
+			String url = e.getURL().toString();
+			setHelp(url.substring(url.lastIndexOf("/") + 1));
+		    } catch (Exception t) {
+			MessageHandler.exceptionThrown(t);
+		    }
 	    }
 	});
 	add(new JScrollPane(this.content));
     }
 
     public void setHelp(String file) {
+	String query = "";
 
-	URL url = IOUtils.getURL(PATH + Locale.getDefault().getLanguage() + "/"
-		+ file);
+	if (file.contains("#")) {
+	    query = file.substring(file.indexOf("#"));
+	    file = file.substring(0, file.indexOf("#"));
+	}
 
-	if (url == null)
-	    url = IOUtils.getURL(PATH + "de/" + file);
+	URL url = IOUtils.getURL(PATH, file, Locale.getDefault());
+
+	try {
+	    url = new URL(url, query);
+	} catch (MalformedURLException e) {
+	    MessageHandler.exceptionThrown(e);
+	}
 
 	try {
 	    this.content.setPage(url);

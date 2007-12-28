@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 28.12.2007 - Version 0.2.1
+ * - Funktion zum parsen der Komandozeilenparameter hinzugefügt
  * 19.12.2007 - Version 0.2
  * - Debug Handling hinzugefügt
  * 09.10.2007 - Version 0.1
@@ -26,12 +28,14 @@
  */
 package info.kriese.soPra.io.impl;
 
+import java.util.Locale;
+
 import info.kriese.soPra.io.Settings;
 
 /**
  * 
  * @author Michael Kriese
- * @version 0.2
+ * @version 0.2.1
  * @since 09.10.2007
  * 
  */
@@ -42,12 +46,64 @@ public final class SettingsFactory {
 
     private static Settings props = null;
 
+    /**
+     * Erstellt bei Bedarf eine Instanz des Settings-Interface und gibt die
+     * Referenz darauf zurück.
+     * 
+     * @return Referenz auf ein Settings-Objekt.
+     */
     public static Settings getInstance() {
 	if (props == null)
 	    props = new SettingsImpl(FILE, DEBUG);
 	return props;
     }
 
+    /**
+     * Durchsucht die Liste auf anwendbare Parameter.
+     * 
+     * Aktuelle Parameter:
+     * <ul>
+     * <li>debug - Aktiviert den Debug-Modus</li>
+     * <li>lang=XX - Ändert die lokale Sprache, wobei XX die gewünschte Sprache
+     * ist.</li>
+     * </ul>
+     * 
+     * @param args -
+     *                Liste, welche durchsucht werden soll.
+     */
+    public static void parseArgs(String[] args) {
+	// Parse Parameters
+	for (String arg : args) {
+	    if (arg.toLowerCase().contains("debug"))
+		DEBUG = true;
+	    if (arg.toLowerCase().contains("lang")) {
+		String[] lang = arg.substring(5).split("_");
+		switch (lang.length) {
+		    case 3:
+			Locale
+				.setDefault(new Locale(lang[0], lang[1],
+					lang[2]));
+			break;
+		    case 2:
+			Locale.setDefault(new Locale(lang[0], lang[1]));
+			break;
+		    case 1:
+			Locale.setDefault(new Locale(lang[0]));
+			break;
+
+		    default:
+			break;
+		}
+	    }
+	}
+    }
+
+    /**
+     * Aktiviert oder deaktiviert den Debug-Modus.
+     * 
+     * @param value -
+     *                true zum aktivieren, andernfalls false.
+     */
     public static void setDebug(boolean value) {
 	DEBUG = value;
     }

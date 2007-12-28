@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 28.12.2007 - Version 0.5.7
+ * - Komandozeilenparameterhandling in SettingsFactory ausgelagert
  * 27.12.2007 - Version 0.5.6
  * - Hilfe-Fenster hinzugefügt
  * - Übergabe für Funktionsmenü hinzugefügt
@@ -56,9 +58,9 @@ import info.kriese.soPra.gui.AboutDialog;
 import info.kriese.soPra.gui.ActionHandler;
 import info.kriese.soPra.gui.DualLOPPanel;
 import info.kriese.soPra.gui.HelpDialog;
-import info.kriese.soPra.gui.MessageHandler;
 import info.kriese.soPra.gui.InputPanel;
 import info.kriese.soPra.gui.MainFrame;
+import info.kriese.soPra.gui.MessageHandler;
 import info.kriese.soPra.gui.SplashDialog;
 import info.kriese.soPra.gui.Visual3DFrame;
 import info.kriese.soPra.gui.lang.Lang;
@@ -80,7 +82,7 @@ import javax.swing.filechooser.FileFilter;
 
 /**
  * @author Michael Kriese
- * @version 0.5.6
+ * @version 0.5.7
  * @since 12.05.2007
  * 
  */
@@ -108,10 +110,8 @@ public final class SoPraLOP {
      */
     public static void main(String[] args) {
 
-	// Parse Parameters
-	for (String arg : args)
-	    if (arg.toLowerCase().contains("debug"))
-		SettingsFactory.setDebug(true);
+	// Parse commandline arguments
+	SettingsFactory.parseArgs(args);
 
 	try { // use the local look and feel
 	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

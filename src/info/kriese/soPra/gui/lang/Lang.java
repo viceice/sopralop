@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 28.12.2007 - Version 0.4.2
+ * - Verzögertes ResourceLoading, um auf Komandozeilenparameter zu reagieren
  * 27.12.2007 - Version 0.4.1
  * - Fehlerbehandlung aufgeräumt
  * 25.10.2007 - Version 0.4
@@ -43,7 +45,7 @@ import java.util.ResourceBundle;
 /**
  * 
  * @author Michael Kriese
- * @version 0.4.1
+ * @version 0.4.2
  * @since 29.07.2007
  * 
  */
@@ -51,8 +53,7 @@ public final class Lang {
 
     private static final String BUNDLE_NAME = "info.kriese.soPra.gui.lang.lang";
 
-    private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle
-	    .getBundle(BUNDLE_NAME, Locale.getDefault());
+    private static ResourceBundle RESOURCE_BUNDLE = null;
 
     public static int getInt(String key) {
 	try {
@@ -78,11 +79,13 @@ public final class Lang {
     }
 
     public static String getString(String key, String def) {
+	if (RESOURCE_BUNDLE == null)
+	    RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME, Locale
+		    .getDefault());
 	try {
 	    String value = RESOURCE_BUNDLE.getString(key);
 	    return new String(value.getBytes("ISO-8859-1"), "UTF-8");
 	} catch (MissingResourceException e) {
-	    e.printStackTrace();
 	} catch (UnsupportedEncodingException e) {
 	    e.printStackTrace();
 	}

@@ -19,6 +19,11 @@
  * 
  * ChangeLog:
  * 
+ * 28.12.2007 - Version 0.4
+ * - Neue Überladung für getURL, mit der man sprachabhängige Dateien findet.
+ * - Nicht mehr benötigte Methoden und Konstanten gelöscht.
+ * - generateXMLContent in saveLOP umgewandelt, ist jetzt auch fürs Speichern
+ *    zuständig
  * 19.12.2007 - Version 0.3.5
  * - Auf neues ExceptionHandling umgestellt
  * - DebugAusgabe optimiert
@@ -58,74 +63,32 @@ import info.kriese.soPra.math.Vector3Frac;
 import info.kriese.soPra.math.impl.FractionalFactory;
 import info.kriese.soPra.math.impl.Vector3FracFactory;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
+import java.text.MessageFormat;
+import java.util.Locale;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 
 /**
  * 
  * @author Michael Kriese
- * @version 0.3.5
+ * @version 0.4
  * @since 29.07.2007
  * 
  */
 public final class IOUtils {
 
-    public static URL BASE_URL = getURL("gui/html/tmpl.html");
+    public static String format(String pattern, String[] args) {
+	return MessageFormat.format(pattern, (Object[]) args);
+    }
 
-    /**
-     * generieren des xml-Content fuer das Speichern der Daten
-     * 
-     */
-    public static String generateXMLContent(LOP lop) {
-
-	StringBuilder out = new StringBuilder();
-
-	// xml-Header
-	out.append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<lop type=\""
-		+ (lop.isMaximum() ? "max" : "min") + "\">\n");
-
-	String[] newOps = new String[2], ops = lop.getOperators();
-	for (int i = 0; i < 2; i++)
-	    if (ops[i].equals("="))
-		newOps[i] = "equal";
-	    else if (ops[i].equals("<"))
-		newOps[i] = "less";
-	    else if (ops[i].equals(">"))
-		newOps[i] = "greater";
-
-	// die Vektordaten der Variablen xi
-	out.append("<vectors>\n");
-	for (Vector3Frac vec : lop.getVectors())
-	    out.append("  <vector x=\"" + vec.getCoordX() + "\" y=\""
-		    + vec.getCoordY() + "\" z=\"" + vec.getCoordZ()
-		    + "\"  />\n");
-	out.append("</vectors>\n");
-
-	// die Vektordaten der Zielfunktion
-	Vector3Frac target = lop.getTarget();
-	out.append("<target  x=\"" + target.getCoordX() + "\" y=\""
-		+ target.getCoordY() + "\" z=\"" + target.getCoordZ()
-		+ "\" />\n");
-
-	// die Operatoren
-	out.append("<ops x=\"" + newOps[0] + "\" y=\"" + newOps[1] + "\" />\n");
-
-	// schliessendes xml-Tag
-	out.append("</lop>\n");
-
-	return out.toString();
+    public static String format(String pattern, Vector3Frac vec) {
+	return MessageFormat.format(pattern, new Object[] { vec.getCoordX(),
+		vec.getCoordY(), vec.getCoordZ() });
     }
 
     public static int getCase(NamedNodeMap map) {
@@ -138,22 +101,6 @@ public final class IOUtils {
 	    MessageHandler.exceptionThrown(e);
 	}
 	return -1;
-    }
-
-    public static Document getDocumentTemplate() {
-	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-	DocumentBuilder builder;
-
-	Document doc = null;
-	try {
-	    builder = factory.newDocumentBuilder();
-	    doc = builder.parse(BASE_URL.openStream());
-	    doc.setDocumentURI(BASE_URL.toString());
-	} catch (Exception e) {
-	    MessageHandler.exceptionThrown(e);
-	}
-
-	return doc;
     }
 
     /**
@@ -195,12 +142,39 @@ public final class IOUtils {
     /**
      * Findet eine Datei und gibt die URL zurück.
      * 
-     * @param file
-     * @return
+     * @param file -
+     *                Datei, welche gefunden werden soll.
+     * @return URL-Objekt, welches auf die gesuchte Datei zeigt. null, falls die
+     *         Datei nicht existiert.
      */
     public static URL getURL(String file) {
 	URL res = SoPraLOP.class.getResource(file);
 	return res;
+    }
+
+    /**
+     * Findet eine sprachabhängige Datei und gibt die URL zurück.
+     * 
+     * @param path -
+     *                Pfad, in welchem sich die Datei befindet.
+     * @param file -
+     *                Datei, welche gefunden werden soll.
+     * @param l -
+     *                Locale-Objekt, welches die Sprache enthält.
+     * @return URL-Objekt, welches auf die gesuchte Datei zeigt. null, falls die
+     *         Datei nicht existiert.
+     */
+    public static URL getURL(String path, String file, Locale l) {
+	URL url;
+	url = getURL(path + "_" + l.getLanguage() + "_" + l.getCountry() + "/"
+		+ file);
+
+	if (url == null)
+	    url = getURL(path + "_" + l.getLanguage() + "/" + file);
+
+	if (url == null)
+	    url = getURL(path + "/" + file);
+	return url;
     }
 
     /**
@@ -229,29 +203,6 @@ public final class IOUtils {
 	    MessageHandler.exceptionThrown(e);
 	}
 	return null;
-    }
-
-    public static void print(Document doc) {
-	System.out
-		.println("---------------------------------------------------------------------------");
-	Transformer transformer = null;
-	TransformerFactory transformerFactory = TransformerFactory
-		.newInstance();
-	try {
-	    transformer = transformerFactory.newTransformer();
-	} catch (TransformerConfigurationException e) {
-	    MessageHandler.exceptionThrown(e);
-	}
-	DOMSource source = new DOMSource(doc);
-	StreamResult result = new StreamResult(System.out);
-	try {
-	    transformer.transform(source, result);
-	} catch (TransformerException e) {
-	    MessageHandler.exceptionThrown(e);
-	}
-	System.out.println();
-	System.out
-		.println("---------------------------------------------------------------------------");
     }
 
     /**
@@ -333,6 +284,58 @@ public final class IOUtils {
 		    + area.getL2Amount() + " ]");
 
 	out.println();
+    }
+
+    /**
+     * Generieren und Speichern des LOP&#039;s.
+     * 
+     * @param lop -
+     *                LOP, welches gespeichert werden soll.
+     * @param file -
+     *                File-Objekt, welches die Datei repräsentiert, in das
+     *                gespeichert wird
+     * @throws IOException -
+     *                 Falls Datei nicht existiert oder nicht geschrieben werden
+     *                 kann.
+     * 
+     */
+    public static void saveLOP(LOP lop, File file) throws IOException {
+
+	FileOutputStream fout = new FileOutputStream(file, false);
+	PrintStream out = new PrintStream(fout, false, "UTF-8");
+
+	String VEC = "\t<vector x=\"{0}\" y=\"{1}\" z=\"{2}\"  />";
+	String TARG = "<target  x=\"{0}\" y=\"{1}\" z=\"{2}\" />";
+	String OPS = "<ops x=\"{0}\" y=\"{1}\" />";
+
+	// xml-Header
+	out.println("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<lop type=\""
+		+ (lop.isMaximum() ? "max" : "min") + "\">");
+
+	// die Vektordaten der Variablen xi
+	out.println("<vectors>");
+	for (Vector3Frac vec : lop.getVectors())
+	    out.println(format(VEC, vec));
+	out.println("</vectors>");
+
+	// die Vektordaten der Zielfunktion
+	out.println(format(TARG, lop.getTarget()));
+
+	// die Operatoren
+	String[] newOps = new String[2], ops = lop.getOperators();
+	for (int i = 0; i < 2; i++)
+	    if (ops[i].equals("="))
+		newOps[i] = "equal";
+	    else if (ops[i].equals("<"))
+		newOps[i] = "less";
+	    else if (ops[i].equals(">"))
+		newOps[i] = "greater";
+	out.println(format(OPS, newOps));
+
+	// schliessendes xml-Tag
+	out.println("</lop>");
+
+	out.close();
     }
 
     /**
