@@ -1,4 +1,4 @@
-﻿body {
+body {
 	color: white;
 	background-color: green;
 	margin: 0px;
@@ -36,7 +36,6 @@ p {
 
 li {
 	font-size: medium;
-	list-style-type: disc;
 }
 
 .back {

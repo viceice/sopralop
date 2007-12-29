@@ -21,6 +21,7 @@
  * 
  * 29.12.2007 - Version 0.1.3
  * - BugFix: Wenn Programm als Jar-Datei gepackt war, fand es die Hilfe-Dateien nicht.
+ * - BugFix: Fehler beim Laden der StyleSheets behoben.
  * 28.12.2007 - Version 0.1.2
  * - Standart-Text geändert
  * - ResourceLoading in IOUtils ausgelagert
@@ -42,6 +43,7 @@ import java.awt.Cursor;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.Locale;
@@ -58,6 +60,7 @@ import javax.swing.event.HyperlinkListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.StyleSheet;
 
 /**
  * 
@@ -68,12 +71,13 @@ import javax.swing.text.html.HTMLEditorKit;
  */
 public final class HelpDialog extends JDialog {
 
+    private static URL CSS = IOUtils.getURL("gui/lang/style.css");
+
     private static final String DEFAULT = "<html><body style=\"background-color:"
 	    + "green;color:white;text-align:center\"><h1>Error</h1></body></html>";
-
     private static HelpDialog INSTANCE = null;
-    private static JFrame PARENT = null;
 
+    private static JFrame PARENT = null;
     private static final String PATH = "gui/lang/help";
     private static final Settings PROPS = SettingsFactory.getInstance();
 
@@ -88,8 +92,32 @@ public final class HelpDialog extends JDialog {
 	return INSTANCE;
     }
 
+    /**
+     * Setzt das Eltern-Fenster, vor dem das Hilfe-Fenster zentriert dargestellt
+     * werden soll.
+     * 
+     * @param parent -
+     *                Eltern-Fenster
+     */
     public static void setParent(JFrame parent) {
 	PARENT = parent;
+    }
+
+    /**
+     * Liest die Style-Datei in das HTML-Dokument
+     * 
+     * @param doc -
+     *                HTML-Dokument, in welches die Styles geladen werden sollen
+     * @throws IOException -
+     *                 Falls ein Lesefehler auftritt
+     */
+    private static void readCSS(HTMLDocument doc) throws IOException {
+	Reader reader;
+	StyleSheet ss = doc.getStyleSheet();
+
+	reader = new StringReader(readDocument(CSS).toString());
+	ss.loadRules(reader, CSS);
+	reader.close();
     }
 
     /**
@@ -170,15 +198,16 @@ public final class HelpDialog extends JDialog {
 		setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
 		this.page = url;
-		StringReader sr = new StringReader(readDocument(url).toString());
+		Reader reader = new StringReader(readDocument(url).toString());
 
 		HTMLDocument doc = (HTMLDocument) this.editor
 			.createDefaultDocument();
 		doc.putProperty("IgnoreCharsetDirective", true);
 		doc.setBase(url);
-		this.editor.read(sr, doc, 0);
+		this.editor.read(reader, doc, 0);
+		reader.close();
 
-		sr.close();
+		readCSS(doc);
 
 		this.content.setDocument(doc);
 		setCursor(old);
