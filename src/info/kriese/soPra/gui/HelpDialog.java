@@ -41,6 +41,7 @@ import info.kriese.soPra.io.impl.SettingsFactory;
 
 import java.awt.Cursor;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -193,7 +194,10 @@ public final class HelpDialog extends JDialog {
 	URL url = IOUtils.getURL(PATH, file, Locale.getDefault());
 
 	try {
-	    if (url != null && (this.page == null || !url.sameFile(this.page))) {
+	    if (url == null)
+		throw new FileNotFoundException(file);
+
+	    if (this.page == null || !url.sameFile(this.page)) {
 		Cursor old = getCursor();
 		setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
