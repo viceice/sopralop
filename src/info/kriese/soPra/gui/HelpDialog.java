@@ -18,6 +18,9 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * 
  * ChangeLog:
+ * 
+ * 29.12.2007 - Version 0.1.3
+ * - BugFix: Wenn Programm als Jar-Datei gepackt war, fand es die Hilfe-Dateien nicht.
  * 28.12.2007 - Version 0.1.2
  * - Standart-Text geändert
  * - ResourceLoading in IOUtils ausgelagert
@@ -35,8 +38,11 @@ import info.kriese.soPra.io.IOUtils;
 import info.kriese.soPra.io.Settings;
 import info.kriese.soPra.io.impl.SettingsFactory;
 
+import java.awt.Cursor;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.MalformedURLException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.URL;
 import java.util.Locale;
 
@@ -45,14 +51,18 @@ import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
 
 /**
  * 
  * @author Michael Kriese
- * @version 0.1.2
+ * @version 0.1.3
  * @since 11.12.2007
  * 
  */
@@ -65,7 +75,6 @@ public final class HelpDialog extends JDialog {
     private static JFrame PARENT = null;
 
     private static final String PATH = "gui/lang/help";
-
     private static final Settings PROPS = SettingsFactory.getInstance();
 
     private static final long serialVersionUID = 1L;
@@ -83,7 +92,38 @@ public final class HelpDialog extends JDialog {
 	PARENT = parent;
     }
 
+    /**
+     * Versucht die angegebene URL zu laden
+     * 
+     * @param url -
+     *                Die URL, welche zu laden ist
+     * @return Gibt die angegebene URL als HTML-Text zurück. Im Fehlerfall gibt
+     *         er eine Fehlermeldung zurück.
+     */
+    private static StringBuffer readDocument(final URL url) {
+	StringBuffer sb = new StringBuffer();
+	try {
+
+	    BufferedReader br = new BufferedReader(new InputStreamReader(url
+		    .openStream(), "UTF-8"));
+	    String buff;
+
+	    while ((buff = br.readLine()) != null)
+		sb.append(buff + "\n");
+
+	    br.close();
+	} catch (IOException e) {
+	    MessageHandler.exceptionThrown(e);
+	    sb.append(DEFAULT);
+	}
+	return sb;
+    }
+
     private final JEditorPane content;
+
+    private final HTMLEditorKit editor;
+
+    private URL page = null;
 
     private HelpDialog() {
 	super(PARENT, PROPS.getName() + " " + Lang.getString("Strings.Help")
@@ -110,28 +150,59 @@ public final class HelpDialog extends JDialog {
 	    }
 	});
 	add(new JScrollPane(this.content));
+
+	this.editor = (HTMLEditorKit) this.content.getEditorKit();
     }
 
     public void setHelp(String file) {
-	String query = "";
+	String query = null;
 
 	if (file.contains("#")) {
-	    query = file.substring(file.indexOf("#"));
+	    query = file.substring(file.indexOf("#") + 1);
 	    file = file.substring(0, file.indexOf("#"));
 	}
 
 	URL url = IOUtils.getURL(PATH, file, Locale.getDefault());
 
 	try {
-	    url = new URL(url, query);
-	} catch (MalformedURLException e) {
-	    MessageHandler.exceptionThrown(e);
-	}
+	    if (url != null && (this.page == null || !url.sameFile(this.page))) {
+		Cursor old = getCursor();
+		setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
-	try {
-	    this.content.setPage(url);
+		this.page = url;
+		StringReader sr = new StringReader(readDocument(url).toString());
+
+		HTMLDocument doc = (HTMLDocument) this.editor
+			.createDefaultDocument();
+		doc.putProperty("IgnoreCharsetDirective", true);
+		doc.setBase(url);
+		this.editor.read(sr, doc, 0);
+
+		sr.close();
+
+		this.content.setDocument(doc);
+		setCursor(old);
+	    }
+
+	    scroll(query);
 	} catch (IOException e) {
 	    MessageHandler.exceptionThrown(e);
+	} catch (BadLocationException e) {
+	    MessageHandler.exceptionThrown(e);
 	}
+    }
+
+    /**
+     * @param query
+     */
+    private void scroll(final String query) {
+	if (query == null)
+	    return;
+
+	SwingUtilities.invokeLater(new Runnable() {
+	    public void run() {
+		HelpDialog.this.content.scrollToReference(query);
+	    }
+	});
     }
 }

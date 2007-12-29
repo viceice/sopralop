@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE jnlp PUBLIC "-//Sun Microsystems, Inc//DTD JNLP Discriptor 1.5//EN" "http://java.sun.com/dtd/JNLP-1.5.dtd">
 
-<jnlp spec="1.0+" codebase="http://math.kriese.info/" href="[codebase]SoPraLOP.jnlp">
+<jnlp spec="1.0+" codebase="http://math.kriese.info/"
+	href="[codebase]SoPraLOP.jnlp">
 
 	<information>
 		<title>[name][debug]</title>
@@ -31,6 +32,8 @@
 			href="http://download.java.net/media/java3d/webstart/release/java3d-latest.jnlp" />
 	</resources>
 
-	<application-desc main-class="info.kriese.soPra.SoPraLOP" />
+	<application-desc main-class="info.kriese.soPra.SoPraLOP">
+		<argument>debug</argument>
+	</application-desc>
 
 </jnlp>
