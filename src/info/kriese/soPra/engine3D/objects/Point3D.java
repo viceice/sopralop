@@ -47,6 +47,7 @@ import com.sun.j3d.utils.geometry.Primitive;
 import com.sun.j3d.utils.geometry.Sphere;
 
 /**
+ * Klasse, welche den Schnittpunkt und die Hilfslinien repräsentiert.
  * 
  * @author Michael Kriese
  * @version 0.4
@@ -55,14 +56,29 @@ import com.sun.j3d.utils.geometry.Sphere;
  */
 public class Point3D extends TransformGroup {
 
+    /**
+     * Apperance-Objekt, welches die visuellen Eigenschaften kapselt.
+     */
     private final Appearance ap;
 
+    /**
+     * Gruppen für Hilfslinien und Kugel.
+     */
     private final TransformGroup grpX, grpY, grpZ, grpPoint;
 
+    /**
+     * Zylinder, welche die Hilfslinien darstellen.
+     */
     private final Cylinder lineX, lineY, lineZ;
 
+    /**
+     * Kugel, welche den Schnittpunkt darstellt.
+     */
     private final Sphere point;
 
+    /**
+     * Konstruktor, welcher alle Objekte erstellt und initialisiert.
+     */
     public Point3D() {
 
 	this.grpPoint = new TransformGroup();
@@ -100,6 +116,12 @@ public class Point3D extends TransformGroup {
 	addChild(this.grpZ);
     }
 
+    /**
+     * Berechnet die Position des Schnittpunkts und der Hilfslinien.
+     * 
+     * @param pos -
+     *                Position, an der der Schnittpunkt liegt.
+     */
     public void compute(Vector3f pos) {
 
 	Vector3d rot = new Vector3d(), scale = new Vector3d(1.0, 1.0, 1.0);

@@ -69,16 +69,39 @@ import com.sun.j3d.utils.geometry.GeometryInfo;
  */
 public class Cone3D extends TransformGroup {
 
+    /**
+     * Außenseite, Innenseite und Kanten des Kegels.
+     */
     private Shape3D front, back, lines;
 
+    /**
+     * Geordnete Indizes der Seitenflächen des Kegels.
+     */
     private int[] indices;
+
+    /**
+     * LOP, welches der Kegel darstellt.
+     */
     private LOP lop;
 
+    /**
+     * Gruppe der Kantenbeschriftung.
+     */
     private final TransformGroup names;
 
+    /**
+     * Kegelflächen
+     */
     private Point3f[] vertices;
+
+    /**
+     * Kegelflächen.
+     */
     private final List<Vector3Frac> verticesOrig;
 
+    /**
+     * Konstruktor, welcher alle Objekte erstellt und initialisiert.
+     */
     public Cone3D() {
 
 	this.names = new TransformGroup();
@@ -94,6 +117,14 @@ public class Cone3D extends TransformGroup {
 	initLines();
     }
 
+    /**
+     * Berechnet das 3D-Koordinatensystem.
+     * 
+     * @param vertices -
+     *                Seitenflächen
+     * @param size -
+     *                Skalierungsfaktor
+     */
     public void compute(List<Vertex> vertices, float size) {
 	this.verticesOrig.clear();
 
@@ -144,10 +175,21 @@ public class Cone3D extends TransformGroup {
 	computeNames();
     }
 
+    /**
+     * Verknüpfung zum LOP.
+     * 
+     * Wird zur Darstellung der Kantennamen gebraucht.
+     * 
+     * @param lop -
+     *                LOP, welches benutzt werden soll
+     */
     public void setLOP(LOP lop) {
 	this.lop = lop;
     }
 
+    /**
+     * Berechnet die Innenseiten des Kegels.
+     */
     private void computeBack() {
 	GeometryInfo gInfo = new GeometryInfo(GeometryInfo.TRIANGLE_ARRAY);
 
@@ -162,6 +204,9 @@ public class Cone3D extends TransformGroup {
 
     }
 
+    /**
+     * Berechnet die Vorderseiten des Kegels.
+     */
     private void computeFront() {
 	GeometryInfo gInfo = new GeometryInfo(GeometryInfo.TRIANGLE_ARRAY);
 
@@ -183,6 +228,9 @@ public class Cone3D extends TransformGroup {
 	this.front.setGeometry(gInfo.getGeometryArray());
     }
 
+    /**
+     * Berechnet die Kanten des Kegels.
+     */
     private void computeLines() {
 	int lines = this.vertices.length - 1;
 	LineArray lineArray = new LineArray(lines * 2, LineArray.COORDINATES
@@ -205,6 +253,9 @@ public class Cone3D extends TransformGroup {
 	this.lines.setGeometry(lineArray);
     }
 
+    /**
+     * Berechnet die Kantenbeschriftungen.
+     */
     private void computeNames() {
 	this.names.removeAllChildren();
 	BranchGroup bg = new BranchGroup();
@@ -230,6 +281,9 @@ public class Cone3D extends TransformGroup {
 	this.names.addChild(bg);
     }
 
+    /**
+     * Initialisiert die Innenseiten des Kegels.
+     */
     private void initBack() {
 	Appearance apr = Tools3D.generateApperance();
 
@@ -246,6 +300,9 @@ public class Cone3D extends TransformGroup {
 	addChild(this.back);
     }
 
+    /**
+     * Initialisiert die Außenseiten des Kegels.
+     */
     private void initFront() {
 	Appearance apr = Tools3D.generateApperance();
 	apr.setMaterial(new Material(new Color3f(0.8f, 0.8f, 0.8f),
@@ -262,6 +319,9 @@ public class Cone3D extends TransformGroup {
 	addChild(this.front);
     }
 
+    /**
+     * Initialisiert die Kanten des Kegels.
+     */
     private void initLines() {
 	Appearance apr = Tools3D.generateApperance();
 

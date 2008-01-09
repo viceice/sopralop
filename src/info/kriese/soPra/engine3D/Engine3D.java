@@ -115,29 +115,59 @@ import com.sun.j3d.utils.universe.ViewingPlatform;
  */
 public final class Engine3D {
 
-    /** */
-    private static final long serialVersionUID = 1L;
-
+    /**
+     * Zeichenfläche, auf die gerendert wird.
+     */
     private final Canvas3D canvas;
 
+    /**
+     * Wrapper-Objekt, welches den Kegel repräsentiert.
+     */
     private final Cone3D cone;
 
+    /**
+     * Wrapper-Objekt, welches das Koordinatensystem repräsentiert.
+     */
     private final CoordinatePlane3D coordsPlane;
 
+    /**
+     * Elemente zur Gruppierung von 3D-Objekten.
+     */
     private final TransformGroup elemsGroup, hudGroup;
 
+    /**
+     * Quickhull-Algorithmus, zur Berechnung des konvexen Kegels.
+     */
     private final QuickHull hull;
 
+    /**
+     * Wrapper-Objekt, welches den Schnittpunkt repräsentiert.
+     */
     private final Point3D intersection;
 
+    /**
+     * Ermöglicht die Bewegung im Raum.
+     */
     private OrbitBehavior orbit;
 
+    /**
+     * Skalierungsfaktor für alle 3D-Objekte.
+     */
     private float size = 15.0f;
 
+    /**
+     * Verbindet die 3D-Objekte mir der Zeichenfläche.
+     */
     private SimpleUniverse su;
 
+    /**
+     * Wrapper-Objekt, welches die Zielfunktion repräsentiert.
+     */
     private final Target3D targetLine;
 
+    /**
+     * Konstruktor, er erstellt alle benötigten Objekte.
+     */
     public Engine3D() {
 
 	this.canvas = new Canvas3D(createConfig());
@@ -186,7 +216,6 @@ public final class Engine3D {
 	// fuege Schnittpunkt hinzu
 	this.intersection = new Point3D();
 	this.elemsGroup.addChild(this.intersection);
-	// fuege Maximum hinzu
 
 	BranchGroup bg = new BranchGroup();
 	bg.addChild(this.elemsGroup);
@@ -199,10 +228,19 @@ public final class Engine3D {
 	this.su.getViewingPlatform().addChild(bg);
     }
 
+    /**
+     * Verknüpt die Zeichnungsfläche mit der Java-Oberfläche.
+     * 
+     * @param conn -
+     *                Element, dem die Zeichnungfläche hinzufgefügt werden soll.
+     */
     public void addConnection(Virtual3DFrame conn) {
 	conn.addCanvas(this.canvas);
     }
 
+    /**
+     * Bewegt alle 3D-Objekte in ihre Ausgangsposition zurück.
+     */
     public void resetScene() {
 	TransformGroup targetTG = this.su.getViewingPlatform()
 		.getViewPlatformTransform();
@@ -211,6 +249,11 @@ public final class Engine3D {
 	targetTG.setTransform(t3d);
     }
 
+    /**
+     * Verbindet das LOP mit der 3D-Scene.
+     * 
+     * @param lop
+     */
     public void setLOP(LOP lop) {
 	lop.addProblemListener(new LOPAdapter() {
 
@@ -224,6 +267,14 @@ public final class Engine3D {
 
     }
 
+    /**
+     * Berechnet den die Größen und Positionen aller 3D-Objekte.
+     * 
+     * Funktion wird aufgerufen, wenn das LOP gelöst wurde.
+     * 
+     * @param lop -
+     *                LOP, mit welchen gerechnet werden soll.
+     */
     private void computeSolution(LOP lop) {
 	Vector3Frac vec = lop.getTarget();
 	int sCase = lop.getSolution().getSpecialCase();
@@ -254,7 +305,11 @@ public final class Engine3D {
     }
 
     /**
-     * @return
+     * Erstellt die Grafik-Konfiguration.
+     * 
+     * Diese wird zum rendern der Scene benötigt.
+     * 
+     * @return Die Grafik-Konfiguration.
      */
     private GraphicsConfiguration createConfig() {
 	GraphicsConfigTemplate3D template = new GraphicsConfigTemplate3D();
@@ -265,6 +320,9 @@ public final class Engine3D {
 	return config;
     }
 
+    /**
+     * Erstellt die Beleuchtung, ohne die man nichts sehen würde.
+     */
     private void createLight() {
 	this.elemsGroup.addChild(GeomObjects.getLight());
 
@@ -275,6 +333,9 @@ public final class Engine3D {
 	this.hudGroup.addChild(headlight);
     }
 
+    /**
+     * Erstellt den Viewer und die Bewegungssteuerung.
+     */
     private void createUserControls() {
 
 	this.su = new SimpleUniverse(this.canvas);

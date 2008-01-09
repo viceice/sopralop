@@ -42,6 +42,7 @@ import javax.vecmath.Color3f;
 import javax.vecmath.Vector3f;
 
 /**
+ * Dient zur Erstellung der Beleuchtung.
  * 
  * @author Michael Kriese
  * @since 25.04.2007
@@ -49,6 +50,11 @@ import javax.vecmath.Vector3f;
  */
 public final class GeomObjects {
 
+    /**
+     * Erstellt die Beleuchtung.
+     * 
+     * @return Gruppe der Lichter.
+     */
     public static Node getLight() {
 	TransformGroup node = new TransformGroup();
 
@@ -69,6 +75,9 @@ public final class GeomObjects {
 	return node;
     }
 
+    /**
+     * Privater Konstruktor, da keine Instanz der Klasse erwünscht.
+     */
     private GeomObjects() {
     }
 }

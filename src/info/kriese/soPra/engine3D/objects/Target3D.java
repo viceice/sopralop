@@ -54,8 +54,14 @@ import com.sun.j3d.utils.geometry.Cylinder;
  */
 public final class Target3D extends TransformGroup {
 
+    /**
+     * Zylinder, welcher die Zielfunktion darstellt.
+     */
     private final Cylinder line;
 
+    /**
+     * Konstruktor, welcher alle Objekte erstellt und initialisiert.
+     */
     public Target3D() {
 
 	setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
@@ -67,6 +73,14 @@ public final class Target3D extends TransformGroup {
 	addChild(this.line);
     }
 
+    /**
+     * Berechnet die Gerade der Zielfunktion.
+     * 
+     * @param pos -
+     *                Position der Zielfunktion
+     * @param size -
+     *                Größe der Zielfunktion
+     */
     public void compute(Vector3f pos, float size) {
 
 	Transform3D rot = new Transform3D();

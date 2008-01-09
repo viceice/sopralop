@@ -68,6 +68,13 @@ import com.sun.j3d.utils.geometry.Sphere;
  */
 public final class CoordinatePlane3D extends TransformGroup {
 
+    /**
+     * Erstellt einen Pfeil für die Koordinatenachsen.
+     * 
+     * @param material -
+     *                Material des Pfeil
+     * @return 3D-Objekt
+     */
     private static TransformGroup createCone(Material material) {
 	Appearance apr = Tools3D.generateApperance(material);
 	Cone cone = new Cone(0.05f, 0.5f, Cone.GENERATE_NORMALS, apr);
@@ -78,6 +85,13 @@ public final class CoordinatePlane3D extends TransformGroup {
 	return tg;
     }
 
+    /**
+     * Erstellt eine Koordinatenachse.
+     * 
+     * @param material -
+     *                Material des Pfeil
+     * @return 3D-Objekt
+     */
     private static TransformGroup createLine(Material material) {
 	Appearance apr = Tools3D.generateApperance(material);
 	Cylinder line = new Cylinder(0.025f, 1.0f, Cylinder.GENERATE_NORMALS,
@@ -89,6 +103,13 @@ public final class CoordinatePlane3D extends TransformGroup {
 	return tg;
     }
 
+    /**
+     * Erstellt eine Markierung für die Koordinatenachseneinheiten.
+     * 
+     * @param material -
+     *                Material des Pfeil
+     * @return 3D-Objekt
+     */
     private static Node createMark(Vector3d scale, Material material) {
 	TransformGroup t = new TransformGroup();
 	Sphere sp = new Sphere(0.05f, Sphere.GENERATE_NORMALS, Tools3D
@@ -102,11 +123,20 @@ public final class CoordinatePlane3D extends TransformGroup {
 	return t;
     }
 
+    /**
+     * Gruppen für die Achsenmarkierungen.
+     */
     private final SharedGroup markX, markY, markZ;
 
+    /**
+     * Gruppen für die Beschriftungen, Achsen, Pfeile und Markierungen.
+     */
     private final TransformGroup xName, yName, zName, xLine, yLine, zLine,
 	    xCone, yCone, zCone, units;
 
+    /**
+     * Konstruktor, welcher alle Objekte erstellt und initialisiert.
+     */
     public CoordinatePlane3D() {
 
 	// Begin X-Achse
@@ -161,7 +191,12 @@ public final class CoordinatePlane3D extends TransformGroup {
 
     }
 
-    // *** Zeichnen des 3D_Koordinatensystems ***
+    /**
+     * Berechnen der Größe des 3D-Koordinatensystems
+     * 
+     * @param size -
+     *                Skalierungsfaktor
+     */
     public void compute(float size) {
 
 	this.units.removeAllChildren();
