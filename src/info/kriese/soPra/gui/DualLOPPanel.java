@@ -96,6 +96,10 @@ public final class DualLOPPanel extends JPanel {
 	setBackground(bg);
     }
 
+    /**
+     * Methode zum Zeichnen des Diagrammes zur Visualisierung des dualen Problems.
+     * 
+     */
     @Override
     public void paint(Graphics g) {
 	// Zeichne Hintergrund
@@ -333,6 +337,12 @@ public final class DualLOPPanel extends JPanel {
 	    }
     }
 
+    /**
+     * Methode zum Transponieren der Vektormatrix (notwendig zur Darstellung des dualen LOP).
+     * 
+     * @param lop - das aktuell bearbeitete LOP
+	 *
+     */
     public void setLOP(LOP lop) {
 	lop.addProblemListener(new LOPAdapter() {
 	    @Override
@@ -378,6 +388,11 @@ public final class DualLOPPanel extends JPanel {
 	});
     }
 
+    /**
+     * Methode zum Berechnen des Skalierungsfaktors des Koordinatensystems
+     * zur feineren Darstellung der Vektorengeraden
+	 *
+     */
     private void setScale() {
 	float temp = 0;
 	float scaleTemp1;
