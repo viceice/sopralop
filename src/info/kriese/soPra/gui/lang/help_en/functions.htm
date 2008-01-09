@@ -8,7 +8,7 @@
 <div class="line">&nbsp;</div>
 <h3>Menu</h3>
 <ul>
-	<li><img src="../../images/spacer.png" /> &nbsp; <a href="#main">Generalities</a></li>
+	<li><img src="../../images/spacer.png" /> &nbsp; <a href="#main">General</a></li>
 	<li><img src="../../images/list-add.png" /> &nbsp; <a
 		href="#addvar">Add variable</a></li>
 	<li><img src="../../images/list-remove.png" /> &nbsp; <a
@@ -17,10 +17,10 @@
 		href="#reset">Reset values</a></li>
 	<li><img src="../../images/edit-delete.png" /> &nbsp; <a
 		href="#clear">Delete values</a></li>
-	<li><img src="../../images/go-jump.png" /> &nbsp; <a href="#take">Take
+	<li><img src="../../images/go-jump.png" /> &nbsp; <a href="#take">Accept
 	values</a></li>
 	<li><img src="../../images/system-search.png" /> &nbsp; <a
-		href="#check">Check solution</a></li>
+		href="#check">Validate solution</a></li>
 </ul>
 <br />
 <p class="back"><a href="file.htm"><img
@@ -35,17 +35,17 @@
 	alt="Help - View"></a></p>
 <div class="line">&nbsp;</div>
 
-<h3><a name="main">Generalities</a></h3>
-<p>Here you can edit the data for an LOP in 2nd geometric
-interpretation. There is an minimum of three variables, due to the fact
-that LOP with 2 variables are better solved in 1st geometric
+<h3><a name="main">General</a></h3>
+<p>Here you can edit the data for a LOP in 2nd geometric
+interpretation. There is a minimum of three variables, due to the fact
+that LOP with 2 variables are better solved in the 1st geometric
 interpretation or by a simple linear algebraic equation. The arrays of
 the table have to be filled with the factors of the x(i) of target
 function and auxiliary conditions. Variables who are not present in the
 target function or in one of the auxiliary conditions have the factor
 zero. The operands (not the one of the target function) can be chosen by
-a pulldown menu; the choice of minimizing or maximizing the LOP has to
-be entered as text (short forms "min" or "max" meet the requirements).
+a pulldown menu; the choice of minimizing or maximizing the LOP is 
+a pulldown-menu too. 
 This point of the menu can be called at every stage of editing a LOP.</p>
 
 <br />
@@ -65,7 +65,7 @@ This point of the menu can be called at every stage of editing a LOP.</p>
 <h3><a name="addvar">Add variable</a></h3>
 <p>Here you can add arrays for additional variables (up to 10
 columns maximum). The arrays will be added as a column with the index of
-the next higher x(i) before the column of the operands.</p>
+the next higher x(i) left from the column of the operands.</p>
 
 <br />
 <p class="back"><a href="file.htm"><img
@@ -84,7 +84,7 @@ the next higher x(i) before the column of the operands.</p>
 <h3><a name="delvar">Remove variable</h3>
 <p>Here you can remove arrays of variables. With every use of the
 button the column with the highest index x(i) will be deleted. The other
-arrays will be unaffected. The first three columns can not be removed</p>
+arrays will stay unaffected. The first three columns can not be removed</p>
 
 <br />
 <p class="back"><a href="file.htm"><img
@@ -101,7 +101,10 @@ arrays will be unaffected. The first three columns can not be removed</p>
 <div class="line">&nbsp;</div>
 
 <h3><a name="reset">Reset values</a></h3>
-<p>TODO ...</p>
+<p>With this button all changes that have not been taken over by using the 
+"Accept values" button will be deleted. The input window will be set back to 
+the state of the last changes that have been accepted/saved. 
+PAY ATTENTION: This step can not be reverted!</p>
 
 <br />
 <p class="back"><a href="file.htm"><img
@@ -135,8 +138,9 @@ reverted! All unsaved data will be lost!</p>
 	href="#top"> <img src="../../images/go-top.png" border="0"
 	alt="to top"></a><a href="view.htm"><img
 	src="../../images/go-next.png" border="0" alt="Help - View"></a></p>
+<div class="line">&nbsp;</div>
 
-<h3><a name="take">Take values</a></h3>
+<h3><a name="take">Accept values</a></h3>
 <p>With this step the edited data will be applied to the actual LOP.
 PAY ATTENTION: As long as there are invalid data within one of the
 arrays (border of the array is red) the window can not be closed, and
@@ -156,8 +160,11 @@ the data will not be applied to the LOP!</p>
 	src="../../images/go-next.png" border="0" alt="Help - View"></a></p>
 <div class="line">&nbsp;</div>
 
-<h3><a name="check">Check solution</a></h3>
-<p>TODO ...</p>
+<h3><a name="check">Validate solution</a></h3>
+<p>With this button the previously calculated and entered solution will be validated. 
+If the LOP has no solution, "ne" (for "not existing") has to be entered as value of 
+the solution. For unlimited LOP's "u" hast to be entered as value of the solution 
+(both without the "").</p>
 
 <br />
 <p class="back"><a href="file.htm"><img
