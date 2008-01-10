@@ -491,8 +491,8 @@ public final class LOPTableModel extends AbstractTableModel {
 	    if (!vec.equals(Vector3Frac.ZERO))
 		cnt++;
 	if (cnt < this.vectors.size()) {
-	    MessageHandler.showError(Lang.getString("Errors.NoZeroVectors"),
-		    Lang.getString("Strings.Error"));
+	    MessageHandler.showError(Lang.getString("Strings.Error"),
+		    Lang.getString("Errors.NoZeroVectors"));
 	    return false;
 	}
 
