@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 10.01.2008 - Version 0.4.1
+ * - Hilfslinie für U3-Achse entfernt
  * 09.11.2007 - Version 0.4
  * - Lösung ist jetzt immer sichtbar
  * 12.10.2007 - Version 0.3.1
@@ -50,7 +52,7 @@ import com.sun.j3d.utils.geometry.Sphere;
  * Klasse, welche den Schnittpunkt und die Hilfslinien repräsentiert.
  * 
  * @author Michael Kriese
- * @version 0.4
+ * @version 0.4.1
  * @since 10.09.2007
  * 
  */
@@ -64,12 +66,12 @@ public class Point3D extends TransformGroup {
     /**
      * Gruppen für Hilfslinien und Kugel.
      */
-    private final TransformGroup grpX, grpY, grpZ, grpPoint;
+    private final TransformGroup grpX, grpY, grpPoint; // , grpZ
 
     /**
      * Zylinder, welche die Hilfslinien darstellen.
      */
-    private final Cylinder lineX, lineY, lineZ;
+    private final Cylinder lineX, lineY; // , lineZ
 
     /**
      * Kugel, welche den Schnittpunkt darstellt.
@@ -84,7 +86,7 @@ public class Point3D extends TransformGroup {
 	this.grpPoint = new TransformGroup();
 	this.grpX = new TransformGroup();
 	this.grpY = new TransformGroup();
-	this.grpZ = new TransformGroup();
+	// this.grpZ = new TransformGroup();
 
 	this.ap = Tools3D.generateApperance(Tools3D.MATERIAL_PINK);
 	this.ap.setTransparencyAttributes(new TransparencyAttributes(
@@ -96,7 +98,7 @@ public class Point3D extends TransformGroup {
 
 	this.lineX = new Cylinder(0.005f, 1.0f, flags, this.ap);
 	this.lineY = new Cylinder(0.005f, 1.0f, flags, this.ap);
-	this.lineZ = new Cylinder(0.005f, 1.0f, flags, this.ap);
+	// this.lineZ = new Cylinder(0.005f, 1.0f, flags, this.ap);
 
 	this.grpPoint.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 	this.grpPoint.addChild(this.point);
@@ -107,13 +109,13 @@ public class Point3D extends TransformGroup {
 	this.grpY.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 	this.grpY.addChild(this.lineY);
 
-	this.grpZ.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-	this.grpZ.addChild(this.lineZ);
+	// this.grpZ.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+	// this.grpZ.addChild(this.lineZ);
 
 	addChild(this.grpPoint);
 	addChild(this.grpX);
 	addChild(this.grpY);
-	addChild(this.grpZ);
+	// addChild(this.grpZ);
     }
 
     /**
@@ -148,6 +150,6 @@ public class Point3D extends TransformGroup {
 		    pos.x, pos.y, 0.0));
 	scale = new Vector3d(1.0, len, 1.0);
 	trans = new Vector3f(pos.x / 2.0f, pos.y / 2.0f, pos.z);
-	this.grpZ.setTransform(Tools3D.createTransform(trans, rot, scale));
+	// this.grpZ.setTransform(Tools3D.createTransform(trans, rot, scale));
     }
 }

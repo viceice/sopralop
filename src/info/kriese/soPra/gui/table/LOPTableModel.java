@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,10 +19,16 @@
  * 
  * ChangeLog:
  * 
+ * 10.01.2008 - Version 0.3.3
+ * - Lösungscheck gibt jetzt eine Fehlermeldung, wenn das Problem nicht 
+ *    übernommen wurde.
+ * - Relationszeichen nicht mehr editierbar
  * 19.12.2007 - Version 0.3.2
- * - BugFix: Lösungcheck gab immer falsch zurück, da der Typ-Vergleich fehlerhaft implementiert war 
+ * - BugFix: Lösungcheck gab immer falsch zurück, da der Typ-Vergleich
+ *    fehlerhaft implementiert war 
  * 04.12.2007 - Version 0.3.1
- * - An Lösungseditor angepasst, um unendlich und nicht exitent eingeben zu können.
+ * - An Lösungseditor angepasst, um unendlich und nicht exitent eingeben zu
+ *   können.
  * - Lösungcheck angepasst
  * 03.12.2007 - Version 0.3
  * - Lösungcheck implementiert
@@ -64,7 +70,7 @@ import javax.swing.table.AbstractTableModel;
  * Wandelt das LOP in ein von JTable lesbares Format um.
  * 
  * @author Peer Sterner
- * @version 0.3.2
+ * @version 0.3.3
  * @since 01.11.2007
  * 
  */
@@ -139,9 +145,9 @@ public final class LOPTableModel extends AbstractTableModel {
 	    }
 
 	if (col == num + 1) {
-	    if (row == 0 || row == 5)
-		return LOPOperator.getOp("=");
-	    return LOPOperator.getOp(this.operators[row - 2]);
+	    if (row != 1 || row != 4)
+		return "=";
+	    return "";
 	}
 
 	if (col == num + 2)
@@ -179,8 +185,7 @@ public final class LOPTableModel extends AbstractTableModel {
     @Override
     public boolean isCellEditable(int row, int col) {
 	int vecs = this.vectors.size();
-	if ((col < 1) || ((row == 0) && (col == vecs + 1)) || row == 1
-		|| row == 4 || (row == 5 && col == vecs + 1))
+	if ((col < 1) || (col == vecs + 1) || row == 1 || row == 4)
 	    return false;
 	else
 	    return true;
@@ -352,6 +357,11 @@ public final class LOPTableModel extends AbstractTableModel {
      *                LOP, mit dem die Lösung überprüft werden soll.
      */
     private void check(LOP lop) {
+	if (isEdited()) {
+	    MessageHandler.showError(Lang.getString("Strings.Solution"), Lang
+		    .getString("Errors.TakeNewValues"));
+	    return;
+	}
 	int idx1, idx2, vals = 0;
 	boolean res = true;
 
@@ -491,8 +501,8 @@ public final class LOPTableModel extends AbstractTableModel {
 	    if (!vec.equals(Vector3Frac.ZERO))
 		cnt++;
 	if (cnt < this.vectors.size()) {
-	    MessageHandler.showError(Lang.getString("Strings.Error"),
-		    Lang.getString("Errors.NoZeroVectors"));
+	    MessageHandler.showError(Lang.getString("Strings.Error"), Lang
+		    .getString("Errors.NoZeroVectors"));
 	    return false;
 	}
 

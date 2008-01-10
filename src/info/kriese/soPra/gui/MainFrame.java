@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 10.01.2008 - Version 0.8.1
+ * - Rollover-Effekt für die Toolbar
  * 27.12.2007 - Version 0.8
  * - setFunctions hizugefügt
  * 04.12.2007 - Version 0.7.3
@@ -98,7 +100,7 @@ import javax.swing.border.Border;
 
 /**
  * @author Michael Kriese
- * @version 0.8
+ * @version 0.8.1
  * @since 12.05.2007
  * 
  */
@@ -300,6 +302,7 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
     private void generateMainToolbar() {
 	JToolBar tb = new JToolBar();
 	tb.setFloatable(false);
+	tb.setRollover(true);
 	add(tb, BorderLayout.NORTH);
 
 	tb.add(MenuMaker.getToolBarButton("Menu.File.Open"));

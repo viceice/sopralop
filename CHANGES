@@ -1,20 +1,34 @@
 SoPraLOP
-(c)2007 Michael Kriese & Peer Sterner
+(c)2007-2008 Michael Kriese & Peer Sterner
 
+-------------------------------------------------------------------------------
+Version 0.6.1 - 13.01.2008  (vorraussichtlich)
+-------------------------------------------------------------------------------
+ - BugFix: Bei einer Fehlermeldung waren Titel und Nachricht vertauscht
+ - BugFix: Lösung-Überprüfen-Button wurde nicht deaktiviert
+ - Lösung-Überprüfen-Button ist jetzt aktiv und gibt eine Fehlermeldung bei
+    nicht übernommenen Änderungen
+ - Einige Menü Mnemonics und Accelerators hinzugefügt
+ - Relationszeichen nicht mehr editierbar
+ - Zeichen für nicht existent geändert
+ - Achsenbeschriftung des Koordinatensystems geändert
+ - Hilfslinie für U3-Achse entfernt
+ - Gerade der Zielfunktion nach unten verlängert
+ - Tabellenkopfbeschriftung des Dualen Problems geändert (y1, y2, w)
 -------------------------------------------------------------------------------
 Version 0.6 - 09.01.2008  (Rev. 195)
 -------------------------------------------------------------------------------
-- Hilfe hinzugefügt (Deutsch / Englisch)
-- Programm jetzt auch in Englisch
-- Menüeintrag Funktionen hinzugefügt
-- Komandozeilenparameter hinzugefügt (debug, lang=XX)
-- BugFix: Bei einer Fehlermeldung waren Titel und Nachricht vertauscht
+ - Hilfe hinzugefügt (Deutsch / Englisch)
+ - Programm jetzt auch in Englisch
+ - Menüeintrag Funktionen hinzugefügt
+ - Komandozeilenparameter hinzugefügt (debug, lang=XX)
+ - BugFix: Bei einer Fehlermeldung waren Titel und Nachricht vertauscht
 -------------------------------------------------------------------------------
 Version 0.5.2 - 19.12.2007 (Rev. 185)
 -------------------------------------------------------------------------------
-- BugFix: Lösungcheck gab immer falsch zurück, da der Typ-Vergleich
-   fehlerhaft implementiert war
-- Neues ExceptionHandling implementiert
+ - BugFix: Lösungcheck gab immer falsch zurück, da der Typ-Vergleich
+    fehlerhaft implementiert war
+ - Neues ExceptionHandling implementiert
 -------------------------------------------------------------------------------
 Version 0.5.1 - 17.12.2007 (Rev. 184)
 -------------------------------------------------------------------------------

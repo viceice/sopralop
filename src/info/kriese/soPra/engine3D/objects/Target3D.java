@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 10.01.2007 - Version 0.3.1
+ * - Gerade nach unten verlängert
  * 17.09.2007 - Version 0.3
  * - Umwandlung Line zu Zylinder
  * 14.09.2007
@@ -48,7 +50,7 @@ import com.sun.j3d.utils.geometry.Cylinder;
  * Erstellt aus dem Zielvektor eine Gerade im Raum.
  * 
  * @author Michael Kriese
- * @version 0.3
+ * @version 0.3.1
  * @since 12.05.2007
  * 
  */
@@ -88,7 +90,7 @@ public final class Target3D extends TransformGroup {
 	Transform3D trans = new Transform3D();
 
 	rot.rotX(Math.PI / 2.0);
-	scale.setScale(new Vector3d(1.0, size, 1.0));
+	scale.setScale(new Vector3d(1.0, size + 1.0, 1.0));
 	pos.z += size / 2.0f;
 	trans.setTranslation(pos);
 

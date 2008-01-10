@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,10 +19,19 @@
  * 
  * ChangeLog:
  * 
+ * 10.01.2008 - Version 0.7.1
+ * - BugFix: Lösung-Überprüfen-Button wurde bei Dual-LOP-Ansicht nicht
+ *    deaktiviert
+ * - Lösung-Überprüfen-Button bleibt auch bei editiertem LOP aktiv, es gibt
+ *    jetzt eine Fehlermeldung
+ * - Rollover-Effekt für die Toolbar
+ * - Erste Spalte etwas verbreitert
+ * - Editor für Relationszeichen entfernt
  * 27.12.2007 - Version 0.7
  * - Funktionsmenü hinzugefügt
  * 04.12.2007 - Version 0.6.4
- * - An Lösungseditor angepasst, um unendlich und nicht exitent  als Lösung eingeben zu können.
+ * - An Lösungseditor angepasst, um unendlich und nicht exitent  als Lösung
+ *    eingeben zu können.
  * 03.12.2007 - Version 0.6.3
  * - Toolbar wird bei Anzeige des Dualen Problems deaktiviert
  * - Reset-Button wird jetzt deaktiviert, wenn nichts zu resetten ist
@@ -37,7 +46,8 @@
  * - Funktionalität aus dem ActionHandler hier her verlagert
  * - Eigenen CellRenderer eingeführt
  * 23.10.2007 - Version 0.5
- * - In InputPanel umbenannt und in JPannel geändert ( zur Integration ins Hauptfenster)
+ * - In InputPanel umbenannt und in JPannel geändert ( zur Integration ins
+ *    Hauptfenster)
  * - An neuen ActionHandler angepasst
  * - BugFix: String wurde nicht korrekt aus Sprach-Datei geladen
  * 19.10.2007 - Version 0.4
@@ -71,7 +81,6 @@ import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.gui.table.DualLOPTableModel;
 import info.kriese.soPra.gui.table.FractionalTableCellEditor;
 import info.kriese.soPra.gui.table.LOPMinMax;
-import info.kriese.soPra.gui.table.LOPOperator;
 import info.kriese.soPra.gui.table.LOPSolutionWrapper;
 import info.kriese.soPra.gui.table.LOPTableCellRenderer;
 import info.kriese.soPra.gui.table.LOPTableModel;
@@ -108,24 +117,28 @@ import javax.swing.table.TableColumn;
  * 
  * @author Peer Sterner
  * @since 13.05.2007
- * @version 0.7
+ * @version 0.7.1
  */
 public final class InputPanel extends JPanel {
 
     /** */
     private static final long serialVersionUID = 4944381133035213540L;
 
+    private JButton check = null;
+
     private final DualLOPTableModel dualModel;
 
     private final List<JMenuItem> functions;
 
-    private final JComboBox opEditor, maxEditor;
+    private final JComboBox maxEditor;
 
     private final LOPTableModel primalModel;
 
+    private JButton reset = null;
+
     private final JTable table;
 
-    private JButton take = null, check = null, reset = null;
+    private JButton take = null;
     private JMenuItem take2, check2, reset2;
 
     private final List<Component> toolbarBtns;
@@ -133,25 +146,6 @@ public final class InputPanel extends JPanel {
     public InputPanel() {
 
 	setLayout(new BorderLayout());
-
-	this.opEditor = new JComboBox();
-	this.opEditor.setFocusable(false);
-	this.opEditor.setToolTipText(Lang.getString("Input.Relation"));
-	this.opEditor.addMouseListener(new MouseAdapter() {
-	    @Override
-	    public void mouseEntered(MouseEvent e) {
-		MessageHandler.showHelp(InputPanel.this.opEditor
-			.getToolTipText());
-	    }
-
-	    @Override
-	    public void mouseExited(MouseEvent e) {
-		MessageHandler.showHelp();
-	    }
-	});
-	this.opEditor.addItem("=");
-	this.opEditor.addItem(">");
-	this.opEditor.addItem("<");
 
 	this.maxEditor = new JComboBox();
 	this.maxEditor.setFocusable(false);
@@ -212,8 +206,6 @@ public final class InputPanel extends JPanel {
 	this.table.setShowGrid(false);
 	this.table.setIntercellSpacing(new Dimension(2, 2));
 	this.table.setDefaultRenderer(Object.class, new LOPTableCellRenderer());
-	this.table.setDefaultEditor(LOPOperator.class, new DefaultCellEditor(
-		this.opEditor));
 	this.table.setDefaultEditor(LOPMinMax.class, new DefaultCellEditor(
 		this.maxEditor));
 	this.table.setDefaultEditor(Fractional.class,
@@ -264,6 +256,7 @@ public final class InputPanel extends JPanel {
 	add(toolbar, BorderLayout.PAGE_START);
 
 	toolbar.setFloatable(false);
+	toolbar.setRollover(true);
 
 	this.toolbarBtns.add(toolbar.add(MenuMaker
 		.getToolBarButton("Input.Menu.AddVar")));
@@ -294,7 +287,7 @@ public final class InputPanel extends JPanel {
 	this.functions.add(this.take2);
 
 	this.check = MenuMaker.getToolBarButton("Input.Menu.Check");
-	toolbar.add(this.check);
+	this.toolbarBtns.add(toolbar.add(this.check));
 	this.check2 = MenuMaker.getMenuItem("Input.Menu.Check");
 	this.functions.add(this.check2);
     }
@@ -310,7 +303,7 @@ public final class InputPanel extends JPanel {
 	    return;
 
 	column = this.table.getColumnModel().getColumn(0);
-	column.setPreferredWidth(40);
+	column.setPreferredWidth(50);
 
 	for (int i = 1; i < this.table.getColumnCount() - 2; i++) {
 	    column = this.table.getColumnModel().getColumn(i);
@@ -329,15 +322,11 @@ public final class InputPanel extends JPanel {
 	if (this.primalModel.isEdited()) {
 	    this.take.setEnabled(true);
 	    this.take2.setEnabled(true);
-	    this.check.setEnabled(false);
-	    this.check2.setEnabled(false);
 	    this.reset.setEnabled(true);
 	    this.reset2.setEnabled(true);
 	} else {
 	    this.take.setEnabled(false);
 	    this.take2.setEnabled(false);
-	    this.check.setEnabled(true);
-	    this.check2.setEnabled(true);
 	    this.reset.setEnabled(false);
 	    this.reset2.setEnabled(false);
 	}

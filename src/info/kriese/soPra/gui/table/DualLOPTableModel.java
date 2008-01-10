@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 10.01.2008 - Version 0.1.1
+ * - Tabellenkopfbeschriftung geändert (y1, y2, w)
  * 09.11.2007 - Version 0.1
  * - Kopie von LOPTableModel
  */
@@ -42,7 +44,7 @@ import javax.swing.table.AbstractTableModel;
  * Wandelt das duale LOP in ein von JTable lesbares Format um.
  * 
  * @author Peer Sterner
- * @version 0.1
+ * @version 0.1.1
  * @since 09.11.2007
  * 
  */
@@ -66,11 +68,11 @@ public final class DualLOPTableModel extends AbstractTableModel {
 
 	this.columnNames = new String[5];
 	this.columnNames[0] = " ";
-	this.columnNames[1] = "<html><center><b>x<sub>1</sub></b></center></html>";
-	this.columnNames[2] = "<html><center><b>x<sub>2</sub></b></center></html>";
+	this.columnNames[1] = "<html><center><b>y<sub>1</sub></b></center></html>";
+	this.columnNames[2] = "<html><center><b>y<sub>2</sub></b></center></html>";
 	this.columnNames[3] = "<html><center><b>" + "&lt; / > / ="
 		+ "</b></center></html>";
-	this.columnNames[4] = "<html><center><b>z</b></center></html>";
+	this.columnNames[4] = "<html><center><b>w</b></center></html>";
     }
 
     @Override

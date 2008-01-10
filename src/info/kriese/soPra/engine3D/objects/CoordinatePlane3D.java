@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 10.01.2008 - Version 0.4.3
+ * - Achsenbeschriftung geändert
  * 08.11.2007 - Version 0.4.2
  * - Methode createAxisName nach Tools3D verschoben
  * 02.10.2007 - Version 0.4.1
@@ -64,7 +66,7 @@ import com.sun.j3d.utils.geometry.Sphere;
  * 
  * @author Michael Kriese
  * @since 11.04.2007
- * @version 0.4.2
+ * @version 0.4.3
  */
 public final class CoordinatePlane3D extends TransformGroup {
 
@@ -146,7 +148,7 @@ public final class CoordinatePlane3D extends TransformGroup {
 	this.xCone = createCone(Tools3D.MATERIAL_RED);
 	addChild(this.xCone);
 
-	this.xName = Tools3D.createAxisName("x", Tools3D.MATERIAL_RED);
+	this.xName = Tools3D.createAxisName("U1", Tools3D.MATERIAL_RED);
 	addChild(this.xName);
 
 	this.markX = new SharedGroup();
@@ -161,7 +163,7 @@ public final class CoordinatePlane3D extends TransformGroup {
 	this.yCone = createCone(Tools3D.MATERIAL_GREEN);
 	addChild(this.yCone);
 
-	this.yName = Tools3D.createAxisName("y", Tools3D.MATERIAL_GREEN);
+	this.yName = Tools3D.createAxisName("U2", Tools3D.MATERIAL_GREEN);
 	addChild(this.yName);
 
 	this.markY = new SharedGroup();
@@ -176,7 +178,7 @@ public final class CoordinatePlane3D extends TransformGroup {
 	this.zCone = createCone(Tools3D.MATERIAL_BLUE);
 	addChild(this.zCone);
 
-	this.zName = Tools3D.createAxisName("z", Tools3D.MATERIAL_BLUE);
+	this.zName = Tools3D.createAxisName("U3", Tools3D.MATERIAL_BLUE);
 	addChild(this.zName);
 
 	this.markZ = new SharedGroup();
