@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 15.01.2008 - Version 0.3.2
+ * - Gerade hat Beschriftung bekommen
+ * - Gerade skaliert nach unten, wenn der Schnittpunkt unten liegt
  * 10.01.2007 - Version 0.3.1
  * - Gerade nach unten verlängert
  * 17.09.2007 - Version 0.3
@@ -50,11 +53,13 @@ import com.sun.j3d.utils.geometry.Cylinder;
  * Erstellt aus dem Zielvektor eine Gerade im Raum.
  * 
  * @author Michael Kriese
- * @version 0.3.1
+ * @version 0.3.2
  * @since 12.05.2007
  * 
  */
 public final class Target3D extends TransformGroup {
+
+    private final TransformGroup desc, gline;
 
     /**
      * Zylinder, welcher die Zielfunktion darstellt.
@@ -66,13 +71,19 @@ public final class Target3D extends TransformGroup {
      */
     public Target3D() {
 
-	setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-
 	Appearance apr = Tools3D.generateApperance();
 	apr.setMaterial(Tools3D.MATERIAL_GOLD);
 	this.line = new Cylinder(0.05f, 1.0f, Cylinder.GENERATE_NORMALS, apr);
 
-	addChild(this.line);
+	this.gline = new TransformGroup();
+	this.gline.addChild(this.line);
+	this.gline.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+
+	this.desc = Tools3D.createAxisName("g", Tools3D.MATERIAL_GOLD);
+	this.desc.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+
+	addChild(this.gline);
+	addChild(this.desc);
     }
 
     /**
@@ -88,16 +99,35 @@ public final class Target3D extends TransformGroup {
 	Transform3D rot = new Transform3D();
 	Transform3D scale = new Transform3D();
 	Transform3D trans = new Transform3D();
+	Vector3f vec = new Vector3f(pos);
+
+	float z = Math.abs(pos.z) > size ? size : pos.z;
 
 	rot.rotX(Math.PI / 2.0);
-	scale.setScale(new Vector3d(1.0, size + 1.0, 1.0));
-	pos.z += size / 2.0f;
-	trans.setTranslation(pos);
+	scale.setScale(new Vector3d(1.0, Math.abs(z) + 2.0, 1.0));
+
+	vec.z = z / 1.75f;
+	trans.setTranslation(vec);
 
 	// erst Translation, dann Rotation und zuletzt die Skalierung
 	rot.mul(scale);
 	trans.mul(rot);
 
-	setTransform(trans);
+	this.gline.setTransform(trans);
+
+	trans = new Transform3D();
+	scale = new Transform3D();
+	vec = new Vector3f(pos);
+
+	if (z < 0)
+	    vec.z = z - 1.5f;
+	else
+	    vec.z = z + 1.5f;
+	trans.setTranslation(vec);
+	scale.setScale(0.5);
+
+	trans.mul(scale);
+
+	this.desc.setTransform(trans);
     }
 }

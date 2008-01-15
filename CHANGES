@@ -15,6 +15,9 @@ Version 0.6.1 - 13.01.2008  (vorraussichtlich)
  - Hilfslinie für U3-Achse entfernt
  - Gerade der Zielfunktion nach unten verlängert
  - Tabellenkopfbeschriftung des Dualen Problems geändert (y1, y2, w)
+ - Zielfunktion hat Beschriftung bekommen
+ - Zielfunktion skaliert nach unten, wenn der Schnittpunkt unten liegt
+ - Beispiel 1 geändert (negativer Schnittpunkt)
 -------------------------------------------------------------------------------
 Version 0.6 - 09.01.2008  (Rev. 195)
 -------------------------------------------------------------------------------

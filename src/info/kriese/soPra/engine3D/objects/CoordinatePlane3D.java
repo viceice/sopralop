@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 15.01.2008 - Version 0.4.4
+ * - Vereinheitlichung der Skalierung
  * 10.01.2008 - Version 0.4.3
  * - Achsenbeschriftung geändert
  * 08.11.2007 - Version 0.4.2
@@ -66,9 +68,13 @@ import com.sun.j3d.utils.geometry.Sphere;
  * 
  * @author Michael Kriese
  * @since 11.04.2007
- * @version 0.4.3
+ * @version 0.4.4
  */
 public final class CoordinatePlane3D extends TransformGroup {
+
+    private static final Vector3d AXIS_NAME_SCALE = new Vector3d(0.4, 0.4, 0.4);
+    private static final Vector3d AXIS_UNIT_SCALE = new Vector3d(0.2, 0.2, 0.2);
+    private static final Vector3d ZERO_VECTOR = new Vector3d();
 
     /**
      * Erstellt einen Pfeil für die Koordinatenachsen.
@@ -213,19 +219,16 @@ public final class CoordinatePlane3D extends TransformGroup {
 	pos = new Vector3f(size / 2.0f, 0.0f, 0.0f);
 	rot = new Vector3d(0.0, 0.0, Math.PI / 2.0);
 	scale = new Vector3d(1.0, size, 1.0);
-
 	this.xLine.setTransform(Tools3D.createTransform(pos, rot, scale));
 
 	pos = new Vector3f(size, 0.0f, 0.0f);
 	rot = new Vector3d(0.0, 0.0, -Math.PI / 2.0);
 	scale = new Vector3d(1.0, 1.0, 1.0);
-
 	this.xCone.setTransform(Tools3D.createTransform(pos, rot, scale));
 
-	trans = new Transform3D();
-	trans.setTranslation(new Vector3f(size + 0.5f, 0f, 0f));
-	trans.setScale(0.5);
-	this.xName.setTransform(trans);
+	pos = new Vector3f(size + 0.5f, 0.0f, 0.0f);
+	this.xName.setTransform(Tools3D.createTransform(pos, ZERO_VECTOR,
+		AXIS_NAME_SCALE));
 
 	for (int x = 1; x < size; x++) {
 	    TransformGroup tg = new TransformGroup();
@@ -236,32 +239,26 @@ public final class CoordinatePlane3D extends TransformGroup {
 	    bg.addChild(tg);
 
 	    tg = Tools3D.createAxisName("" + x, Tools3D.MATERIAL_RED);
-	    trans = new Transform3D();
-	    rot = new Vector3d();
-	    scale = new Vector3d(0.2, 0.2, 0.2);
 	    tg.setTransform(Tools3D.createTransform(new Vector3f(x, -0.25f,
-		    -0.25f), rot, scale));
+		    -0.25f), ZERO_VECTOR, AXIS_UNIT_SCALE));
 	    bg.addChild(tg);
 	}
 	// End X-Achse
 
 	// Begin Y-Achse
 	pos = new Vector3f(0.0f, size / 2.0f, 0.0f);
-	rot = new Vector3d();
 	scale = new Vector3d(1.0, size, 1.0);
-
-	this.yLine.setTransform(Tools3D.createTransform(pos, rot, scale));
+	this.yLine.setTransform(Tools3D
+		.createTransform(pos, ZERO_VECTOR, scale));
 
 	pos = new Vector3f(0.0f, size, 0.0f);
-	rot = new Vector3d();
 	scale = new Vector3d(1.0, 1.0, 1.0);
+	this.yCone.setTransform(Tools3D
+		.createTransform(pos, ZERO_VECTOR, scale));
 
-	this.yCone.setTransform(Tools3D.createTransform(pos, rot, scale));
-
-	trans = new Transform3D();
-	trans.setTranslation(new Vector3f(0f, size + 0.5f, 0f));
-	trans.setScale(0.5);
-	this.yName.setTransform(trans);
+	pos = new Vector3f(0.0f, size + 0.5f, 0.0f);
+	this.yName.setTransform(Tools3D.createTransform(pos, ZERO_VECTOR,
+		AXIS_NAME_SCALE));
 
 	for (int x = 1; x < size; x++) {
 	    TransformGroup tg = new TransformGroup();
@@ -272,11 +269,8 @@ public final class CoordinatePlane3D extends TransformGroup {
 	    bg.addChild(tg);
 
 	    tg = Tools3D.createAxisName("" + x, Tools3D.MATERIAL_GREEN);
-	    trans = new Transform3D();
-	    rot = new Vector3d();
-	    scale = new Vector3d(0.2, 0.2, 0.2);
 	    tg.setTransform(Tools3D.createTransform(new Vector3f(-0.25f, x,
-		    -0.25f), rot, scale));
+		    -0.25f), ZERO_VECTOR, AXIS_UNIT_SCALE));
 	    bg.addChild(tg);
 	}
 	// End Y-Achse
@@ -294,10 +288,9 @@ public final class CoordinatePlane3D extends TransformGroup {
 
 	this.zCone.setTransform(Tools3D.createTransform(pos, rot, scale));
 
-	trans = new Transform3D();
-	trans.setTranslation(new Vector3f(0f, 0f, size + 0.5f));
-	trans.setScale(0.5);
-	this.zName.setTransform(trans);
+	pos = new Vector3f(0.0f, 0.0f, size + 0.5f);
+	this.zName.setTransform(Tools3D.createTransform(pos, ZERO_VECTOR,
+		AXIS_NAME_SCALE));
 
 	for (int x = 1; x < size; x++) {
 	    TransformGroup tg = new TransformGroup();
@@ -308,11 +301,8 @@ public final class CoordinatePlane3D extends TransformGroup {
 	    bg.addChild(tg);
 
 	    tg = Tools3D.createAxisName("" + x, Tools3D.MATERIAL_BLUE);
-	    trans = new Transform3D();
-	    rot = new Vector3d();
-	    scale = new Vector3d(0.2, 0.2, 0.2);
 	    tg.setTransform(Tools3D.createTransform(new Vector3f(-0.25f,
-		    -0.25f, x), rot, scale));
+		    -0.25f, x), ZERO_VECTOR, AXIS_UNIT_SCALE));
 	    bg.addChild(tg);
 	}
 	// End Z-Achse

@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 15.01.2008 - Version 0.5.3
+ * - Zielfunktion bekommt jetz Lösung übergeben (zur Skalierung nach unten oder oben)
  * 09.11.2007 - Version 0.5.2
  * - Lösung nicht mehr unsichtbar
  * - Änderung der Scene nur noch bei problemsolved, da nach problemChanged das
@@ -110,7 +112,7 @@ import com.sun.j3d.utils.universe.ViewingPlatform;
  * TODO: Beleuchtung verbessern
  * 
  * @author Michael Kriese
- * @version 0.5.2
+ * @version 0.5.3
  * @since 26.04.2007
  */
 public final class Engine3D {
@@ -297,7 +299,8 @@ public final class Engine3D {
 	this.cone.compute(this.hull.getVerticesList(), this.size);
 
 	// fuege ZielVektor hinzu
-	this.targetLine.compute(lop.getTarget().toVector3f(), this.size);
+	this.targetLine.compute(lop.getSolution().getVector().toVector3f(),
+		this.size);
 
 	this.intersection.compute(lop.getSolution().getVector().toVector3f());
 
