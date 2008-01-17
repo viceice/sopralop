@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 17.01.2008 - Version 0.3.2.1
+ * - Beschriftung der Geraden im negativen leicht verschoben
  * 15.01.2008 - Version 0.3.2
  * - Gerade hat Beschriftung bekommen
  * - Gerade skaliert nach unten, wenn der Schnittpunkt unten liegt
@@ -53,7 +55,7 @@ import com.sun.j3d.utils.geometry.Cylinder;
  * Erstellt aus dem Zielvektor eine Gerade im Raum.
  * 
  * @author Michael Kriese
- * @version 0.3.2
+ * @version 0.3.2.1
  * @since 12.05.2007
  * 
  */
@@ -120,7 +122,7 @@ public final class Target3D extends TransformGroup {
 	vec = new Vector3f(pos);
 
 	if (z < 0)
-	    vec.z = z - 1.5f;
+	    vec.z = z - 1.6f;
 	else
 	    vec.z = z + 1.5f;
 	trans.setTranslation(vec);

@@ -19,6 +19,10 @@
  * 
  * ChangeLog:
  * 
+ * 17.01.2008 - Version 0.8.2
+ * - Panel für Duales Problem entfernt
+ * - InfoLabel hinzugefügt, es zeigt an ob das primale oder duale Problem
+ *    angezeigt wird
  * 10.01.2008 - Version 0.8.1
  * - Rollover-Effekt für die Toolbar
  * 27.12.2007 - Version 0.8
@@ -78,7 +82,6 @@ import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPAdapter;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -100,7 +103,7 @@ import javax.swing.border.Border;
 
 /**
  * @author Michael Kriese
- * @version 0.8.1
+ * @version 0.8.2
  * @since 12.05.2007
  * 
  */
@@ -125,15 +128,11 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 
     private JMenu edit, functions;
 
-    private Component pnDuale = null;
-
-    private Component pnPrimale = null;
-
     private JMenuItem primale, duale;
 
-    private final Settings PROPS = SettingsFactory.getInstance();
+    private final JLabel problem;
 
-    private boolean showDuale = false;
+    private final Settings PROPS = SettingsFactory.getInstance();
 
     private final JLabel status;
 
@@ -169,14 +168,15 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 	this.status.setBorder(createStatusBarBorder());
 	add(this.status, BorderLayout.PAGE_END);
 
+	this.problem = new JLabel(Lang.getString("Strings.PrimalProblem"));
+	this.problem.setBorder(BorderFactory.createEmptyBorder(5, 50, 5, 50));
+	this.problem.setHorizontalTextPosition(JLabel.CENTER);
+
 	generateMainMenu();
 	generateMainToolbar();
     }
 
     public void addCanvas(Canvas3D canvas) {
-	this.pnPrimale = canvas;
-	if (this.showDuale)
-	    return;
 	canvas.setMinimumSize(new Dimension(0, 0));
 	canvas.setPreferredSize(new Dimension(WIDTH / 2, 300));
 	this.body.setRightComponent(canvas);
@@ -199,8 +199,8 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 	repaint();
     }
 
+    @Deprecated
     public void setDualPanel(DualLOPPanel dual) {
-	this.pnDuale = dual;
     }
 
     public void setFunctions(List<JMenuItem> items) {
@@ -217,22 +217,20 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 	lop.addProblemListener(new LOPAdapter() {
 	    @Override
 	    public void showDualProblem(LOP lop) {
-		MainFrame.this.showDuale = true;
 		MainFrame.this.edit.remove(MainFrame.this.duale);
 		MainFrame.this.edit.add(MainFrame.this.primale);
-		MainFrame.this.body.setRightComponent(MainFrame.this.pnDuale);
-		MainFrame.this.body.setDividerLocation(WIDTH / 2);
+		MainFrame.this.problem.setText(Lang
+			.getString("Strings.DualProblem"));
 		validate();
 		repaint();
 	    }
 
 	    @Override
 	    public void showPrimalProblem(LOP lop) {
-		MainFrame.this.showDuale = false;
 		MainFrame.this.edit.remove(MainFrame.this.primale);
 		MainFrame.this.edit.add(MainFrame.this.duale);
-		MainFrame.this.body.setRightComponent(MainFrame.this.pnPrimale);
-		MainFrame.this.body.setDividerLocation(WIDTH / 2);
+		MainFrame.this.problem.setText(Lang
+			.getString("Strings.PrimalProblem"));
 		validate();
 		repaint();
 	    }
@@ -310,5 +308,7 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 	tb.addSeparator();
 	tb.add(MenuMaker.getToolBarButton("Menu.View.Show"));
 	tb.add(MenuMaker.getToolBarButton("Menu.View.Reset"));
+	tb.addSeparator();
+	tb.add(this.problem);
     }
 }

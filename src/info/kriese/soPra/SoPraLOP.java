@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 17.01.2008 - Version 0.5.8
+ * - Panel für Duales Problem entfernt
  * 28.12.2007 - Version 0.5.7
  * - Komandozeilenparameterhandling in SettingsFactory ausgelagert
  * 27.12.2007 - Version 0.5.6
@@ -56,7 +58,6 @@ package info.kriese.soPra;
 import info.kriese.soPra.engine3D.Engine3D;
 import info.kriese.soPra.gui.AboutDialog;
 import info.kriese.soPra.gui.ActionHandler;
-import info.kriese.soPra.gui.DualLOPPanel;
 import info.kriese.soPra.gui.HelpDialog;
 import info.kriese.soPra.gui.InputPanel;
 import info.kriese.soPra.gui.MainFrame;
@@ -82,15 +83,13 @@ import javax.swing.filechooser.FileFilter;
 
 /**
  * @author Michael Kriese
- * @version 0.5.7
+ * @version 0.5.8
  * @since 12.05.2007
  * 
  */
 public final class SoPraLOP {
 
     public static AboutDialog ABOUT;
-
-    public static DualLOPPanel DUAL;
 
     public static LOPEditor EDITOR;
 
@@ -131,7 +130,7 @@ public final class SoPraLOP {
 
 	System.out.println("SoPraLOP - Version "
 		+ SettingsFactory.getInstance().getVersion());
-	System.out.println("\t(c) 2007  "
+	System.out.println("\t(c) 2007-2008  "
 		+ SettingsFactory.getInstance().getAuthor());
 	System.out.println();
 
@@ -175,11 +174,6 @@ public final class SoPraLOP {
 		ENGINE.addConnection(VISUAL);
 	    }
 	});
-
-	splash.setMessage(Lang.getString("Boot.DualPanel"));
-	DUAL = new DualLOPPanel();
-	DUAL.setLOP(lop);
-	MAIN.setDualPanel(DUAL);
 
 	splash.setMessage(Lang.getString("Boot.About"));
 	ABOUT = AboutDialog.getInstance(MAIN);
