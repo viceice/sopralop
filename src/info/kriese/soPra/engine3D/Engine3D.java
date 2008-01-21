@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 21.01.2008 - Version 0.5.4
+ * - Vektor für duales Problem hinzugefügt
  * 15.01.2008 - Version 0.5.3
  * - Zielfunktion bekommt jetz Lösung übergeben (zur Skalierung nach unten oder oben)
  * 09.11.2007 - Version 0.5.2
@@ -83,6 +85,7 @@ import info.kriese.soPra.gui.Virtual3DFrame;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPAdapter;
 import info.kriese.soPra.lop.LOPSolution;
+import info.kriese.soPra.lop.LOPSolutionArea;
 import info.kriese.soPra.math.Vector3Frac;
 import info.kriese.soPra.math.quickhull.QuickHull;
 
@@ -112,7 +115,7 @@ import com.sun.j3d.utils.universe.ViewingPlatform;
  * TODO: Beleuchtung verbessern
  * 
  * @author Michael Kriese
- * @version 0.5.3
+ * @version 0.5.4
  * @since 26.04.2007
  */
 public final class Engine3D {
@@ -177,8 +180,10 @@ public final class Engine3D {
 
 	    @Override
 	    public void keyPressed(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_F2)
+		if (e.getKeyCode() == KeyEvent.VK_F2) {
 		    resetScene();
+		    e.consume();
+		}
 	    }
 	});
 
@@ -263,6 +268,20 @@ public final class Engine3D {
 	    public void problemSolved(LOP lop) {
 		Engine3D.this.computeSolution(lop);
 	    }
+
+	    @Override
+	    public void showDualProblem(LOP lop) {
+		if (lop.getSolution().getSpecialCase() == LOPSolution.SIMPLE) {
+		    Engine3D.this.intersection.setDualLineVisible(true);
+		    resetScene();
+		}
+
+	    }
+
+	    @Override
+	    public void showPrimalProblem(LOP lop) {
+		Engine3D.this.intersection.setDualLineVisible(false);
+	    }
 	});
 
 	this.cone.setLOP(lop);
@@ -302,7 +321,16 @@ public final class Engine3D {
 	this.targetLine.compute(lop.getSolution().getVector().toVector3f(),
 		this.size);
 
-	this.intersection.compute(lop.getSolution().getVector().toVector3f());
+	// Schnittpunkt / Vektor für Duales Problem
+	this.intersection.setDualLineVisible(false);
+	if (lop.getSolution().getSpecialCase() == LOPSolution.SIMPLE) {
+	    LOPSolutionArea area = lop.getSolution().getAreas().get(0);
+	    this.intersection.compute(lop.getSolution().getVector()
+		    .toVector3f(), area.getL1().toVector3f(), area.getL2()
+		    .toVector3f());
+	} else
+	    this.intersection.compute(lop.getSolution().getVector()
+		    .toVector3f(), null, null);
 
 	resetScene();
     }
@@ -316,6 +344,7 @@ public final class Engine3D {
      */
     private GraphicsConfiguration createConfig() {
 	GraphicsConfigTemplate3D template = new GraphicsConfigTemplate3D();
+	// template.setSceneAntialiasing(GraphicsConfigTemplate3D.PREFERRED);
 	GraphicsEnvironment env = GraphicsEnvironment
 		.getLocalGraphicsEnvironment();
 	GraphicsDevice device = env.getDefaultScreenDevice();
@@ -348,6 +377,7 @@ public final class Engine3D {
 	view.setTransparencySortingPolicy(View.TRANSPARENCY_SORT_GEOMETRY);
 	view.setBackClipDistance(Tools3D.BACK_CLIP_DISTANCE);
 	view.setFrontClipDistance(Tools3D.FRONT_CLIP_DISTANCE);
+	// view.setSceneAntialiasingEnable(true);
 
 	ViewingPlatform vp = this.su.getViewingPlatform();
 

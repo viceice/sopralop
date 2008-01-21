@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 17.01.2008 - Version 0.5
+ * - Polygonzahl für Primitive erhöht
+ * - Vektor für duales Problem hinzugefügt
  * 10.01.2008 - Version 0.4.1
  * - Hilfslinie für U3-Achse entfernt
  * 09.11.2007 - Version 0.4
@@ -39,8 +42,8 @@ import info.kriese.soPra.engine3D.Tools3D;
 import info.kriese.soPra.math.Math2;
 
 import javax.media.j3d.Appearance;
+import javax.media.j3d.RenderingAttributes;
 import javax.media.j3d.TransformGroup;
-import javax.media.j3d.TransparencyAttributes;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 
@@ -52,26 +55,21 @@ import com.sun.j3d.utils.geometry.Sphere;
  * Klasse, welche den Schnittpunkt und die Hilfslinien repräsentiert.
  * 
  * @author Michael Kriese
- * @version 0.4.1
+ * @version 0.5
  * @since 10.09.2007
  * 
  */
 public class Point3D extends TransformGroup {
 
     /**
-     * Apperance-Objekt, welches die visuellen Eigenschaften kapselt.
-     */
-    private final Appearance ap;
-
-    /**
      * Gruppen für Hilfslinien und Kugel.
      */
-    private final TransformGroup grpX, grpY, grpPoint; // , grpZ
+    private final TransformGroup grpX, grpY, grpPoint, grpDualLine;
 
     /**
      * Zylinder, welche die Hilfslinien darstellen.
      */
-    private final Cylinder lineX, lineY; // , lineZ
+    private final Cylinder lineX, lineY, dualline;
 
     /**
      * Kugel, welche den Schnittpunkt darstellt.
@@ -86,19 +84,17 @@ public class Point3D extends TransformGroup {
 	this.grpPoint = new TransformGroup();
 	this.grpX = new TransformGroup();
 	this.grpY = new TransformGroup();
-	// this.grpZ = new TransformGroup();
 
-	this.ap = Tools3D.generateApperance(Tools3D.MATERIAL_PINK);
-	this.ap.setTransparencyAttributes(new TransparencyAttributes(
-		TransparencyAttributes.NONE, 0.0f));
+	Appearance ap = Tools3D.generateApperance(Tools3D.MATERIAL_PINK);
 
-	int flags = Primitive.GENERATE_NORMALS;
+	this.point = new Sphere(0.1f, Primitive.GENERATE_NORMALS, 100, ap);
 
-	this.point = new Sphere(0.1f, flags, 40, this.ap);
+	this.lineX = Tools3D.generateCylinder(0.005f, 1.0f, ap);
+	this.lineY = Tools3D.generateCylinder(0.005f, 1.0f, ap);
 
-	this.lineX = new Cylinder(0.005f, 1.0f, flags, this.ap);
-	this.lineY = new Cylinder(0.005f, 1.0f, flags, this.ap);
-	// this.lineZ = new Cylinder(0.005f, 1.0f, flags, this.ap);
+	ap = Tools3D.generateApperance(Tools3D.MATERIAL_PINK);
+	ap.setCapability(Appearance.ALLOW_RENDERING_ATTRIBUTES_WRITE);
+	this.dualline = Tools3D.generateCylinder(0.05f, 1.0f, ap);
 
 	this.grpPoint.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 	this.grpPoint.addChild(this.point);
@@ -109,13 +105,14 @@ public class Point3D extends TransformGroup {
 	this.grpY.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 	this.grpY.addChild(this.lineY);
 
-	// this.grpZ.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-	// this.grpZ.addChild(this.lineZ);
+	this.grpDualLine = new TransformGroup();
+	this.grpDualLine.addChild(this.dualline);
+	this.grpDualLine.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+	this.grpPoint.addChild(this.grpDualLine);
 
 	addChild(this.grpPoint);
 	addChild(this.grpX);
 	addChild(this.grpY);
-	// addChild(this.grpZ);
     }
 
     /**
@@ -124,7 +121,19 @@ public class Point3D extends TransformGroup {
      * @param pos -
      *                Position, an der der Schnittpunkt liegt.
      */
+    @Deprecated
     public void compute(Vector3f pos) {
+	compute(pos, null, null);
+    }
+
+    /**
+     * Berechnet die Position des Schnittpunkts und der Hilfslinien.
+     * 
+     * @param pos
+     * @param l1
+     * @param l2
+     */
+    public void compute(Vector3f pos, Vector3f l1, Vector3f l2) {
 
 	Vector3d rot = new Vector3d(), scale = new Vector3d(1.0, 1.0, 1.0);
 	Vector3f trans;
@@ -144,12 +153,35 @@ public class Point3D extends TransformGroup {
 	trans.y = pos.y;
 	this.grpY.setTransform(Tools3D.createTransform(trans, rot, scale));
 
-	float len = new Vector3f(pos.x, pos.y, 0.0f).length();
-	if (pos.x != 0 && pos.y != 0)
-	    rot.z = -Math2.angle(new Vector3d(0.0, 1.0, 0.0), new Vector3d(
-		    pos.x, pos.y, 0.0));
-	scale = new Vector3d(1.0, len, 1.0);
-	trans = new Vector3f(pos.x / 2.0f, pos.y / 2.0f, pos.z);
-	// this.grpZ.setTransform(Tools3D.createTransform(trans, rot, scale));
+	scale = new Vector3d(1.0, 3.0, 1.0);
+	trans = new Vector3f();
+
+	if (l1 != null && l2 != null) {
+	    Vector3d v1, v2;
+	    Vector3f targ = new Vector3f();
+	    targ.cross(l1, l2);
+	    v1 = new Vector3d(targ.x, targ.y, 0.0);
+	    v2 = new Vector3d(targ);
+	    rot.x = Math2.angle(v1, v2);
+
+	    v1 = new Vector3d(0.0, 1.0, 0.0);
+	    v2 = new Vector3d(targ.x, targ.y, 0.0);
+	    rot.z = -Math2.angle(v1, v2);
+	}
+
+	this.grpDualLine.setTransform(Tools3D
+		.createTransform(trans, rot, scale));
+    }
+
+    public void setDualLineVisible(boolean visible) {
+	Appearance apr = this.dualline.getAppearance();
+	RenderingAttributes ra = new RenderingAttributes();
+
+	if (visible)
+	    ra.setVisible(true);
+	else
+	    ra.setVisible(false);
+
+	apr.setRenderingAttributes(ra);
     }
 }

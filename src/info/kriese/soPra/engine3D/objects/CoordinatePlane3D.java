@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 17.01.2008 - Version 0.4.5
+ * - Polygonzahl für Primitive erhöht
  * 15.01.2008 - Version 0.4.4
  * - Vereinheitlichung der Skalierung
  * 10.01.2008 - Version 0.4.3
@@ -68,7 +70,7 @@ import com.sun.j3d.utils.geometry.Sphere;
  * 
  * @author Michael Kriese
  * @since 11.04.2007
- * @version 0.4.4
+ * @version 0.4.5
  */
 public final class CoordinatePlane3D extends TransformGroup {
 
@@ -85,7 +87,7 @@ public final class CoordinatePlane3D extends TransformGroup {
      */
     private static TransformGroup createCone(Material material) {
 	Appearance apr = Tools3D.generateApperance(material);
-	Cone cone = new Cone(0.05f, 0.5f, Cone.GENERATE_NORMALS, apr);
+	Cone cone = new Cone(0.05f, 0.5f, Cone.GENERATE_NORMALS, 100, 100, apr);
 
 	TransformGroup tg = new TransformGroup();
 	tg.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
@@ -102,8 +104,7 @@ public final class CoordinatePlane3D extends TransformGroup {
      */
     private static TransformGroup createLine(Material material) {
 	Appearance apr = Tools3D.generateApperance(material);
-	Cylinder line = new Cylinder(0.025f, 1.0f, Cylinder.GENERATE_NORMALS,
-		apr);
+	Cylinder line = Tools3D.generateCylinder(0.025f, 1.0f, apr);
 
 	TransformGroup tg = new TransformGroup();
 	tg.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
@@ -120,7 +121,7 @@ public final class CoordinatePlane3D extends TransformGroup {
      */
     private static Node createMark(Vector3d scale, Material material) {
 	TransformGroup t = new TransformGroup();
-	Sphere sp = new Sphere(0.05f, Sphere.GENERATE_NORMALS, Tools3D
+	Sphere sp = new Sphere(0.05f, Sphere.GENERATE_NORMALS, 100, Tools3D
 		.generateApperance(material));
 
 	Transform3D tr = new Transform3D();

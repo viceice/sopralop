@@ -47,6 +47,7 @@ import javax.media.j3d.FontExtrusion;
 import javax.media.j3d.LineAttributes;
 import javax.media.j3d.Material;
 import javax.media.j3d.OrientedShape3D;
+import javax.media.j3d.PolygonAttributes;
 import javax.media.j3d.Text3D;
 import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransformGroup;
@@ -57,8 +58,10 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 
+import com.sun.j3d.utils.geometry.Cylinder;
 import com.sun.j3d.utils.geometry.GeometryInfo;
 import com.sun.j3d.utils.geometry.NormalGenerator;
+import com.sun.j3d.utils.geometry.Primitive;
 import com.sun.j3d.utils.geometry.Stripifier;
 
 /**
@@ -231,6 +234,10 @@ public final class Tools3D {
 		LineAttributes.PATTERN_SOLID, true));
 	ap.setTransparencyAttributes(new TransparencyAttributes(
 		TransparencyAttributes.NONE, 0.0f));
+	PolygonAttributes pa = new PolygonAttributes();
+	pa.setCullFace(PolygonAttributes.CULL_BACK);
+	pa.setPolygonMode(PolygonAttributes.POLYGON_FILL);
+	ap.setPolygonAttributes(pa);
 
 	return ap;
     }
@@ -249,6 +256,12 @@ public final class Tools3D {
 	Appearance apr = generateApperance();
 	apr.setMaterial(material);
 	return apr;
+    }
+
+    public static Cylinder generateCylinder(float radius, float heigth,
+	    Appearance apr) {
+	return new Cylinder(radius, heigth, Primitive.GENERATE_NORMALS, 100,
+		100, apr);
     }
 
     /**

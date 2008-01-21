@@ -2,7 +2,7 @@ SoPraLOP
 (c)2007-2008 Michael Kriese & Peer Sterner
 
 -------------------------------------------------------------------------------
-Version 0.6.1 - 13.01.2008  (vorraussichtlich)
+Version 0.6.1 - 24.01.2008  (vorraussichtlich)
 -------------------------------------------------------------------------------
  - BugFix: Bei einer Fehlermeldung waren Titel und Nachricht vertauscht
  - BugFix: Lösung-Überprüfen-Button wurde nicht deaktiviert
@@ -21,6 +21,8 @@ Version 0.6.1 - 13.01.2008  (vorraussichtlich)
  - Panel für Duales Problem entfernt
  - InfoLabel hinzugefügt, es zeigt an ob das primale oder duale Problem
     angezeigt wird
+ - Polygonzahl für Primitive erhöht
+ - Vektor für duales Problem hinzugefügt
 -------------------------------------------------------------------------------
 Version 0.6 - 09.01.2008  (Rev. 195)
 -------------------------------------------------------------------------------

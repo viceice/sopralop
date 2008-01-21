@@ -60,7 +60,7 @@ public final class Math2 {
      *                Der erste Vektor
      * @param v2 -
      *                Der zweite Vektor
-     * @return Der Winkel zwischen den Vektoren.
+     * @return Der Winkel zwischen den Vektoren in Radiant.
      */
     public static double angle(Vector3d v1, Vector3d v2) {
 

@@ -19,8 +19,9 @@
  * 
  * ChangeLog:
  * 
- * 17.01.2008 - Version 0.3.2.1
+ * 17.01.2008 - Version 0.3.3
  * - Beschriftung der Geraden im negativen leicht verschoben
+ * - Polygonzahl für Primitive erhöht
  * 15.01.2008 - Version 0.3.2
  * - Gerade hat Beschriftung bekommen
  * - Gerade skaliert nach unten, wenn der Schnittpunkt unten liegt
@@ -43,7 +44,6 @@ package info.kriese.soPra.engine3D.objects;
 
 import info.kriese.soPra.engine3D.Tools3D;
 
-import javax.media.j3d.Appearance;
 import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransformGroup;
 import javax.vecmath.Vector3d;
@@ -55,7 +55,7 @@ import com.sun.j3d.utils.geometry.Cylinder;
  * Erstellt aus dem Zielvektor eine Gerade im Raum.
  * 
  * @author Michael Kriese
- * @version 0.3.2.1
+ * @version 0.3.3
  * @since 12.05.2007
  * 
  */
@@ -72,10 +72,8 @@ public final class Target3D extends TransformGroup {
      * Konstruktor, welcher alle Objekte erstellt und initialisiert.
      */
     public Target3D() {
-
-	Appearance apr = Tools3D.generateApperance();
-	apr.setMaterial(Tools3D.MATERIAL_GOLD);
-	this.line = new Cylinder(0.05f, 1.0f, Cylinder.GENERATE_NORMALS, apr);
+	this.line = Tools3D.generateCylinder(0.05f, 1.0f, Tools3D
+		.generateApperance(Tools3D.MATERIAL_GOLD));
 
 	this.gline = new TransformGroup();
 	this.gline.addChild(this.line);
