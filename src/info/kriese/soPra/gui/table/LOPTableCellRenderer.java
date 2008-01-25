@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 25.01.2008 - Version 0.1.3
+ * - Hintergrund geändert
+ * - Tooltips für Relationszeichen gelöscht, da nicht mehr benötigt
  * 17.12.2007 - Version 0.1.2
  * - SelectionBorder auch für nicht editierbare Felder
  * 09.11.2007 - Version 0.1.1
@@ -46,7 +49,7 @@ import javax.swing.table.TableCellRenderer;
  * Dient zur Visualisierung von Werte in einer Tabelle.
  * 
  * @author Michael Kriese
- * @version 0.1.2
+ * @version 0.1.3
  * @since 03.11.2007
  */
 public class LOPTableCellRenderer implements TableCellRenderer {
@@ -61,9 +64,8 @@ public class LOPTableCellRenderer implements TableCellRenderer {
 
     public LOPTableCellRenderer() {
 	this.content = new JLabel();
-	this.content.setOpaque(true);
 	this.content.setBorder(this.noBorder);
-	this.content.setBackground(Color.WHITE);
+	this.content.setOpaque(true);
 	this.content.addMouseListener(new MouseAdapter() {
 	    @Override
 	    public void mouseEntered(MouseEvent e) {
@@ -117,10 +119,14 @@ public class LOPTableCellRenderer implements TableCellRenderer {
 	else
 	    this.content.setBorder(this.noBorder);
 
+	// Hintergrund
+	if (table.isCellEditable(row, column))
+	    this.content.setBackground(Color.WHITE);
+	else
+	    this.content.setBackground(null);
+
 	// ToolTips
-	if (column == cols - 2 && row > 1 && row < rows - 2)
-	    this.content.setToolTipText(Lang.getString("Input.Relation"));
-	else if (column == 0) {
+	if (column == 0) {
 	    if (row == 0)
 		this.content.setToolTipText(Lang
 			.getString("Strings.TargetFunction"));
@@ -140,5 +146,6 @@ public class LOPTableCellRenderer implements TableCellRenderer {
 	this.content.setText(value == null ? "" : value.toString());
 
 	return this.content;
+
     }
 }

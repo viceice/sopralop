@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 25.01.2007 - Version 0.4
+ * - Vorbereitung auf erweiterte Lösungsüberprüfung
  * 10.01.2008 - Version 0.3.3
  * - Lösungscheck gibt jetzt eine Fehlermeldung, wenn das Problem nicht 
  *    übernommen wurde.
@@ -48,9 +50,11 @@
  */
 package info.kriese.soPra.gui.table;
 
+import info.kriese.soPra.gui.InputPanel;
 import info.kriese.soPra.gui.MessageHandler;
 import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.lop.LOP;
+import info.kriese.soPra.lop.LOPAdapter;
 import info.kriese.soPra.lop.LOPEditor;
 import info.kriese.soPra.lop.LOPEditorAdapter;
 import info.kriese.soPra.lop.LOPSolutionArea;
@@ -63,6 +67,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.ButtonGroup;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
@@ -88,9 +96,13 @@ public final class LOPTableModel extends AbstractTableModel {
 
     private LOPSolutionWrapper sol;
 
+    private JComponent specialCases;
+
+    private JTable table;
     private Vector3Frac target;
 
     private final List<LOPSolutionWrapper> values;
+
     private final List<Vector3Frac> vectors;
 
     public LOPTableModel() {
@@ -198,6 +210,10 @@ public final class LOPTableModel extends AbstractTableModel {
 	    return false;
     }
 
+    public boolean isVisible() {
+	return this.table != null && this.table.getModel() == this;
+    }
+
     public void setEdited(boolean value) {
 	if (this.editor != null)
 	    this.editor.setEdited(value);
@@ -236,9 +252,21 @@ public final class LOPTableModel extends AbstractTableModel {
 		LOPTableModel.this.update(lop);
 	    }
 	});
+
+	editor.getLOP().addProblemListener(new LOPAdapter() {
+	    @Override
+	    public void showPrimalProblem(LOP lop) {
+		showSpecialCases();
+	    }
+	});
+    }
+
+    public void setSpecialCasesComponent(JComponent c) {
+	this.specialCases = c;
     }
 
     public void setTable(JTable table) {
+	this.table = table;
 	table.setModel(this);
 	fireTableStructureChanged();
     }
@@ -247,15 +275,7 @@ public final class LOPTableModel extends AbstractTableModel {
     public void setValueAt(Object value, int row, int col) {
 	int num = this.vectors.size();
 
-	if (col == num + 1) {
-	    if (row == 2 || row == 3) {
-		String s = (String) value;
-		if (!this.operators[row - 2].equals(s))
-		    this.operators[row - 2] = s;
-		else
-		    return;
-	    }
-	} else if (col == num + 2)
+	if (col == num + 2)
 	    switch (row) {
 		case 0:
 		    boolean bool = LOPMinMax.get((String) value).isMax();
@@ -357,6 +377,11 @@ public final class LOPTableModel extends AbstractTableModel {
      *                LOP, mit dem die Lösung überprüft werden soll.
      */
     private void check(LOP lop) {
+
+	// TODO: erweitern
+
+	if (!isVisible())
+	    return;
 	if (isEdited()) {
 	    MessageHandler.showError(Lang.getString("Strings.Solution"), Lang
 		    .getString("Errors.TakeNewValues"));
@@ -366,10 +391,7 @@ public final class LOPTableModel extends AbstractTableModel {
 	boolean res = true;
 
 	if (lop.getSolution().getSpecialCase() == info.kriese.soPra.lop.LOPSolution.NO_SOLUTION) {
-	    for (LOPSolutionWrapper sol : this.values)
-		if (!(sol.getValue() instanceof LOPInfinity))
-		    res = false;
-	    if (!(this.sol.getValue() instanceof LOPInfinity))
+	    if (!(this.sol.getValue() instanceof LOPNotExsitent))
 		res = false;
 
 	    if (res)
@@ -380,9 +402,6 @@ public final class LOPTableModel extends AbstractTableModel {
 			Lang.getString("Strings.IncorrectSolution"));
 	    return;
 	} else if (lop.getSolution().getSpecialCase() == info.kriese.soPra.lop.LOPSolution.UNLIMITED) {
-	    for (LOPSolutionWrapper sol : this.values)
-		if (!(sol.getValue() instanceof LOPInfinity))
-		    res = false;
 	    if (!(this.sol.getValue() instanceof LOPInfinity))
 		res = false;
 
@@ -522,10 +541,96 @@ public final class LOPTableModel extends AbstractTableModel {
 	for (int i = 1; i <= this.vectors.size(); i++)
 	    this.columnNames.add("<html><center><b>x<sub>" + i
 		    + "</sub></b></center></html>");
-	this.columnNames.add("<html><center><b>" + "&lt; / > / ="
-		+ "</b></center></html>");
+	this.columnNames.add("<html><center><b>=</b></center></html>");
 	this.columnNames.add("<html><center><b>z</b></center></html>");
 	fireTableStructureChanged();
     }
 
+    /**
+     * 
+     */
+    private void showSpecialCases() {
+
+	// TODO: optimieren
+
+	this.specialCases.setVisible(true);
+	this.specialCases.removeAll();
+
+	ButtonGroup bg;
+	JRadioButton rb;
+	JPanel pn;
+
+	bg = new ButtonGroup();
+	pn = new JPanel();
+	pn.setBorder(InputPanel
+		.createBorder("Lösungsbereich des Problems ist:"));
+	this.specialCases.add(pn);
+
+	rb = new JRadioButton("<html>&empty;</html>");
+	pn.add(rb);
+	bg.add(rb);
+
+	rb = new JRadioButton("beschränkt");
+	pn.add(rb);
+	bg.add(rb);
+
+	rb = new JRadioButton("unbeschränkt");
+	pn.add(rb);
+	bg.add(rb);
+
+	bg = new ButtonGroup();
+	pn = new JPanel();
+	pn
+		.setBorder(InputPanel
+			.createBorder("Lösungsbereich des Problems wird abgebildet auf:"));
+	this.specialCases.add(pn);
+
+	rb = new JRadioButton("<html>&empty;</html>");
+	pn.add(rb);
+	bg.add(rb);
+
+	rb = new JRadioButton("Strahl");
+	pn.add(rb);
+	bg.add(rb);
+
+	rb = new JRadioButton("Strecke");
+	pn.add(rb);
+	bg.add(rb);
+
+	bg = new ButtonGroup();
+	pn = new JPanel();
+	pn.setBorder(InputPanel
+		.createBorder("Bereich der optimalen Lösung ist:"));
+	this.specialCases.add(pn);
+
+	rb = new JRadioButton("<html>&empty;</html>");
+	pn.add(rb);
+	bg.add(rb);
+
+	rb = new JRadioButton("ein Punkt");
+	pn.add(rb);
+	bg.add(rb);
+
+	rb = new JRadioButton("mehr als ein Punkt");
+	pn.add(rb);
+	bg.add(rb);
+
+	bg = new ButtonGroup();
+	pn = new JPanel();
+	pn.setBorder(InputPanel.createBorder(
+		"Die Zielfunktion des Problems ist", true));
+	this.specialCases.add(pn);
+
+	rb = new JRadioButton("beschränkt");
+	pn.add(rb);
+	bg.add(rb);
+
+	rb = new JRadioButton("unbeschränkt");
+	pn.add(rb);
+	bg.add(rb);
+
+	rb = new JRadioButton("weder / noch");
+	pn.add(rb);
+	bg.add(rb);
+    }
 }

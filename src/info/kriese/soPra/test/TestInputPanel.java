@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 25.01.2008 - Version 0.2
+ * - TestCase komplett überarbeitet
  * 04.11.2007 - Version 0.1
  *  - Datei hinzugefuegt
  */
@@ -27,22 +29,34 @@ package info.kriese.soPra.test;
 import info.kriese.soPra.SoPraLOP;
 import info.kriese.soPra.gui.ActionHandler;
 import info.kriese.soPra.gui.InputPanel;
+import info.kriese.soPra.gui.lang.Lang;
+import info.kriese.soPra.io.IOUtils;
 import info.kriese.soPra.io.impl.SettingsFactory;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPEditor;
 import info.kriese.soPra.lop.impl.LOPFactory;
+import info.kriese.soPra.math.LOPSolver;
 
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 
 /**
  * 
  * @author Michael Kriese
- * @version 0.1
+ * @version 0.2
  * @since 04.11.2007
  * 
  */
 public class TestInputPanel {
+
+    private static boolean DUAL = true;
+    private static LOP lop;
+    private static final String SAMPLE = "S02";
 
     public static void main(String[] args) {
 	try { // use the local look and feel
@@ -52,12 +66,15 @@ public class TestInputPanel {
 
 	System.out.println("SoPraLOP InputTest - Version "
 		+ SettingsFactory.getInstance().getVersion());
-	System.out.println("\t(c) 2007  "
+	System.out.println("\t(c) 2007-2008  "
 		+ SettingsFactory.getInstance().getAuthor());
 	System.out.println();
 
-	LOP lop = LOPFactory.newLinearOptimizingProblem();
+	lop = LOPFactory.newLinearOptimizingProblem();
 	LOPEditor editor = LOPFactory.newLOPEditor(lop);
+
+	LOPSolver solver = new LOPSolver();
+	solver.setEditor(editor);
 
 	ActionHandler.INSTANCE.setLOP(lop);
 
@@ -66,13 +83,30 @@ public class TestInputPanel {
 	InputPanel ip = new InputPanel();
 	ip.setEditor(editor);
 
-	editor.update();
+	JButton pdbtn = new JButton("zeige Primales / Duales Problem");
+	pdbtn.setFocusPainted(false);
+	pdbtn.addActionListener(new ActionListener() {
+	    public void actionPerformed(ActionEvent e) {
+		if (DUAL) {
+		    lop.showDualProblem();
+		    DUAL = false;
+		} else {
+		    lop.showPrimalProblem();
+		    DUAL = true;
+		}
+	    }
+	});
+
+	editor.open(IOUtils.getURL("problems/"
+		+ Lang.getString("Menu.File.Samples." + SAMPLE + ".File")
+		+ ".lop"));
 
 	JFrame frame = new JFrame("SoPraLOP InputTest - Version "
 		+ SettingsFactory.getInstance().getVersion());
 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	frame.add(ip);
-	frame.setSize(400, 300);
+	frame.add(ip, BorderLayout.CENTER);
+	frame.add(pdbtn, BorderLayout.PAGE_END);
+	frame.setSize(400, 400);
 	frame.setVisible(true);
     }
 }

@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 25.01.2008 - Version 0.8.3
+ * - Fenstergröße geändert
+ * - setDualPanel entfernt, da nicht mehr benötigt
  * 17.01.2008 - Version 0.8.2
  * - Panel für Duales Problem entfernt
  * - InfoLabel hinzugefügt, es zeigt an ob das primale oder duale Problem
@@ -103,14 +106,14 @@ import javax.swing.border.Border;
 
 /**
  * @author Michael Kriese
- * @version 0.8.2
+ * @version 0.8.3
  * @since 12.05.2007
  * 
  */
 public final class MainFrame extends JFrame implements Virtual3DFrame,
 	HelpProvider {
 
-    private static final int HEIGHT = 400;
+    private static final int HEIGHT = 500;
 
     /**	*/
     private static final long serialVersionUID = -2209082679810518777L;
@@ -195,12 +198,6 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 	content.setPreferredSize(new Dimension(WIDTH / 2, 300));
 	this.body.setLeftComponent(content);
 	this.body.setDividerLocation(WIDTH / 2);
-	validate();
-	repaint();
-    }
-
-    @Deprecated
-    public void setDualPanel(DualLOPPanel dual) {
     }
 
     public void setFunctions(List<JMenuItem> items) {

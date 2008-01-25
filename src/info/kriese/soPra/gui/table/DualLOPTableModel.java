@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 25.01.2008 - Version 0.2
+ * - Vorbereitung zur Lösungsüberprüfung
  * 10.01.2008 - Version 0.1.1
  * - Tabellenkopfbeschriftung geändert (y1, y2, w)
  * 09.11.2007 - Version 0.1
@@ -26,8 +28,10 @@
  */
 package info.kriese.soPra.gui.table;
 
+import info.kriese.soPra.gui.MessageHandler;
 import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.lop.LOP;
+import info.kriese.soPra.lop.LOPAdapter;
 import info.kriese.soPra.lop.LOPEditor;
 import info.kriese.soPra.lop.LOPEditorAdapter;
 import info.kriese.soPra.lop.LOPSolution;
@@ -37,6 +41,7 @@ import info.kriese.soPra.math.Vector3Frac;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
@@ -44,7 +49,7 @@ import javax.swing.table.AbstractTableModel;
  * Wandelt das duale LOP in ein von JTable lesbares Format um.
  * 
  * @author Peer Sterner
- * @version 0.1.1
+ * @version 0.2
  * @since 09.11.2007
  * 
  */
@@ -56,6 +61,10 @@ public final class DualLOPTableModel extends AbstractTableModel {
     private boolean max;
 
     private final Object sol[];
+
+    private JComponent specialCases;
+
+    private JTable table;
 
     private Vector3Frac target;
 
@@ -147,22 +156,49 @@ public final class DualLOPTableModel extends AbstractTableModel {
     /**
      * legt die Editierbarkeit einzelner Zellen fest
      * 
+     * @param row
+     * @param col
      */
     @Override
     public boolean isCellEditable(int row, int col) {
-	return false;
+	if (getRowCount() - 1 == row && col != 0 && col != 3)
+	    return true;
+	else
+	    return false;
+    }
+
+    public boolean isVisible() {
+	return this.table != null && this.table.getModel() == this;
     }
 
     public void setEditor(LOPEditor editor) {
 	editor.addListener(new LOPEditorAdapter() {
 	    @Override
+	    public void check(LOP lop) {
+		DualLOPTableModel.this.check(lop);
+	    }
+
+	    @Override
 	    public void update(LOP lop) {
 		DualLOPTableModel.this.update(lop);
 	    }
 	});
+
+	editor.getLOP().addProblemListener(new LOPAdapter() {
+	    @Override
+	    public void showDualProblem(LOP lop) {
+		DualLOPTableModel.this.specialCases.removeAll();
+		DualLOPTableModel.this.specialCases.setVisible(false);
+	    }
+	});
+    }
+
+    public void setSpecialCasesComponent(JComponent c) {
+	this.specialCases = c;
     }
 
     public void setTable(JTable table) {
+	this.table = table;
 	table.setModel(this);
 	fireTableStructureChanged();
     }
@@ -211,5 +247,10 @@ public final class DualLOPTableModel extends AbstractTableModel {
 	}
 
 	fireTableStructureChanged();
+    }
+
+    protected void check(LOP lop) {
+	if (isVisible())
+	    MessageHandler.showNotImplemented();
     }
 }

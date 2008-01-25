@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 25.01.2008 - Version 0.7.2
+ * - Vorbereitung zur erweiterten Lösungsüberprüfung
  * 10.01.2008 - Version 0.7.1
  * - BugFix: Lösung-Überprüfen-Button wurde bei Dual-LOP-Ansicht nicht
  *    deaktiviert
@@ -93,11 +95,13 @@ import info.kriese.soPra.math.Fractional;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -107,6 +111,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.Border;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableCellEditor;
@@ -117,12 +124,28 @@ import javax.swing.table.TableColumn;
  * 
  * @author Peer Sterner
  * @since 13.05.2007
- * @version 0.7.1
+ * @version 0.7.2
  */
 public final class InputPanel extends JPanel {
 
     /** */
     private static final long serialVersionUID = 4944381133035213540L;
+
+    public static Border createBorder(String title) {
+	return createBorder(title, false);
+    }
+
+    public static Border createBorder(String title, boolean last) {
+	Border outer, inner, titled;
+
+	inner = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
+	outer = BorderFactory.createEmptyBorder(10, 10, last ? 10 : 0, 10);
+
+	titled = BorderFactory.createTitledBorder(inner, title,
+		TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION);
+
+	return BorderFactory.createCompoundBorder(outer, titled);
+    }
 
     private JButton check = null;
 
@@ -137,15 +160,16 @@ public final class InputPanel extends JPanel {
     private JButton reset = null;
 
     private final JTable table;
-
     private JButton take = null;
+
     private JMenuItem take2, check2, reset2;
+    private final JToolBar toolbar;
 
     private final List<Component> toolbarBtns;
 
     public InputPanel() {
-
-	setLayout(new BorderLayout());
+	JScrollPane scrollPane;
+	JPanel body, pn;
 
 	this.maxEditor = new JComboBox();
 	this.maxEditor.setFocusable(false);
@@ -164,6 +188,7 @@ public final class InputPanel extends JPanel {
 	});
 	this.maxEditor.addItem("max");
 	this.maxEditor.addItem("min");
+	this.maxEditor.setBorder(BorderFactory.createEmptyBorder());
 
 	this.primalModel = new LOPTableModel();
 	this.primalModel.addTableModelListener(new TableModelListener() {
@@ -184,6 +209,50 @@ public final class InputPanel extends JPanel {
 
 	    private static final long serialVersionUID = 1L;
 
+	    /**
+	     * Überschriebene Funktion zur Selektierung von Zellen.
+	     * 
+	     * Nicht editierbare Zellen können nicht markiert werden.
+	     * 
+	     * @param row -
+	     *                Zu selektierende Zeile.
+	     * @param col -
+	     *                Zu selektierende Spalte.
+	     * @param toggle -
+	     *                Hat bei uns keine Bedeutung.
+	     * @param extend -
+	     *                Hat bei uns keine Bedeutung.
+	     * @see JTable.changeSelection(int, int,boolean,boolean)
+	     */
+	    @Override
+	    public void changeSelection(int row, int col, boolean toggle,
+		    boolean extend) {
+
+		int rows = getRowCount(), cols = getColumnCount();
+
+		if (getModel() == InputPanel.this.primalModel) {
+
+		    if (row == 1 || row == rows - 2)
+			row++;
+		} else
+		    row = rows - 1;
+
+		if (col == 0 || col == cols - 2)
+		    col++;
+
+		super.changeSelection(row, col, toggle, extend);
+	    }
+
+	    /**
+	     * Überschriebene Funktion, welche den Zellspeziefischen Editor
+	     * zurückgibt.
+	     * 
+	     * @param row -
+	     *                Zeile der Zelle.
+	     * @param column -
+	     *                Spalte der Zelle.
+	     * @return Ein TableCellEditor für die gewählte Zelle
+	     */
 	    @Override
 	    public TableCellEditor getCellEditor(int row, int column) {
 		if (row == getRowCount() - 1)
@@ -212,15 +281,41 @@ public final class InputPanel extends JPanel {
 		new FractionalTableCellEditor());
 	this.table.setDefaultEditor(LOPSolutionWrapper.class,
 		new SolutionTableCellEditor());
+	this.table.setBackground(null);
+	this.table.setOpaque(false);
+	this.table.setBorder(BorderFactory.createEmptyBorder());
 
 	this.table.getTableHeader().setReorderingAllowed(false);
+	this.table.getTableHeader().setResizingAllowed(true);
 
-	JScrollPane scrollPane = new JScrollPane(this.table);
-
+	this.toolbar = new JToolBar("Input.Menu");
+	this.toolbar.setFloatable(false);
+	this.toolbar.setRollover(true);
+	this.toolbar.setBorder(createBorder(Lang.getString("Input.Menu")));
 	this.toolbarBtns = new ArrayList<Component>();
 	this.functions = new ArrayList<JMenuItem>();
 	generateEditToolbar();
 
+	body = new JPanel(new BorderLayout());
+	body.setBorder(BorderFactory.createEmptyBorder());
+
+	scrollPane = new JScrollPane(this.table);
+	scrollPane.setBorder(createBorder("Problem"));
+	scrollPane.setPreferredSize(new Dimension(300, 200));
+	body.add(scrollPane, BorderLayout.CENTER);
+
+	pn = new JPanel();
+	pn.setLayout(new GridLayout(0, 1));
+	pn.setBorder(BorderFactory.createEmptyBorder());
+	this.primalModel.setSpecialCasesComponent(pn);
+	this.dualModel.setSpecialCasesComponent(pn);
+	body.add(pn, BorderLayout.SOUTH);
+
+	scrollPane = new JScrollPane(body);
+	scrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+	setLayout(new BorderLayout());
+	add(this.toolbar, BorderLayout.NORTH);
 	add(scrollPane, BorderLayout.CENTER);
     }
 
@@ -252,42 +347,37 @@ public final class InputPanel extends JPanel {
      * 
      */
     private void generateEditToolbar() {
-	JToolBar toolbar = new JToolBar("Input.Menu");
-	add(toolbar, BorderLayout.PAGE_START);
 
-	toolbar.setFloatable(false);
-	toolbar.setRollover(true);
-
-	this.toolbarBtns.add(toolbar.add(MenuMaker
+	this.toolbarBtns.add(this.toolbar.add(MenuMaker
 		.getToolBarButton("Input.Menu.AddVar")));
 	this.functions.add(MenuMaker.getMenuItem("Input.Menu.AddVar"));
 
-	this.toolbarBtns.add(toolbar.add(MenuMaker
+	this.toolbarBtns.add(this.toolbar.add(MenuMaker
 		.getToolBarButton("Input.Menu.DelVar")));
 	this.functions.add(MenuMaker.getMenuItem("Input.Menu.DelVar"));
 
-	toolbar.addSeparator();
+	this.toolbar.addSeparator();
 	this.functions.add(new JMenuItem(MenuMaker.SEPARATOR));
 
 	this.reset = MenuMaker.getToolBarButton("Input.Menu.Reset");
-	toolbar.add(this.reset);
+	this.toolbar.add(this.reset);
 	this.reset2 = MenuMaker.getMenuItem("Input.Menu.Reset");
 	this.functions.add(this.reset2);
 
-	this.toolbarBtns.add(toolbar.add(MenuMaker
+	this.toolbarBtns.add(this.toolbar.add(MenuMaker
 		.getToolBarButton("Input.Menu.Clear")));
 	this.functions.add(MenuMaker.getMenuItem("Input.Menu.Clear"));
 
-	toolbar.addSeparator();
+	this.toolbar.addSeparator();
 	this.functions.add(new JMenuItem(MenuMaker.SEPARATOR));
 
 	this.take = MenuMaker.getToolBarButton("Input.Menu.Save");
-	toolbar.add(this.take);
+	this.toolbar.add(this.take);
 	this.take2 = MenuMaker.getMenuItem("Input.Menu.Save");
 	this.functions.add(this.take2);
 
 	this.check = MenuMaker.getToolBarButton("Input.Menu.Check");
-	this.toolbarBtns.add(toolbar.add(this.check));
+	this.toolbar.add(this.check);
 	this.check2 = MenuMaker.getMenuItem("Input.Menu.Check");
 	this.functions.add(this.check2);
     }
@@ -338,6 +428,8 @@ public final class InputPanel extends JPanel {
 
 	for (Component c : this.functions)
 	    c.setEnabled(value);
+
+	this.check2.setEnabled(true);
 
 	if (value)
 	    setSaveBtn();
