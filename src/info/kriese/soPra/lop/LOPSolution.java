@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 25.01.2008 - Version 0.4.1
+ * - Variablen für Spezialfälle geändert (jetzt Bitfeld)
  * 06.11.2007 - Version 0.4
  * - Die Lösungsflächen Funktionen erweitert
  * 10.10.2007 - Version 0.3.1
@@ -49,10 +51,17 @@ import info.kriese.soPra.math.Vector3Frac;
  */
 public interface LOPSolution {
 
-    static final int MORE_THAN_ONE_SOLUTION = 2;
-    static final int NO_SOLUTION = 1;
-    static final int SIMPLE = 0;
-    static final int UNLIMITED = 3;
+    static final int SOLUTION_AREA_LIMITED = 0x01;
+    static final int SOLUTION_AREA_UNLIMITED = 0x02;
+    static final int SOLUTION_AREA_EMPTY = 0x03;
+    
+    static final int OPTIMAL_SOLUTION_AREA_POINT = 0x04;
+    static final int OPTIMAL_SOLUTION_AREA_MULTIPLE = 0x08;
+    static final int OPTIMAL_SOLUTION_AREA_EMPTY = 0x0c;
+    
+    static final int TARGET_FUNCTION_LIMITED = 0x10;
+    static final int TARGET_FUNCTION_UNLIMITED = 0x20;
+    static final int TARGET_FUNCTION_EMPTY = 0x30;
 
     /**
      * Fügt eine Fläche hinzu.

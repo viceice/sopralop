@@ -18,6 +18,9 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * 
  * ChangeLog:
+ * 
+ *  * 25.01.2008 - Version 0.2.3
+ * - Variablennamen für Spezialfälle angepasst
  * 04.12.2007 - Version 0.2.2
  * - Fehlerbereinigung bei den Richtungsvektoren
  * - Änderung der Beschriftung an den Vektoren
@@ -255,7 +258,8 @@ public final class DualLOPPanel extends JPanel {
 
 	// Zeichnen des Strahls, der durch das Optimum geht (nur, wenn es
 	// mindestens eine Lösung gibt)
-	if (this.solution.getSpecialCase() == LOPSolution.SIMPLE)
+	if (this.solution.getSpecialCase() == (LOPSolution.OPTIMAL_SOLUTION_AREA_POINT | LOPSolution.SOLUTION_AREA_LIMITED
+			| LOPSolution.TARGET_FUNCTION_LIMITED))
 	    if (this.tmp.getCoordX().toFloat() >= 0
 		    && this.tmp.getCoordY().toFloat() >= 0) {
 
@@ -357,7 +361,8 @@ public final class DualLOPPanel extends JPanel {
 
 		DualLOPPanel.this.vectors = lop.getVectors();
 
-		if (DualLOPPanel.this.solution.getSpecialCase() != LOPSolution.NO_SOLUTION) {
+		if (DualLOPPanel.this.solution.getSpecialCase() != (LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY | LOPSolution.SOLUTION_AREA_EMPTY 
+				| LOPSolution.TARGET_FUNCTION_EMPTY)) {
 		    Vector3Frac vec1 = DualLOPPanel.this.solution.getAreas()
 			    .get(0).getL1();
 		    Vector3Frac vec2 = DualLOPPanel.this.solution.getAreas()

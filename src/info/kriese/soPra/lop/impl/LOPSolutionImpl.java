@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ *  * 25.01.2008 - Version 0.3.1
+ * - Variablennamen für Spezialfälle angepasst
  * 06.11.2007 - Version 0.3
  * - Neue Interfacemethoden implementiert
  * 24.09.2007 - Version 0.2.1
@@ -60,7 +62,7 @@ final class LOPSolutionImpl implements LOPSolution {
 
     public LOPSolutionImpl(LOP problem) {
 	this.value = null;
-	this.sCase = SIMPLE;
+	this.sCase = (OPTIMAL_SOLUTION_AREA_POINT | SOLUTION_AREA_LIMITED | TARGET_FUNCTION_LIMITED);
 	this.problem = problem;
 	this.areas = new ArrayList<LOPSolutionArea>();
     }
@@ -102,7 +104,7 @@ final class LOPSolutionImpl implements LOPSolution {
     }
 
     public boolean isSpecialCase() {
-	return this.sCase != SIMPLE;
+	return this.sCase != (OPTIMAL_SOLUTION_AREA_POINT | SOLUTION_AREA_LIMITED | TARGET_FUNCTION_LIMITED);
     }
 
     public void setSpecialCase(int sCase) {

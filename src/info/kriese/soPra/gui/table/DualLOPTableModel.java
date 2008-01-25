@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ *  * 25.01.2008 - Version 0.2.1
+ * - Variablennamen für Spezialfälle angepasst
+ * - Fallprüfung für Spezialfälle erweitert
  * 25.01.2008 - Version 0.2
  * - Vorbereitung zur Lösungsüberprüfung
  * 10.01.2008 - Version 0.1.1
@@ -210,12 +213,15 @@ public final class DualLOPTableModel extends AbstractTableModel {
 	this.target = lop.getTarget().clone();
 	this.max = lop.isMaximum();
 
+	// TODO: Prüfen, welche Fälle auftreten können /behandelt werden müssen (gibt ja jetzt noch mehr Permutationen...)
 	LOPSolution solution = lop.getSolution();
-	if (solution.getSpecialCase() == LOPSolution.NO_SOLUTION) {
+	if (solution.getSpecialCase() == (LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY | LOPSolution.SOLUTION_AREA_EMPTY 
+			| LOPSolution.TARGET_FUNCTION_EMPTY)) {
 	    this.sol[0] = LOPInfinity.INFINITY;
 	    this.sol[1] = LOPInfinity.INFINITY;
 	    this.sol[2] = LOPInfinity.INFINITY;
-	} else if (solution.getSpecialCase() == LOPSolution.UNLIMITED) {
+	} else if (solution.getSpecialCase() == (LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY | LOPSolution.SOLUTION_AREA_UNLIMITED 
+			| LOPSolution.TARGET_FUNCTION_EMPTY)) {
 	    this.sol[0] = LOPNotExsitent.NOT_EXISTENT;
 	    this.sol[1] = LOPNotExsitent.NOT_EXISTENT;
 	    this.sol[2] = LOPNotExsitent.NOT_EXISTENT;

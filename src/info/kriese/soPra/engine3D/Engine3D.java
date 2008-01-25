@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ *  * 25.01.2008 - Version 0.5.5
+ * - Variablennamen für Spezialfälle angepasst
  * 21.01.2008 - Version 0.5.4
  * - Vektor für duales Problem hinzugefügt
  * 15.01.2008 - Version 0.5.3
@@ -271,7 +273,7 @@ public final class Engine3D {
 
 	    @Override
 	    public void showDualProblem(LOP lop) {
-		if (lop.getSolution().getSpecialCase() == LOPSolution.SIMPLE) {
+		if (lop.getSolution().getSpecialCase() == (LOPSolution.OPTIMAL_SOLUTION_AREA_POINT | LOPSolution.SOLUTION_AREA_LIMITED | LOPSolution.TARGET_FUNCTION_LIMITED)) {
 		    Engine3D.this.intersection.setDualLineVisible(true);
 		    resetScene();
 		}
@@ -303,9 +305,10 @@ public final class Engine3D {
 	this.size = (vec.getCoordX().toFloat() > vec.getCoordY().toFloat() ? vec
 		.getCoordX().toFloat()
 		: vec.getCoordY().toFloat()) + 3.0f;
-
-	if (sCase == LOPSolution.SIMPLE
-		|| sCase == LOPSolution.MORE_THAN_ONE_SOLUTION)
+	
+	// TODO: Prüfen, ob nicht noch mehr Fälle auftreten können /behandelt werden müssen (gibt ja jetzt noch mehr Permutationen...)
+	if (sCase == (LOPSolution.OPTIMAL_SOLUTION_AREA_POINT | LOPSolution.SOLUTION_AREA_LIMITED | LOPSolution.TARGET_FUNCTION_LIMITED)
+		|| sCase == (LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE | LOPSolution.SOLUTION_AREA_LIMITED | LOPSolution.TARGET_FUNCTION_LIMITED))
 	    this.size = (this.size > lop.getSolution().getValue() + 3.0f ? this.size
 		    : (float) lop.getSolution().getValue()) + 3.0f;
 
@@ -322,8 +325,9 @@ public final class Engine3D {
 		this.size);
 
 	// Schnittpunkt / Vektor für Duales Problem
+	// TODO: Prüfen, ob nicht noch mehr Fälle auftreten können /behandelt werden müssen (gibt ja jetzt noch mehr Permutationen...)
 	this.intersection.setDualLineVisible(false);
-	if (lop.getSolution().getSpecialCase() == LOPSolution.SIMPLE) {
+	if (lop.getSolution().getSpecialCase() == (LOPSolution.OPTIMAL_SOLUTION_AREA_POINT | LOPSolution.SOLUTION_AREA_LIMITED | LOPSolution.TARGET_FUNCTION_LIMITED)) {
 	    LOPSolutionArea area = lop.getSolution().getAreas().get(0);
 	    this.intersection.compute(lop.getSolution().getVector()
 		    .toVector3f(), area.getL1().toVector3f(), area.getL2()

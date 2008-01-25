@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 25.01.2008 - Version 0.4.1
+ * - Variablennamen für Spezialfälle angepasst
  * 28.12.2007 - Version 0.4
  * - Neue Überladung für getURL, mit der man sprachabhängige Dateien findet.
  * - Nicht mehr benötigte Methoden und Konstanten gelöscht.
@@ -256,19 +258,20 @@ public final class IOUtils {
 	out.println();
 	out.println("Lösung: " + sol.getValue());
 
+	// TODO: Prüfen, welche Fälle auftreten können /behandelt werden müssen (gibt ja jetzt noch mehr Permutationen...)
 	switch (sol.getSpecialCase()) {
-	    case LOPSolution.NO_SOLUTION:
+	    case (LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY | LOPSolution.SOLUTION_AREA_EMPTY | LOPSolution.TARGET_FUNCTION_EMPTY):
 		out.println(Lang.getString("Strings.NoSolution"));
 		break;
-	    case LOPSolution.MORE_THAN_ONE_SOLUTION:
+	    case (LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE | LOPSolution.SOLUTION_AREA_LIMITED | LOPSolution.TARGET_FUNCTION_LIMITED):
 		out.println(Lang.getString("Strings.MoreSolutions",
 			new Object[] { sol.countAreas() }));
 		out.println(sol.getAreas());
 		break;
-	    case LOPSolution.UNLIMITED:
+	    case (LOPSolution.SOLUTION_AREA_UNLIMITED | LOPSolution.SOLUTION_AREA_EMPTY | LOPSolution.TARGET_FUNCTION_EMPTY):
 		out.println(Lang.getString("Strings.UnlimitedSol"));
 		break;
-	    case LOPSolution.SIMPLE:
+	    case (LOPSolution.OPTIMAL_SOLUTION_AREA_POINT | LOPSolution.SOLUTION_AREA_LIMITED | LOPSolution.TARGET_FUNCTION_LIMITED):
 		out.println(Lang.getString("Strings.SimpleSolution"));
 		break;
 	    default:

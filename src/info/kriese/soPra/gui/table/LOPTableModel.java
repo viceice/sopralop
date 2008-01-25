@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 25.01.2008 - Version 0.4.1
+ * - Variablennamen für Spezialfälle angepasst
  * 25.01.2007 - Version 0.4
  * - Vorbereitung auf erweiterte Lösungsüberprüfung
  * 10.01.2008 - Version 0.3.3
@@ -390,29 +392,31 @@ public final class LOPTableModel extends AbstractTableModel {
 	int idx1, idx2, vals = 0;
 	boolean res = true;
 
-	if (lop.getSolution().getSpecialCase() == info.kriese.soPra.lop.LOPSolution.NO_SOLUTION) {
-	    if (!(this.sol.getValue() instanceof LOPNotExsitent))
-		res = false;
+	if (lop.getSolution().getSpecialCase() == (info.kriese.soPra.lop.LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
+				| info.kriese.soPra.lop.LOPSolution.SOLUTION_AREA_EMPTY | info.kriese.soPra.lop.LOPSolution.TARGET_FUNCTION_EMPTY)) {
+			if (!(this.sol.getValue() instanceof LOPNotExsitent))
+				res = false;
 
-	    if (res)
-		MessageHandler.showInfo(Lang.getString("Strings.Solution"),
-			Lang.getString("Strings.CorrectSolution"));
-	    else
-		MessageHandler.showError(Lang.getString("Strings.Solution"),
-			Lang.getString("Strings.IncorrectSolution"));
-	    return;
-	} else if (lop.getSolution().getSpecialCase() == info.kriese.soPra.lop.LOPSolution.UNLIMITED) {
-	    if (!(this.sol.getValue() instanceof LOPInfinity))
-		res = false;
+			if (res)
+				MessageHandler.showInfo(Lang.getString("Strings.Solution"),
+						Lang.getString("Strings.CorrectSolution"));
+			else
+				MessageHandler.showError(Lang.getString("Strings.Solution"),
+						Lang.getString("Strings.IncorrectSolution"));
+			return;
+		} else if (lop.getSolution().getSpecialCase() == (info.kriese.soPra.lop.LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
+				| info.kriese.soPra.lop.LOPSolution.SOLUTION_AREA_UNLIMITED | info.kriese.soPra.lop.LOPSolution.TARGET_FUNCTION_UNLIMITED)) {
+			if (!(this.sol.getValue() instanceof LOPInfinity))
+				res = false;
 
-	    if (res)
-		MessageHandler.showInfo(Lang.getString("Strings.Solution"),
-			Lang.getString("Strings.CorrectSolution"));
-	    else
-		MessageHandler.showError(Lang.getString("Strings.Solution"),
-			Lang.getString("Strings.IncorrectSolution"));
-	    return;
-	} else {
+			if (res)
+				MessageHandler.showInfo(Lang.getString("Strings.Solution"),
+						Lang.getString("Strings.CorrectSolution"));
+			else
+				MessageHandler.showError(Lang.getString("Strings.Solution"),
+						Lang.getString("Strings.IncorrectSolution"));
+			return;
+		} else {
 
 	    for (LOPSolutionWrapper sol : this.values)
 		if (sol.getValue() instanceof Fractional) {
