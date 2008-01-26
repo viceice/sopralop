@@ -23,6 +23,7 @@
  * - Operatoren-Handling-Funktionen gelöscht, da nicht mehr benötigt
  * - Lösung-Handling-Funktionen gelöscht, werden auch nicht mehr benötigt
  * - Neue Konstanten TARGET & VECTOR
+ * - Überprüfung, ob LOP gelöst ist, entfernt, da LOP immer gelöst sein muss.
  * 25.01.2008 - Version 0.4.1
  * - Variablennamen für Spezialfälle angepasst
  * 28.12.2007 - Version 0.4
@@ -212,18 +213,13 @@ public final class IOUtils {
 
 	vec = lop.getTarget();
 
-	x.append(" " + lop.getOperators()[0] + " " + vec.getCoordX());
-	y.append(" " + lop.getOperators()[1] + " " + vec.getCoordY());
+	x.append(" = " + vec.getCoordX());
+	y.append(" = " + vec.getCoordY());
 	z.append(" = " + (lop.isMaximum() ? "max" : "min"));
 
 	out.println(x.toString());
 	out.println(y.toString());
 	out.println(z.toString());
-
-	if (!lop.isSolved()) {
-	    System.out.println("LOP is not solved.");
-	    return;
-	}
 
 	LOPSolution sol = lop.getSolution();
 
