@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 26.01.2008 - Version 0.2.1
+ * - BugFix: Quickhull filtert jetzt keinen ungewollten vektoren mehr
  * 23.10.2007 - Version 0.2
  * - Quickhull angepasst, Vektoren, die in einer Ebene liegen, werden nicht mehr herausgefiltert
  * 16.09.2007 - Version 0.1.1
@@ -34,6 +36,7 @@ import info.kriese.soPra.math.impl.Vector3FracFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import ca.ubc.cs.spider.lloyed.quickhull3d.Point3d;
 import ca.ubc.cs.spider.lloyed.quickhull3d.QuickHull3D;
@@ -42,7 +45,7 @@ import ca.ubc.cs.spider.lloyed.quickhull3d.QuickHull3D;
  * WrapperKlasse für den QuickHull Algorithmus.
  * 
  * @author Michael Kriese
- * @version 0.2
+ * @version 0.2.1
  * @since 14.09.2007
  * 
  * @see http://www.cs.ubc.ca/spider/lloyd/index.html
@@ -50,18 +53,23 @@ import ca.ubc.cs.spider.lloyed.quickhull3d.QuickHull3D;
 public final class QuickHull {
 
     private int[][] faces;
-
     private final QuickHull3D hull;
     private Point3d[] oldVertices;
+
     private final List<Vertex> vertices;
 
     public QuickHull() {
 	this.hull = new QuickHull3D();
+	// this.hull.setDebug(true);
 
 	this.vertices = new ArrayList<Vertex>();
     }
 
     public void build(List<Vector3Frac> points) {
+	build(points, true);
+    }
+
+    public void build(List<Vector3Frac> points, boolean all) {
 	Point3d[] pts = new Point3d[points.size() + 1];
 	for (int i = 0; i < points.size(); i++)
 	    pts[i] = new Point3DWrapper(points.get(i));
@@ -75,8 +83,13 @@ public final class QuickHull {
 	this.vertices.clear();
 
 	for (int[] face : this.faces)
-	    this.vertices.add(getVertex(this.oldVertices[face[0]],
-		    this.oldVertices[face[1]], this.oldVertices[face[2]]));
+	    if (face.length == 3)
+		this.vertices.add(getVertex(this.oldVertices[face[0]],
+			this.oldVertices[face[1]], this.oldVertices[face[2]]));
+	    else
+		triangulate(face, all);
+
+	System.out.println();
 
 	if (this.oldVertices.length == points.size() + 1)
 	    return; // kein Vektor wurde gefiltert
@@ -93,6 +106,9 @@ public final class QuickHull {
 		if (vertex.isPointInVertex(vec)
 			&& vertex.p1.equals(Vector3Frac.ZERO)) {
 		    // ok, spalte vertex auf
+
+		    if (all)
+			tvtx.add(vertex);
 
 		    v1 = new Vertex();
 		    v1.p2 = vertex.p2.clone();
@@ -123,10 +139,6 @@ public final class QuickHull {
 	this.hull.print(System.out, QuickHull3D.INDEXED_FROM_ZERO);
     }
 
-    public void triangulate() {
-	this.hull.triangulate();
-    }
-
     private Vertex getVertex(Point3d p1, Point3d p2, Point3d p3) {
 	Vertex res = new Vertex();
 	Vector3Frac v1, v2, v3;
@@ -150,4 +162,38 @@ public final class QuickHull {
 	return res;
     }
 
+    /**
+     * @param face
+     */
+    private void triangulate(int[] face, boolean all) {
+
+	List<Vector3Frac> points = new Vector<Vector3Frac>(face.length);
+
+	for (int p : face)
+	    points.add(Vector3FracFactory.getInstance(this.oldVertices[p].x,
+		    this.oldVertices[p].y, this.oldVertices[p].z));
+
+	if (points.contains(Vector3Frac.ZERO))
+	    while (!points.get(0).equals(Vector3Frac.ZERO))
+		points.add(points.remove(0));
+
+	Vector3Frac p0 = points.remove(0);
+
+	for (int p = 0; p < points.size() - 1; p++) {
+	    Vertex vtx = new Vertex();
+	    vtx.p1 = p0;
+	    vtx.p2 = points.get(p);
+	    vtx.p3 = points.get(p + 1);
+	    this.vertices.add(vtx);
+
+	    if (all)
+		for (int p2 = p + 2; p2 < points.size(); p2++) {
+		    Vertex vtx2 = new Vertex();
+		    vtx2.p1 = p0;
+		    vtx2.p2 = points.get(p);
+		    vtx2.p3 = points.get(p2);
+		    this.vertices.add(vtx2);
+		}
+	}
+    }
 }

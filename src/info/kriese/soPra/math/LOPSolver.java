@@ -21,6 +21,7 @@
  * 
  * 26.01.2008 - Version 0.5.8
  * - Operator-Handling entfernt, da nicht mehr benötigt
+ * - BugFix: Unter bestimmten Bedingungen brach der Algorithmus zu früh ab
  * 25.01.2008 - Version 0.5.7
  * - Variablennamen für Spezialfälle angepasst
  * - Fallprüfung für Spezialfälle erweitert
@@ -261,13 +262,13 @@ public final class LOPSolver {
 			    && !value_high.equals(Fractional.MAX_VALUE)) {
 			sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(), sln
 				.getCoordY());
-			break;
+			continue;
 		    }
 		    if (!max && sln.getCoordZ().equals(opt)
 			    && !value_low.equals(Fractional.MIN_VALUE)) {
 			sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(), sln
 				.getCoordY());
-			break;
+			continue;
 		    }
 		    if (sln.getCoordZ().compareTo(value_high) < 0) {
 			if (!max) {

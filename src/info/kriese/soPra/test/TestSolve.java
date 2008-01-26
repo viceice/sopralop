@@ -59,7 +59,7 @@ public final class TestSolve {
 	LOPSolver solver = new LOPSolver();
 	solver.setEditor(editor);
 
-	editor.open(IOUtils.getURL("problems/unlimited_high2.lop"));
+	editor.open(IOUtils.getURL("problems/4ononeside.lop"));
 	System.out.println();
 	System.out.println("Problem: ");
 	IOUtils.print(lop, System.out);

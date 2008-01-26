@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 26.01.2007 -Version 0.3.3
+ * - is PointinTriangle überarbeitet
  * 08.11.2007 - Version 0.3.2
  * - isPointInTriangle überarbeitet, sollte jetzt korrekt funktionieren
  * 07.11.2007 - Version 0.3.1
@@ -46,7 +48,7 @@ import javax.vecmath.Vector3f;
  * 
  * @author Michael Kriese
  * @since 13.04.2007
- * @version 0.3.2
+ * @version 0.3.3
  */
 public final class Math2 {
 
@@ -109,8 +111,8 @@ public final class Math2 {
 	    u = sol.getCoordX();
 	    v = sol.getCoordY();
 	    if (a.equals(Vector3Frac.ZERO))
-		res = ((u.compareTo(Fractional.ZERO) > 0) && (v
-			.compareTo(Fractional.ZERO) > 0));
+		res = ((u.compareTo(Fractional.ZERO) >= 0) && (v
+			.compareTo(Fractional.ZERO) >= 0));
 	    else
 		res = ((u.compareTo(Fractional.ZERO) >= 0)
 			&& (v.compareTo(Fractional.ZERO) >= 0) && (u.add(v)

@@ -2,10 +2,12 @@ SoPraLOP
 (c)2007-2008 Michael Kriese & Peer Sterner
 
 -------------------------------------------------------------------------------
-Version 0.6.1 - 24.01.2008  (vorraussichtlich)
+Version 0.7 - 31.01.2008  (vorraussichtlich)
 -------------------------------------------------------------------------------
  - BugFix: Bei einer Fehlermeldung waren Titel und Nachricht vertauscht
  - BugFix: Lösung-Überprüfen-Button wurde nicht deaktiviert
+ - BugFix: Quickhull filtert jetzt keinen ungewollten Vektoren mehr
+ - BugFix: LOPSolver brach unter bestimmten Bedingungen zu früh ab
  - Lösung-Überprüfen-Button ist jetzt aktiv und gibt eine Fehlermeldung bei
     nicht übernommenen Änderungen
  - Einige Menü Mnemonics und Accelerators hinzugefügt

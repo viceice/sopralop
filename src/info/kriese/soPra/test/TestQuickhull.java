@@ -19,9 +19,7 @@
  * 
  * ChangeLog:
  * 
- * 26.01.2008 - Version 0.1.1
- * - TestCase erweitert
- * 23.10.2007 - Version 0.1
+ * 26.01.2008 - Version 0.1
  *  - Datei hinzugefuegt
  */
 package info.kriese.soPra.test;
@@ -30,15 +28,19 @@ import info.kriese.soPra.io.impl.SettingsFactory;
 import info.kriese.soPra.math.Vector3Frac;
 import info.kriese.soPra.math.Vertex;
 import info.kriese.soPra.math.impl.Vector3FracFactory;
+import info.kriese.soPra.math.quickhull.QuickHull;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 
  * @author Michael Kriese
- * @version 0.1.1
- * @since 23.10.2007
+ * @version 0.1
+ * @since 26.01.2008
  * 
  */
-public final class TestTriangle {
+public final class TestQuickhull {
 
     public static void main(String[] args) {
 
@@ -47,30 +49,35 @@ public final class TestTriangle {
 
 	SettingsFactory.initJava();
 
-	SettingsFactory.showTitle("TriangleTest");
+	SettingsFactory.showTitle("QuickhullTest");
 
-	Vertex vtx = new Vertex();
-	vtx.p2 = Vector3FracFactory.getInstance(-2, -2, 2);
-	vtx.p3 = Vector3FracFactory.getInstance(-2, 2, 2);
-	Vector3Frac pnt = Vector3FracFactory.getInstance(2, 0, 2);
+	List<Vector3Frac> vecs = new LinkedList<Vector3Frac>(), vecsnew = new LinkedList<Vector3Frac>();
+	vecs.add(Vector3FracFactory.getInstance(2, 2, 2));
+	vecs.add(Vector3FracFactory.getInstance(-2, 2, 2));
+	vecs.add(Vector3FracFactory.getInstance(-2, -2, 2));
+	vecs.add(Vector3FracFactory.getInstance(2, -2, 2));
+	vecs.add(Vector3FracFactory.getInstance(4, 0, 4));
+	vecs.add(Vector3FracFactory.getInstance(4, 0.5, 4));
 
-	System.out.println(vtx + "\t" + pnt);
-	System.out.println(vtx.isPointInVertex(pnt) ? "True" : "False");
+	QuickHull hull = new QuickHull();
 
-	vtx = new Vertex();
-	vtx.p2 = Vector3FracFactory.getInstance(2, 2, 2);
-	vtx.p3 = Vector3FracFactory.getInstance(2, -2, 2);
-	pnt = Vector3FracFactory.getInstance(2, 0, 2);
+	hull.build(vecs, true);
 
-	System.out.println(vtx + "\t" + pnt);
-	System.out.println(vtx.isPointInVertex(pnt) ? "True" : "False");
+	for (Vertex vtx : hull.getVerticesList()) {
+	    if (!vecsnew.contains(vtx.p1))
+		vecsnew.add(vtx.p1);
+	    if (!vecsnew.contains(vtx.p2))
+		vecsnew.add(vtx.p2);
+	    if (!vecsnew.contains(vtx.p3))
+		vecsnew.add(vtx.p3);
+	}
 
-	vtx = new Vertex();
-	vtx.p2 = Vector3FracFactory.getInstance(2, 2, 2);
-	vtx.p3 = Vector3FracFactory.getInstance(2, -2, 2);
-	pnt = Vector3FracFactory.getInstance(4, 0.5, 4);
+	System.out.println(vecs);
+	System.out.println(vecsnew);
 
-	System.out.println(vtx + "\t" + pnt);
-	System.out.println(vtx.isPointInVertex(pnt) ? "True" : "False");
+	System.out.println();
+
+	for (Vertex vtx : hull.getVerticesList())
+	    System.out.println(vtx);
     }
 }
