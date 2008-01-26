@@ -111,6 +111,7 @@ import java.util.Vector;
  * @author John E. Lloyd, Fall 2004
  */
 public class QuickHull3D {
+
     /**
      * Specifies that the distance tolerance should be computed automatically
      * from the input point data.
@@ -142,13 +143,22 @@ public class QuickHull3D {
     public static final int POINT_RELATIVE = 0x8;
 
     /**
+     * 
      * Precision of a double.
      */
-    static private final double DOUBLE_PREC = 2.2204460492503131e-16;
+    private static final double DOUBLE_PREC = 2.2204460492503131e-16;
 
     private static final int NONCONVEX = 2;
 
     private static final int NONCONVEX_WRT_LARGER_FACE = 1;
+
+    static {
+	System.out.println("QuickHull3D Java Implementation");
+	System.out.println("\tCopyright (c) 2004 by John E. Lloyd");
+	System.out.println("\tAll rights reserved.");
+	System.out.println("\thttp://www.cs.ubc.ca/spider/lloyd/");
+	System.out.println();
+    }
 
     private final VertexList claimed = new VertexList();
 
