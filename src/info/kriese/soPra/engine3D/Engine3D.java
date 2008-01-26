@@ -19,7 +19,7 @@
  * 
  * ChangeLog:
  * 
- *  * 25.01.2008 - Version 0.5.5
+ * 25.01.2008 - Version 0.5.5
  * - Variablennamen für Spezialfälle angepasst
  * 21.01.2008 - Version 0.5.4
  * - Vektor für duales Problem hinzugefügt
@@ -87,7 +87,6 @@ import info.kriese.soPra.gui.Virtual3DFrame;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPAdapter;
 import info.kriese.soPra.lop.LOPSolution;
-import info.kriese.soPra.lop.LOPSolutionArea;
 import info.kriese.soPra.math.Vector3Frac;
 import info.kriese.soPra.math.quickhull.QuickHull;
 
@@ -117,7 +116,7 @@ import com.sun.j3d.utils.universe.ViewingPlatform;
  * TODO: Beleuchtung verbessern
  * 
  * @author Michael Kriese
- * @version 0.5.4
+ * @version 0.5.5
  * @since 26.04.2007
  */
 public final class Engine3D {
@@ -273,7 +272,8 @@ public final class Engine3D {
 
 	    @Override
 	    public void showDualProblem(LOP lop) {
-		if (lop.getSolution().getSpecialCase() == (LOPSolution.OPTIMAL_SOLUTION_AREA_POINT | LOPSolution.SOLUTION_AREA_LIMITED | LOPSolution.TARGET_FUNCTION_LIMITED)) {
+		if (lop.getSolution().getSpecialCase() == (LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
+			| LOPSolution.SOLUTION_AREA_LIMITED | LOPSolution.TARGET_FUNCTION_LIMITED)) {
 		    Engine3D.this.intersection.setDualLineVisible(true);
 		    resetScene();
 		}
@@ -300,19 +300,21 @@ public final class Engine3D {
      */
     private void computeSolution(LOP lop) {
 	Vector3Frac vec = lop.getTarget();
-	int sCase = lop.getSolution().getSpecialCase();
+	// TODO: Spezialfälle behandeln
+	// int sCase = lop.getSolution().getSpecialCase();
 
 	this.size = (vec.getCoordX().toFloat() > vec.getCoordY().toFloat() ? vec
 		.getCoordX().toFloat()
 		: vec.getCoordY().toFloat()) + 3.0f;
-	
-	// TODO: Prüfen, ob nicht noch mehr Fälle auftreten können /behandelt werden müssen (gibt ja jetzt noch mehr Permutationen...)
-	if (sCase == (LOPSolution.OPTIMAL_SOLUTION_AREA_POINT | LOPSolution.SOLUTION_AREA_LIMITED | LOPSolution.TARGET_FUNCTION_LIMITED)
-		|| sCase == (LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE | LOPSolution.SOLUTION_AREA_LIMITED | LOPSolution.TARGET_FUNCTION_LIMITED))
-	    this.size = (this.size > lop.getSolution().getValue() + 3.0f ? this.size
-		    : (float) lop.getSolution().getValue()) + 3.0f;
 
-	this.hull.build(lop.getVectors());
+	// Gibt es eine oder mehrere Lösungen?
+	// if ((sCase & LOPSolution.OPTIMAL_SOLUTION_AREA_POINT) != 0
+	// || (sCase & LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE) != 0)
+	// this.size = (this.size > lop.getSolution().getValue() + 3.0f ?
+	// this.size
+	// : (float) lop.getSolution().getValue()) + 3.0f;
+
+	this.hull.build(lop.getVectors(), false);
 
 	// fuege Koordinatensystem hinzu
 	this.coordsPlane.compute(this.size);
@@ -325,16 +327,19 @@ public final class Engine3D {
 		this.size);
 
 	// Schnittpunkt / Vektor für Duales Problem
-	// TODO: Prüfen, ob nicht noch mehr Fälle auftreten können /behandelt werden müssen (gibt ja jetzt noch mehr Permutationen...)
+	// werden müssen (gibt ja jetzt noch mehr Permutationen...)
 	this.intersection.setDualLineVisible(false);
-	if (lop.getSolution().getSpecialCase() == (LOPSolution.OPTIMAL_SOLUTION_AREA_POINT | LOPSolution.SOLUTION_AREA_LIMITED | LOPSolution.TARGET_FUNCTION_LIMITED)) {
-	    LOPSolutionArea area = lop.getSolution().getAreas().get(0);
-	    this.intersection.compute(lop.getSolution().getVector()
-		    .toVector3f(), area.getL1().toVector3f(), area.getL2()
-		    .toVector3f());
-	} else
-	    this.intersection.compute(lop.getSolution().getVector()
-		    .toVector3f(), null, null);
+
+	// Gibt es eine oder mehrere Lösungen?
+	// if ((sCase & LOPSolution.OPTIMAL_SOLUTION_AREA_POINT) != 0
+	// || (sCase & LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE) != 0) {
+	// LOPSolutionArea area = lop.getSolution().getAreas().get(0);
+	// this.intersection.compute(lop.getSolution().getVector()
+	// .toVector3f(), area.getL1().toVector3f(), area.getL2()
+	// .toVector3f());
+	// } else
+	this.intersection.compute(lop.getSolution().getVector().toVector3f(),
+		null, null);
 
 	resetScene();
     }
