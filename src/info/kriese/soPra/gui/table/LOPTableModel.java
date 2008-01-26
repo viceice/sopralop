@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 26.01.2008 - Version 0.4.2
+ * - Operatoren-Handling entfernt
  * 25.01.2008 - Version 0.4.1
  * - Variablennamen für Spezialfälle angepasst
  * 25.01.2007 - Version 0.4
@@ -80,7 +82,7 @@ import javax.swing.table.AbstractTableModel;
  * Wandelt das LOP in ein von JTable lesbares Format um.
  * 
  * @author Peer Sterner
- * @version 0.3.3
+ * @version 0.4.2
  * @since 01.11.2007
  * 
  */
@@ -93,8 +95,6 @@ public final class LOPTableModel extends AbstractTableModel {
     private LOPEditor editor;
 
     private boolean max;
-
-    private final String[] operators;
 
     private LOPSolutionWrapper sol;
 
@@ -110,7 +110,6 @@ public final class LOPTableModel extends AbstractTableModel {
     public LOPTableModel() {
 	this.columnNames = new Vector<String>();
 	this.vectors = new ArrayList<Vector3Frac>();
-	this.operators = new String[2];
 	this.values = new ArrayList<LOPSolutionWrapper>();
 	this.sol = LOPSolutionWrapper.getInstance(null);
 	this.editor = null;
@@ -267,12 +266,28 @@ public final class LOPTableModel extends AbstractTableModel {
 	this.specialCases = c;
     }
 
+    /**
+     * Aktiviert dieses Modell in der Tabelle.
+     * 
+     * @param table -
+     *                Tablle, in der dieses Modell aktiviert werden soll.
+     */
     public void setTable(JTable table) {
 	this.table = table;
 	table.setModel(this);
 	fireTableStructureChanged();
     }
 
+    /**
+     * Ersetzt den internen Wert durch den vom Nutzer eingegeben.
+     * 
+     * @param value -
+     *                Eingegebener Wert
+     * @param row -
+     *                Zeile, in die Eingetragen werden soll.
+     * @param col -
+     *                Spalte, in die Eingetragen werden soll.
+     */
     @Override
     public void setValueAt(Object value, int row, int col) {
 	int num = this.vectors.size();
@@ -335,6 +350,12 @@ public final class LOPTableModel extends AbstractTableModel {
 	fireTableCellUpdated(row, col);
     }
 
+    /**
+     * Aktualisiert die Tabelle mit dem angegeben Problem.
+     * 
+     * @param lop -
+     *                Problem, welches zum Aktualisieren benutzt werden soll.
+     */
     public void update(LOP lop) {
 	this.vectors.clear();
 	this.values.clear();
@@ -343,8 +364,6 @@ public final class LOPTableModel extends AbstractTableModel {
 	    this.values.add(LOPSolutionWrapper.getInstance());
 	}
 	this.target = lop.getTarget().clone();
-	this.operators[0] = lop.getOperators()[0];
-	this.operators[1] = lop.getOperators()[1];
 	this.max = lop.isMaximum();
 
 	this.sol = LOPSolutionWrapper.getInstance();
@@ -355,7 +374,6 @@ public final class LOPTableModel extends AbstractTableModel {
 
     /**
      * Erweitert die Tabelle um eine weitere Variable Xi.
-     * 
      */
     private void addColumn() {
 	int num = this.vectors.size();
@@ -393,30 +411,30 @@ public final class LOPTableModel extends AbstractTableModel {
 	boolean res = true;
 
 	if (lop.getSolution().getSpecialCase() == (info.kriese.soPra.lop.LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
-				| info.kriese.soPra.lop.LOPSolution.SOLUTION_AREA_EMPTY | info.kriese.soPra.lop.LOPSolution.TARGET_FUNCTION_EMPTY)) {
-			if (!(this.sol.getValue() instanceof LOPNotExsitent))
-				res = false;
+		| info.kriese.soPra.lop.LOPSolution.SOLUTION_AREA_EMPTY | info.kriese.soPra.lop.LOPSolution.TARGET_FUNCTION_EMPTY)) {
+	    if (!(this.sol.getValue() instanceof LOPNotExsitent))
+		res = false;
 
-			if (res)
-				MessageHandler.showInfo(Lang.getString("Strings.Solution"),
-						Lang.getString("Strings.CorrectSolution"));
-			else
-				MessageHandler.showError(Lang.getString("Strings.Solution"),
-						Lang.getString("Strings.IncorrectSolution"));
-			return;
-		} else if (lop.getSolution().getSpecialCase() == (info.kriese.soPra.lop.LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
-				| info.kriese.soPra.lop.LOPSolution.SOLUTION_AREA_UNLIMITED | info.kriese.soPra.lop.LOPSolution.TARGET_FUNCTION_UNLIMITED)) {
-			if (!(this.sol.getValue() instanceof LOPInfinity))
-				res = false;
+	    if (res)
+		MessageHandler.showInfo(Lang.getString("Strings.Solution"),
+			Lang.getString("Strings.CorrectSolution"));
+	    else
+		MessageHandler.showError(Lang.getString("Strings.Solution"),
+			Lang.getString("Strings.IncorrectSolution"));
+	    return;
+	} else if (lop.getSolution().getSpecialCase() == (info.kriese.soPra.lop.LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
+		| info.kriese.soPra.lop.LOPSolution.SOLUTION_AREA_UNLIMITED | info.kriese.soPra.lop.LOPSolution.TARGET_FUNCTION_UNLIMITED)) {
+	    if (!(this.sol.getValue() instanceof LOPInfinity))
+		res = false;
 
-			if (res)
-				MessageHandler.showInfo(Lang.getString("Strings.Solution"),
-						Lang.getString("Strings.CorrectSolution"));
-			else
-				MessageHandler.showError(Lang.getString("Strings.Solution"),
-						Lang.getString("Strings.IncorrectSolution"));
-			return;
-		} else {
+	    if (res)
+		MessageHandler.showInfo(Lang.getString("Strings.Solution"),
+			Lang.getString("Strings.CorrectSolution"));
+	    else
+		MessageHandler.showError(Lang.getString("Strings.Solution"),
+			Lang.getString("Strings.IncorrectSolution"));
+	    return;
+	} else {
 
 	    for (LOPSolutionWrapper sol : this.values)
 		if (sol.getValue() instanceof Fractional) {
@@ -489,8 +507,6 @@ public final class LOPTableModel extends AbstractTableModel {
 	this.target.getCoordX().setNumerator(0);
 	this.target.getCoordY().setNumerator(0);
 
-	this.operators[0] = "=";
-	this.operators[1] = "=";
 	this.max = true;
 
 	this.sol = LOPSolutionWrapper.getInstance();
@@ -500,14 +516,12 @@ public final class LOPTableModel extends AbstractTableModel {
     }
 
     /**
-     * reduziert die Tabelle um eine Variable xi;
-     * 
-     * bei 2 Variablen wird keine weitere entfernt
+     * Reduziert die Tabelle um eine Variable xi;
      */
     private void removeColumn() {
 	int num = this.vectors.size();
 
-	if (num <= LOP.MIN_VECTORS)
+	if (num == LOP.MIN_VECTORS)
 	    return;
 
 	this.vectors.remove(num - 1);
@@ -518,6 +532,16 @@ public final class LOPTableModel extends AbstractTableModel {
 	fireTableStructureChanged();
     }
 
+    /**
+     * Übernimmt die Änderungen des Nutzers in das Problem.
+     * 
+     * Danach wird das Problem automatisch gelöst.
+     * 
+     * @param lop -
+     *                Das LOP, in das die Änderungen übernommen werden sollen.
+     * @return Gibt "true" zurück, wenn die Übernahme erfolgreich war, sonst
+     *         "false"
+     */
     private boolean save(LOP lop) {
 	int cnt = 0;
 	for (Vector3Frac vec : this.vectors)
@@ -532,13 +556,14 @@ public final class LOPTableModel extends AbstractTableModel {
 	lop.setVectors(this.vectors);
 	lop.setTarget(this.target);
 	lop.setMaximum(this.max);
-	lop.setOperators(this.operators);
-	lop.problemChanged();
 	setEdited(false);
 	fireTableCellUpdated(0, 0);
 	return true;
     }
 
+    /**
+     * Erstellt den Tabellenkopf.
+     */
     private void setColumnCount() {
 	this.columnNames.clear();
 	this.columnNames.add(" ");
@@ -551,11 +576,11 @@ public final class LOPTableModel extends AbstractTableModel {
     }
 
     /**
+     * Wird noch umgebaut!!!
      * 
+     * TODO: optimieren
      */
     private void showSpecialCases() {
-
-	// TODO: optimieren
 
 	this.specialCases.setVisible(true);
 	this.specialCases.removeAll();
@@ -636,5 +661,8 @@ public final class LOPTableModel extends AbstractTableModel {
 	rb = new JRadioButton("weder / noch");
 	pn.add(rb);
 	bg.add(rb);
+
+	this.specialCases.validate();
+	this.specialCases.repaint();
     }
 }
