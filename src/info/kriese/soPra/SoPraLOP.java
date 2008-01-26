@@ -19,8 +19,9 @@
  * 
  * ChangeLog:
  * 
- * 26.01.2008 - Version 0.5.8.1
+ * 26.01.2008 - Version 0.5.9
  * - Aufruf von LOP.problemChanged entfernt, da überflüssig.
+ * - An neue SettingsFactory angepasst.
  * 17.01.2008 - Version 0.5.8
  * - Panel für Duales Problem entfernt
  * 28.12.2007 - Version 0.5.7
@@ -79,9 +80,6 @@ import java.awt.event.ComponentEvent;
 import java.io.File;
 
 import javax.swing.JFileChooser;
-import javax.swing.JPopupMenu;
-import javax.swing.ToolTipManager;
-import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 
 /**
@@ -116,37 +114,12 @@ public final class SoPraLOP {
 	// Parse commandline arguments
 	SettingsFactory.parseArgs(args);
 
-	try { // use the local look and feel
-	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-	} catch (Exception e) {
-	}
+	SettingsFactory.initJava();
 
-	// We need heavyweight elements, so we can see them infront of our
-	// canvas3d
-	JPopupMenu.setDefaultLightWeightPopupEnabled(false);
-	ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
+	SettingsFactory.showTitle();
 
 	SplashDialog splash = SplashDialog.getInstance();
-
 	splash.setVisible(true);
-
-	System.setProperty("file.encoding", "UTF-8");
-
-	System.out.println("SoPraLOP - Version "
-		+ SettingsFactory.getInstance().getVersion());
-	System.out.println("\t(c) 2007-2008  "
-		+ SettingsFactory.getInstance().getAuthor());
-	System.out.println();
-
-	String os = System.getProperty("os.name");
-	if (SettingsFactory.getInstance().isDebug())
-	    System.out.println("OS: " + os);
-	if (os != null && os.toLowerCase().contains("vista")) {
-	    System.setProperty("j3d.rend", "d3d");
-	    if (SettingsFactory.getInstance().isDebug())
-		System.out.println("On Vista we have to use D3D Renderer! :-(");
-	} else
-	    System.setProperty("j3d.rend", "ogl");
 
 	splash.setMessage(Lang.getString("Boot.LOP"));
 	LOP lop = LOPFactory.newLinearOptimizingProblem();

@@ -40,11 +40,13 @@ public final class TestTriangle {
 
     public static void main(String[] args) {
 
-	System.out.println("SoPraLOP TriangleTest - Version "
-		+ SettingsFactory.getInstance().getVersion());
-	System.out.println("\t(c) 2007 "
-		+ SettingsFactory.getInstance().getAuthor());
-	System.out.println();
+	// Parse commandline arguments
+	SettingsFactory.parseArgs(args);
+
+	SettingsFactory.initJava();
+
+	SettingsFactory.showTitle("TriangleTest");
+
 	Vertex vtx = new Vertex();
 	vtx.p2 = Vector3FracFactory.getInstance(-2, -2, 2);
 	vtx.p3 = Vector3FracFactory.getInstance(-2, 2, 2);

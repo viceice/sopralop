@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 26.01.2008 - Version 0.8.3.1
+ * - Schrift auf Info-Label jetzt fett gedruckt
  * 25.01.2008 - Version 0.8.3
  * - Fenstergröße geändert
  * - setDualPanel entfernt, da nicht mehr benötigt
@@ -86,6 +88,7 @@ import info.kriese.soPra.lop.LOPAdapter;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.List;
@@ -174,6 +177,8 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 	this.problem = new JLabel(Lang.getString("Strings.PrimalProblem"));
 	this.problem.setBorder(BorderFactory.createEmptyBorder(5, 50, 5, 50));
 	this.problem.setHorizontalTextPosition(JLabel.CENTER);
+	Font f = this.problem.getFont();
+	this.problem.setFont(f.deriveFont(Font.BOLD));
 
 	generateMainMenu();
 	generateMainToolbar();

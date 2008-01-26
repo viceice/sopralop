@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 26.01.2008 - Version 0.1.1
+ * - An neue SettingsFactory angepasst.
  * 17.12.2007 - Version 0.1
  *  - Datei hinzugefuegt
  */
@@ -32,7 +34,7 @@ import javax.swing.JDialog;
 /**
  * 
  * @author Michael Kriese
- * @version 0.1
+ * @version 0.1.1
  * @since 17.12.2007
  * 
  */
@@ -43,11 +45,12 @@ public final class TestAbout {
      * @param args
      */
     public static void main(String[] args) {
-	System.out.println("SoPraLOP AboutTest - Version "
-		+ SettingsFactory.getInstance().getVersion());
-	System.out.println("\t(c) 2007  "
-		+ SettingsFactory.getInstance().getAuthor());
-	System.out.println();
+	// Parse commandline arguments
+	SettingsFactory.parseArgs(args);
+
+	SettingsFactory.initJava();
+
+	SettingsFactory.showTitle("AboutTest");
 
 	about = AboutDialog.getInstance(null);
 	about.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);

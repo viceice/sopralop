@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 26.01.2008 - Version 0.2.1
+ * - An neue SettingsFactory angepasst.
  * 25.01.2008 - Version 0.2
  * - TestCase komplett überarbeitet
  * 04.11.2007 - Version 0.1
@@ -43,12 +45,11 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.UIManager;
 
 /**
  * 
  * @author Michael Kriese
- * @version 0.2
+ * @version 0.2.1
  * @since 04.11.2007
  * 
  */
@@ -59,16 +60,12 @@ public class TestInputPanel {
     private static final String SAMPLE = "S02";
 
     public static void main(String[] args) {
-	try { // use the local look and feel
-	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-	} catch (Exception e) {
-	}
+	// Parse commandline arguments
+	SettingsFactory.parseArgs(args);
 
-	System.out.println("SoPraLOP InputTest - Version "
-		+ SettingsFactory.getInstance().getVersion());
-	System.out.println("\t(c) 2007-2008  "
-		+ SettingsFactory.getInstance().getAuthor());
-	System.out.println();
+	SettingsFactory.initJava();
+
+	SettingsFactory.showTitle("InputTest");
 
 	lop = LOPFactory.newLinearOptimizingProblem();
 	LOPEditor editor = LOPFactory.newLOPEditor(lop);

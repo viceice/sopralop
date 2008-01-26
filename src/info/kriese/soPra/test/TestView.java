@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 26.01.2008 - Version 0.1.3
+ * - An neue SettingsFactory angepasst.
  * 17.01.2008 - Verison 0.1.2
  * - [F7] wechselt in die Duales-Problem-Ansicht
  * 02.10.2007 - Version 0.1.1
@@ -47,7 +49,7 @@ import info.kriese.soPra.math.LOPSolver;
 /**
  * 
  * @author Michael Kriese
- * @version 0.1.2
+ * @version 0.1.3
  * @since 17.09.2007
  * 
  */
@@ -61,16 +63,18 @@ public final class TestView {
      * @param args
      */
     public static void main(String[] args) {
+
+	// Parse commandline arguments
+	SettingsFactory.parseArgs(args);
+
+	SettingsFactory.initJava();
+
+	SettingsFactory.showTitle("VisualTest");
+
 	lop = LOPFactory.newLinearOptimizingProblem();
 	LOPEditor editor = LOPFactory.newLOPEditor(lop);
 	LOPSolver solver = new LOPSolver();
 	solver.setEditor(editor);
-
-	System.out.println("SoPraLOP VisualTest - Version "
-		+ SettingsFactory.getInstance().getVersion());
-	System.out.println("\t(c) 2007-2008  "
-		+ SettingsFactory.getInstance().getAuthor());
-	System.out.println();
 
 	Visual3DFrame view = new Visual3DFrame(null);
 

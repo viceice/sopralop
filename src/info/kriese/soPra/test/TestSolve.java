@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 26.01.2008 - Version 0.1.3
+ * - An neue SettingsFactory angepasst.
  * 23.10.2007 - Version 0.1.2
  * - solve entfert,  wird jetzt implizit aufgerufen
  * 02.10.2007 - Version 0.1.1
@@ -38,23 +40,25 @@ import info.kriese.soPra.math.LOPSolver;
 /**
  * 
  * @author Michael Kriese
- * @version 0.1.2
+ * @version 0.1.3
  * @since 15.09.2007
  * 
  */
 public final class TestSolve {
 
     public static void main(String[] args) {
+	// Parse commandline arguments
+	SettingsFactory.parseArgs(args);
+
+	SettingsFactory.initJava();
+
+	SettingsFactory.showTitle("SolveTest");
+
 	LOP lop = LOPFactory.newLinearOptimizingProblem();
 	LOPEditor editor = LOPFactory.newLOPEditor(lop);
 	LOPSolver solver = new LOPSolver();
 	solver.setEditor(editor);
 
-	System.out.println("SoPraLOP Test - Version "
-		+ SettingsFactory.getInstance().getVersion());
-	System.out.println("\t(c) 2007 "
-		+ SettingsFactory.getInstance().getAuthor());
-	System.out.println();
 	editor.open(IOUtils.getURL("problems/unlimited_high2.lop"));
 	System.out.println();
 	System.out.println("Problem: ");

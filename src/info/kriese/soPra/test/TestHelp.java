@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,12 +19,12 @@
  * 
  * ChangeLog:
  * 
+ * 26.01.2008 - Version 0.1.1
+ * - An neue SettingsFactory angepasst.
  * 25.10.2007 - Version 0.1
  *  - Datei hinzugefügt
  */
 package info.kriese.soPra.test;
-
-import java.util.Locale;
 
 import info.kriese.soPra.gui.HelpDialog;
 import info.kriese.soPra.io.impl.SettingsFactory;
@@ -33,7 +33,7 @@ import javax.swing.JDialog;
 
 /**
  * @author Peer Sterner
- * @version 0.1
+ * @version 0.1.1
  * @since 25.10.2007
  */
 public class TestHelp {
@@ -45,12 +45,9 @@ public class TestHelp {
 	SettingsFactory.parseArgs(args);
 	SettingsFactory.setDebug(true);
 
-	System.out.println("SoPraLOP HelpTest - Version "
-		+ SettingsFactory.getInstance().getVersion());
-	System.out.println("\t(c) 2007  "
-		+ SettingsFactory.getInstance().getAuthor());
-	System.out.println();
-	System.out.println("Locale: " + Locale.getDefault());
+	SettingsFactory.initJava();
+
+	SettingsFactory.showTitle("HelpTest");
 
 	HelpDialog help = HelpDialog.getInstance();
 

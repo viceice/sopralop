@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 26.01.2008 - Version 0.2.3
+ * - An neue SettingsFactory angepasst.
  * 09.11.2007 - Version 0.2.2
  * - Neue Testgleichung
  * 08.11.2007 - Version 0.2.1
@@ -44,7 +46,7 @@ import java.util.List;
 
 /**
  * @author Peer Sterner
- * @version 0.2.2
+ * @version 0.2.3
  * @since 02.05.2007
  */
 public class TestGauss {
@@ -57,11 +59,12 @@ public class TestGauss {
      * @param args
      */
     public static void main(String[] args) {
-	System.out.println("SoPraLOP GaussianTest - Version "
-		+ SettingsFactory.getInstance().getVersion());
-	System.out.println("\t(c) 2007  "
-		+ SettingsFactory.getInstance().getAuthor());
-	System.out.println();
+	// Parse commandline arguments
+	SettingsFactory.parseArgs(args);
+
+	SettingsFactory.initJava();
+
+	SettingsFactory.showTitle("GaussianTest");
 
 	Vertex vert;
 	Vector3Frac pnt, sol, tmp;

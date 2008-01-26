@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 26.01.2008 - Version 0.1.1
+ * - An neue SettingsFactory angepasst.
  * 17.12.2007 - Version 0.1
  *  - Datei hinzugefügt
  */
@@ -38,7 +40,7 @@ import javax.imageio.ImageIO;
 /**
  * 
  * @author Michael Kriese
- * @version 0.1
+ * @version 0.1.1
  * @since 17.12.2007
  * 
  */
@@ -52,11 +54,13 @@ public final class SplashGenerator {
      *                Parameter, werden nicht benötigt
      */
     public static void main(String[] args) {
-	System.out.println("SoPraLOP SplashGenerator - Version "
-		+ SettingsFactory.getInstance().getVersion());
-	System.out.println("\t(c) 2007  "
-		+ SettingsFactory.getInstance().getAuthor());
-	System.out.println();
+
+	// Parse commandline arguments
+	SettingsFactory.parseArgs(args);
+
+	SettingsFactory.initJava();
+
+	SettingsFactory.showTitle("SplashGenerator");
 
 	about = AboutDialog.getInstance(null);
 
@@ -78,7 +82,7 @@ public final class SplashGenerator {
 	    MessageHandler.setParent(about);
 	    MessageHandler.showError("Error: " + ex.getClass().getSimpleName(),
 		    ex.getLocalizedMessage());
-	    System.out.println(" Error!\nError: " + ex.getMessage());
+	    System.out.println(" Error!\nError: " + ex.getLocalizedMessage());
 	    System.exit(1);
 	}
 
