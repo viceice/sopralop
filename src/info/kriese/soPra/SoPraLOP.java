@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 26.01.2008 - Version 0.5.8.1
+ * - Aufruf von LOP.problemChanged entfernt, da überflüssig.
  * 17.01.2008 - Version 0.5.8
  * - Panel für Duales Problem entfernt
  * 28.12.2007 - Version 0.5.7
@@ -45,7 +47,8 @@
  * 19.10.2007 - Version 0.3
  * - Funktionalität aus GUI hirhin ausgelagert
  * 14.09.2007 - Version 0.2.1
- * - Property für die RenderEngine hizugefügt (Unter Vista schlechte Performance mit OpenGL)
+ * - Property für die RenderEngine hizugefügt (Unter Vista schlechte
+ *    Performance mit OpenGL)
  * 11.09.2007- Version 0.2
  * - Default DateiCodierung auf UTF-8 geändert
  * 29.07.2007 - Version 0.1.1
@@ -83,7 +86,7 @@ import javax.swing.filechooser.FileFilter;
 
 /**
  * @author Michael Kriese
- * @version 0.5.8
+ * @version 0.5.8.1
  * @since 12.05.2007
  * 
  */
@@ -94,6 +97,7 @@ public final class SoPraLOP {
     public static LOPEditor EDITOR;
 
     public static Engine3D ENGINE;
+
     public static JFileChooser FC;
 
     public static InputPanel INPUT;
@@ -213,7 +217,6 @@ public final class SoPraLOP {
 	splash.setMessage(Lang.getString("Boot.Solver"));
 	SOLVER = new LOPSolver();
 	SOLVER.setEditor(EDITOR);
-	lop.problemChanged();
 	EDITOR.solve();
 
 	splash.setMessage(Lang.getString("Boot.ShowMain"));
