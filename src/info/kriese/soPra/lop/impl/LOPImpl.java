@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,6 +19,10 @@
  * 
  * ChangeLog:
  * 
+ * 26.01.2008 - Version 0.3
+ * - An neues Interface angepasst (einige Methoden entfernt)
+ * - Zugriff auf Listener erfolgt jetzt asynchron
+ * - Exceptions in IllegalArgumentException geändert
  * 09.11.2007 - Version 0.2.3
  * - Nachdem ein Problem gelöst wird, wird automatisch wieder das primale
  *    Problem angezeigt
@@ -35,7 +39,7 @@
  */
 package info.kriese.soPra.lop.impl;
 
-import info.kriese.soPra.exceptions.NotAllowedException;
+import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPListener;
 import info.kriese.soPra.lop.LOPSolution;
@@ -44,12 +48,16 @@ import info.kriese.soPra.math.impl.Vector3FracFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+
+import javax.swing.SwingUtilities;
 
 /**
  * 
  * @author Michael Kriese
- * @version 0.2.3
+ * @version 0.3
  * @since 23.08.2007
  * 
  */
@@ -59,9 +67,7 @@ final class LOPImpl implements LOP {
 
     private boolean max;
 
-    private String[] operators;
-
-    private LOPSolution solution;
+    private final LOPSolution solution;
 
     private Vector3Frac target;
 
@@ -73,24 +79,24 @@ final class LOPImpl implements LOP {
 	this.vectors.add(Vector3FracFactory.getInstance(1, 0, 0));
 	this.vectors.add(Vector3FracFactory.getInstance(0, 1, 0));
 	this.vectors.add(Vector3FracFactory.getInstance(0, 0, 1));
-	this.operators = new String[] { "=", "=" };
 	this.max = true;
-	this.solution = null;
+	this.solution = new LOPSolutionImpl(this);
 
-	this.listeners = new ArrayList<LOPListener>();
+	this.listeners = Collections
+		.synchronizedCollection(new LinkedList<LOPListener>());
     }
 
-    public void addProblemListener(LOPListener listener) {
-	this.listeners.add(listener);
-    }
-
-    public String[] getOperators() {
-	return this.operators;
+    public void addProblemListener(final LOPListener listener) {
+	SwingUtilities.invokeLater(new Runnable() {
+	    public void run() {
+		synchronized (LOPImpl.this.listeners) {
+		    LOPImpl.this.listeners.add(listener);
+		}
+	    }
+	});
     }
 
     public LOPSolution getSolution() {
-	if (this.solution == null)
-	    this.solution = new LOPSolutionImpl(this);
 	return this.solution;
     }
 
@@ -110,24 +116,26 @@ final class LOPImpl implements LOP {
 	return !this.max;
     }
 
-    public boolean isSolved() {
-	return this.solution != null;
-    }
-
-    public void problemChanged() {
-	this.solution = null;
-	for (LOPListener listener : this.listeners)
-	    listener.problemChanged(this);
-    }
-
     public void problemSolved() {
-	for (LOPListener listener : this.listeners)
-	    listener.problemSolved(this);
-	showPrimalProblem();
+	SwingUtilities.invokeLater(new Runnable() {
+	    public void run() {
+		synchronized (LOPImpl.this.listeners) {
+		    for (LOPListener listener : LOPImpl.this.listeners)
+			listener.problemSolved(LOPImpl.this);
+		}
+		showPrimalProblem();
+	    }
+	});
     }
 
-    public void removeProblemListener(LOPListener listener) {
-	this.listeners.remove(listener);
+    public void removeProblemListener(final LOPListener listener) {
+	SwingUtilities.invokeLater(new Runnable() {
+	    public void run() {
+		synchronized (LOPImpl.this.listeners) {
+		    LOPImpl.this.listeners.remove(listener);
+		}
+	    }
+	});
     }
 
     public void setMaximum(boolean max) {
@@ -138,38 +146,42 @@ final class LOPImpl implements LOP {
 	this.max = !min;
     }
 
-    public void setOperators(String[] operators) {
-	if (operators == null || operators.length != 2)
-	    throw new NotAllowedException(operators);
-	this.operators = operators;
-    }
-
     public void setTarget(Vector3Frac target) {
 	if (target == null)
-	    throw new NotAllowedException(null);
+	    throw new IllegalArgumentException(Lang
+		    .getString("Errors.TargetNotNull"));
 	this.target = target;
     }
 
     public void setVectors(List<Vector3Frac> vectors) {
-	if (vectors == null | vectors.size() < 3)
-	    throw new NotAllowedException(vectors);
+	if (vectors == null | vectors.size() < MIN_VECTORS
+		|| vectors.size() > MAX_VECTORS)
+	    throw new IllegalArgumentException(Lang.getString(
+		    "Errors.MinMaxVectors", new Object[] { MIN_VECTORS,
+			    MAX_VECTORS }));
 	this.vectors.clear();
 	this.vectors.addAll(vectors);
     }
 
     public void showDualProblem() {
-	for (LOPListener listener : this.listeners)
-	    listener.showDualProblem(this);
+	SwingUtilities.invokeLater(new Runnable() {
+	    public void run() {
+		synchronized (LOPImpl.this.listeners) {
+		    for (LOPListener listener : LOPImpl.this.listeners)
+			listener.showDualProblem(LOPImpl.this);
+		}
+	    }
+	});
     }
 
     public void showPrimalProblem() {
-	for (LOPListener listener : this.listeners)
-	    listener.showPrimalProblem(this);
+	SwingUtilities.invokeLater(new Runnable() {
+	    public void run() {
+		synchronized (LOPImpl.this.listeners) {
+		    for (LOPListener listener : LOPImpl.this.listeners)
+			listener.showPrimalProblem(LOPImpl.this);
+		}
+	    }
+	});
     }
-
-    public void showSolution() {
-	for (LOPListener listener : this.listeners)
-	    listener.showSolution(this);
-    }
-
 }
