@@ -19,6 +19,10 @@
  * 
  * ChangeLog:
  * 
+ * 26.01.2008 - Version 0.5
+ * - Operatoren-Handling-Funktionen gelöscht, da nicht mehr benötigt
+ * - Lösung-Handling-Funktionen gelöscht, werden auch nicht mehr benötigt
+ * - Neue Konstanten TARGET & VECTOR
  * 25.01.2008 - Version 0.4.1
  * - Variablennamen für Spezialfälle angepasst
  * 28.12.2007 - Version 0.4
@@ -41,7 +45,7 @@
  * - Lösung des LOP nicht mehr speichern
  * 03.10.2007 - Version 0.3.2
  * - Fehler beim Speichern des Problems behoben (ich habe die Quotes vergessen,
- * 	dadurch kam es zu ungültigem XML-Code)
+ *    dadurch kam es zu ungültigem XML-Code)
  * - XML-Encoding-Tag gesetzt
  * 24.09.2007 - Version 0.3.1
  * - An verändertes Speicherformat angepasst
@@ -78,67 +82,35 @@ import org.w3c.dom.NamedNodeMap;
 /**
  * 
  * @author Michael Kriese
- * @version 0.4
+ * @version 0.5
  * @since 29.07.2007
  * 
  */
 public final class IOUtils {
 
-    public static String format(String pattern, String[] args) {
-	return MessageFormat.format(pattern, (Object[]) args);
-    }
+    /**
+     * Speicherformat für die Zielfunktion.
+     */
+    private static final String TARGET = "<target  x=\"{0}\" y=\"{1}\" z=\"{2}\" />";
 
+    /**
+     * Speicherformat für die Variablen.
+     */
+    private static final String VECTOR = "\t<vector x=\"{0}\" y=\"{1}\" z=\"{2}\"  />";
+
+    /**
+     * Formatiert einen Vektor mittels gegebenen Format in einen String zum
+     * speichern.
+     * 
+     * @param pattern -
+     *                Format-String, welcher benutzt werden soll.
+     * @param vec -
+     *                Vektor, welcher formatiert werden soll.
+     * @return Der übergebene Vektor als formatierter String.
+     */
     public static String format(String pattern, Vector3Frac vec) {
 	return MessageFormat.format(pattern, new Object[] { vec.getCoordX(),
 		vec.getCoordY(), vec.getCoordZ() });
-    }
-
-    public static int getCase(NamedNodeMap map) {
-	if (map == null)
-	    return -1;
-
-	try {
-	    return Integer.parseInt(map.getNamedItem("case").getNodeValue());
-	} catch (Exception e) {
-	    MessageHandler.exceptionThrown(e);
-	}
-	return -1;
-    }
-
-    /**
-     * Extrahiert die Operatoren aus den xml-Daten.
-     * 
-     * @param map
-     * @return
-     */
-    public static String[] getOperators(NamedNodeMap map) {
-	if (map == null)
-	    return null;
-
-	try {
-	    String[] res = new String[2];
-	    res[0] = getOperator(map.getNamedItem("x").getNodeValue());
-	    res[1] = getOperator(map.getNamedItem("y").getNodeValue());
-
-	    if (res[0] != null && res[1] != null)
-		return res;
-	} catch (Exception e) {
-	    MessageHandler.exceptionThrown(e);
-	}
-	return null;
-    }
-
-    public static Fractional getSol(NamedNodeMap map) {
-	if (map == null)
-	    return null;
-
-	try {
-	    return FractionalFactory.getInstance(map.getNamedItem("value")
-		    .getNodeValue());
-	} catch (Exception e) {
-	    MessageHandler.exceptionThrown(e);
-	}
-	return null;
     }
 
     /**
@@ -258,20 +230,25 @@ public final class IOUtils {
 	out.println();
 	out.println("Lösung: " + sol.getValue());
 
-	// TODO: Prüfen, welche Fälle auftreten können /behandelt werden müssen (gibt ja jetzt noch mehr Permutationen...)
+	// TODO: Prüfen, welche Fälle auftreten können /behandelt werden müssen
+	// (gibt ja jetzt noch mehr Permutationen...)
 	switch (sol.getSpecialCase()) {
-	    case (LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY | LOPSolution.SOLUTION_AREA_EMPTY | LOPSolution.TARGET_FUNCTION_EMPTY):
+	    case (LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
+		    | LOPSolution.SOLUTION_AREA_EMPTY | LOPSolution.TARGET_FUNCTION_EMPTY):
 		out.println(Lang.getString("Strings.NoSolution"));
 		break;
-	    case (LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE | LOPSolution.SOLUTION_AREA_LIMITED | LOPSolution.TARGET_FUNCTION_LIMITED):
+	    case (LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE
+		    | LOPSolution.SOLUTION_AREA_LIMITED | LOPSolution.TARGET_FUNCTION_LIMITED):
 		out.println(Lang.getString("Strings.MoreSolutions",
 			new Object[] { sol.countAreas() }));
 		out.println(sol.getAreas());
 		break;
-	    case (LOPSolution.SOLUTION_AREA_UNLIMITED | LOPSolution.SOLUTION_AREA_EMPTY | LOPSolution.TARGET_FUNCTION_EMPTY):
+	    case (LOPSolution.SOLUTION_AREA_UNLIMITED
+		    | LOPSolution.SOLUTION_AREA_EMPTY | LOPSolution.TARGET_FUNCTION_EMPTY):
 		out.println(Lang.getString("Strings.UnlimitedSol"));
 		break;
-	    case (LOPSolution.OPTIMAL_SOLUTION_AREA_POINT | LOPSolution.SOLUTION_AREA_LIMITED | LOPSolution.TARGET_FUNCTION_LIMITED):
+	    case (LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
+		    | LOPSolution.SOLUTION_AREA_LIMITED | LOPSolution.TARGET_FUNCTION_LIMITED):
 		out.println(Lang.getString("Strings.SimpleSolution"));
 		break;
 	    default:
@@ -307,10 +284,6 @@ public final class IOUtils {
 	FileOutputStream fout = new FileOutputStream(file, false);
 	PrintStream out = new PrintStream(fout, false, "UTF-8");
 
-	String VEC = "\t<vector x=\"{0}\" y=\"{1}\" z=\"{2}\"  />";
-	String TARG = "<target  x=\"{0}\" y=\"{1}\" z=\"{2}\" />";
-	String OPS = "<ops x=\"{0}\" y=\"{1}\" />";
-
 	// xml-Header
 	out.println("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<lop type=\""
 		+ (lop.isMaximum() ? "max" : "min") + "\">");
@@ -318,22 +291,11 @@ public final class IOUtils {
 	// die Vektordaten der Variablen xi
 	out.println("<vectors>");
 	for (Vector3Frac vec : lop.getVectors())
-	    out.println(format(VEC, vec));
+	    out.println(format(VECTOR, vec));
 	out.println("</vectors>");
 
 	// die Vektordaten der Zielfunktion
-	out.println(format(TARG, lop.getTarget()));
-
-	// die Operatoren
-	String[] newOps = new String[2], ops = lop.getOperators();
-	for (int i = 0; i < 2; i++)
-	    if (ops[i].equals("="))
-		newOps[i] = "equal";
-	    else if (ops[i].equals("<"))
-		newOps[i] = "less";
-	    else if (ops[i].equals(">"))
-		newOps[i] = "greater";
-	out.println(format(OPS, newOps));
+	out.println(format(TARGET, lop.getTarget()));
 
 	// schliessendes xml-Tag
 	out.println("</lop>");
@@ -342,20 +304,8 @@ public final class IOUtils {
     }
 
     /**
-     * Extrahiert einen Operator aus dem String
-     * 
-     * @param op
-     * @return
+     * Privater Konstruktor, da keine Instanz dieser Klasse erlaubt.
      */
-    private static String getOperator(String op) {
-
-	if (op.equals("equal"))
-	    return "=";
-	else if (op.equals("less"))
-	    return "<";
-	else if (op.equals("greater"))
-	    return ">";
-
-	return null;
+    private IOUtils() {
     }
 }
