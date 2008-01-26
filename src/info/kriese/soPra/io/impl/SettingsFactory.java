@@ -156,9 +156,11 @@ public final class SettingsFactory {
     public static void showTitle(String title) {
 	System.out.println("SoPraLOP " + title + " - Version "
 		+ SettingsFactory.getInstance().getVersion());
-	System.out.println("\t(c) 2007-"
+	System.out.println("\tCopyright (c) 2007-"
 		+ Calendar.getInstance().get(Calendar.YEAR) + " "
 		+ SettingsFactory.getInstance().getAuthor());
+	System.out.println("\tGPL, Version 2");
+	System.out.println("\t" + getInstance().getWeb());
 	System.out.println();
     }
 

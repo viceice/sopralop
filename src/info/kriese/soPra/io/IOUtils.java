@@ -24,6 +24,7 @@
  * - Lösung-Handling-Funktionen gelöscht, werden auch nicht mehr benötigt
  * - Neue Konstanten TARGET & VECTOR
  * - Überprüfung, ob LOP gelöst ist, entfernt, da LOP immer gelöst sein muss.
+ * - Kopfzeile bei Ausgabe des Problems auf der Konsole hinzugefügt
  * 25.01.2008 - Version 0.4.1
  * - Variablennamen für Spezialfälle angepasst
  * 28.12.2007 - Version 0.4
@@ -189,13 +190,17 @@ public final class IOUtils {
      *                PrintStream, auf dem das LOP ausgegeben werden soll.
      */
     public static void print(LOP lop, PrintStream out) {
-	StringBuffer x = new StringBuffer(), y = new StringBuffer(), z = new StringBuffer();
+
+	out.println("--------------------------------------------------------");
+
+	StringBuffer x = new StringBuffer(), y = new StringBuffer(), z = new StringBuffer(), t = new StringBuffer();
 
 	Vector3Frac vec = lop.getVectors().get(0);
 
-	x.append(vec.getCoordX() + " ");
-	y.append(vec.getCoordY() + " ");
-	z.append(vec.getCoordZ() + " ");
+	t.append("\tX1\t");
+	x.append("\t" + vec.getCoordX() + "\t");
+	y.append("\t" + vec.getCoordY() + "\t");
+	z.append("\t" + vec.getCoordZ() + "\t");
 
 	for (int i = 1; i < lop.getVectors().size(); i++) {
 	    vec = lop.getVectors().get(i);
@@ -206,17 +211,20 @@ public final class IOUtils {
 	    if (vec.getCoordZ().toDouble() >= 0)
 		z.append("+");
 
-	    x.append(vec.getCoordX() + " ");
-	    y.append(vec.getCoordY() + " ");
-	    z.append(vec.getCoordZ() + " ");
+	    t.append("X" + (i + 1) + "\t");
+	    x.append(vec.getCoordX() + "\t");
+	    y.append(vec.getCoordY() + "\t");
+	    z.append(vec.getCoordZ() + "\t");
 	}
 
 	vec = lop.getTarget();
 
-	x.append(" = " + vec.getCoordX());
-	y.append(" = " + vec.getCoordY());
-	z.append(" = " + (lop.isMaximum() ? "max" : "min"));
+	t.append("= Z");
+	x.append("= " + vec.getCoordX());
+	y.append("= " + vec.getCoordY());
+	z.append("= " + (lop.isMaximum() ? "max" : "min"));
 
+	out.println(t.toString());
 	out.println(x.toString());
 	out.println(y.toString());
 	out.println(z.toString());
@@ -237,7 +245,7 @@ public final class IOUtils {
 		    | LOPSolution.SOLUTION_AREA_LIMITED | LOPSolution.TARGET_FUNCTION_LIMITED):
 		out.println(Lang.getString("Strings.MoreSolutions",
 			new Object[] { sol.countAreas() }));
-		out.println(sol.getAreas());
+		// out.println(sol.getAreas());
 		break;
 	    case (LOPSolution.SOLUTION_AREA_UNLIMITED
 		    | LOPSolution.SOLUTION_AREA_EMPTY | LOPSolution.TARGET_FUNCTION_EMPTY):
@@ -259,7 +267,7 @@ public final class IOUtils {
 		    + " ] = [ " + area.getL1Amount() + ", "
 		    + area.getL2Amount() + " ]");
 
-	out.println();
+	out.println("--------------------------------------------------------");
     }
 
     /**
