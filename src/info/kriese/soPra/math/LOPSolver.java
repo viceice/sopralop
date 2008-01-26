@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 26.01.2008 - Version 0.5.8
+ * - Operator-Handling entfernt, da nicht mehr benötigt
  * 25.01.2008 - Version 0.5.7
  * - Variablennamen für Spezialfälle angepasst
  * - Fallprüfung für Spezialfälle erweitert
@@ -27,7 +29,8 @@
  * 19.12.2007 - Version 0.5.5
  * - Auf neues ExceptionHandling umgestellt
  * 17.12.2007 - Version 0.5.4
- * - BugFix: Fehler beim Speichern in Pfaden mit Leerzeichen behoben, LOP konnte dadurch nicht gespeichert werden.
+ * - BugFix: Fehler beim Speichern in Pfaden mit Leerzeichen behoben, LOP
+ *    konnte dadurch nicht gespeichert werden.
  * 09.11.2007 - Version 0.5.3
  * - Aufruf von showSolution entfernt, da nicht mehr nötig
  * 08.11.2007 - Version 0.5.2
@@ -104,7 +107,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author Michael Kriese
- * @version 0.5.6
+ * @version 0.5.8
  * @since 10.05.2007
  * 
  */
@@ -146,7 +149,6 @@ public final class LOPSolver {
 	    boolean bMax = true;
 	    Vector3Frac vTarget = null;
 	    Vector<Vector3Frac> vecs = new Vector<Vector3Frac>();
-	    String[] vOps = null;
 	    // ---- Parse XML file ----
 	    DocumentBuilderFactory factory = DocumentBuilderFactory
 		    .newInstance();
@@ -172,14 +174,6 @@ public final class LOPSolver {
 		    vTarget = IOUtils.getVector(att);
 	    }
 
-	    ndList = document.getElementsByTagName("ops");
-	    if (ndList.getLength() == 1) {
-		n = ndList.item(0);
-		att = n.getAttributes();
-		if (att != null)
-		    vOps = IOUtils.getOperators(att);
-	    }
-
 	    ndList = document.getElementsByTagName("vectors");
 	    if (ndList.getLength() == 1) {
 		ndList = ndList.item(0).getChildNodes();
@@ -200,14 +194,12 @@ public final class LOPSolver {
 	    }
 
 	    if (vTarget != null && vecs.size() >= LOP.MIN_VECTORS
-		    && vecs.size() <= LOP.MAX_VECTORS && vOps != null) {
+		    && vecs.size() <= LOP.MAX_VECTORS) {
 		lop.setMaximum(bMax);
 		lop.setTarget(vTarget);
-		lop.setOperators(vOps);
 		lop.setVectors(vecs);
-		lop.problemChanged();
+		return true;
 	    }
-	    return true;
 
 	    // ---- Error handling ----
 	} catch (Exception e) {
@@ -326,50 +318,49 @@ public final class LOPSolver {
 	}
 
 	if (unlimited && opt != null) {
-			if (max && opt.compareTo(value_unlimit) < 0) {
-				sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
-						| LOPSolution.SOLUTION_AREA_EMPTY
-						| LOPSolution.TARGET_FUNCTION_EMPTY);
-				opt = Fractional.MAX_VALUE;
-			}
+	    if (max && opt.compareTo(value_unlimit) < 0) {
+		sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
+			| LOPSolution.SOLUTION_AREA_EMPTY
+			| LOPSolution.TARGET_FUNCTION_EMPTY);
+		opt = Fractional.MAX_VALUE;
+	    }
 
-			if (!max && opt.compareTo(value_unlimit) > 0) {
-				sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
-						| LOPSolution.SOLUTION_AREA_EMPTY
-						| LOPSolution.TARGET_FUNCTION_EMPTY);
-				opt = Fractional.MIN_VALUE;
-			}
+	    if (!max && opt.compareTo(value_unlimit) > 0) {
+		sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
+			| LOPSolution.SOLUTION_AREA_EMPTY
+			| LOPSolution.TARGET_FUNCTION_EMPTY);
+		opt = Fractional.MIN_VALUE;
+	    }
 
-			if (max && opt.compareTo(value_unlimit) > 0)
-				sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
-						| LOPSolution.SOLUTION_AREA_UNLIMITED
-						| LOPSolution.TARGET_FUNCTION_LIMITED);
+	    if (max && opt.compareTo(value_unlimit) > 0)
+		sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
+			| LOPSolution.SOLUTION_AREA_UNLIMITED
+			| LOPSolution.TARGET_FUNCTION_LIMITED);
 
-			if (!max && opt.compareTo(value_unlimit) < 0)
-				sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
-						| LOPSolution.SOLUTION_AREA_UNLIMITED
-						| LOPSolution.TARGET_FUNCTION_LIMITED);
+	    if (!max && opt.compareTo(value_unlimit) < 0)
+		sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
+			| LOPSolution.SOLUTION_AREA_UNLIMITED
+			| LOPSolution.TARGET_FUNCTION_LIMITED);
 
-			if (sol.countAreas() >= 2)
-				sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE
-						| LOPSolution.SOLUTION_AREA_UNLIMITED
-						| LOPSolution.TARGET_FUNCTION_LIMITED);
-		} 
-		else if (!unlimited && opt != null && sol.countAreas() >= 2)
-			sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE
-					| LOPSolution.SOLUTION_AREA_LIMITED
-					| LOPSolution.TARGET_FUNCTION_LIMITED);
+	    if (sol.countAreas() >= 2)
+		sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE
+			| LOPSolution.SOLUTION_AREA_UNLIMITED
+			| LOPSolution.TARGET_FUNCTION_LIMITED);
+	} else if (!unlimited && opt != null && sol.countAreas() >= 2)
+	    sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE
+		    | LOPSolution.SOLUTION_AREA_LIMITED
+		    | LOPSolution.TARGET_FUNCTION_LIMITED);
 
-		else if (opt == null) {
-			sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
-					| LOPSolution.SOLUTION_AREA_EMPTY
-					| LOPSolution.TARGET_FUNCTION_EMPTY);
-			opt = Fractional.MAX_VALUE;
-		} 
-		else sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
-					| LOPSolution.SOLUTION_AREA_LIMITED
-					| LOPSolution.TARGET_FUNCTION_LIMITED);
-	
+	else if (opt == null) {
+	    sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
+		    | LOPSolution.SOLUTION_AREA_EMPTY
+		    | LOPSolution.TARGET_FUNCTION_EMPTY);
+	    opt = Fractional.MAX_VALUE;
+	} else
+	    sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
+		    | LOPSolution.SOLUTION_AREA_LIMITED
+		    | LOPSolution.TARGET_FUNCTION_LIMITED);
+
 	sol.setValue(opt);
 
 	lop.problemSolved();
