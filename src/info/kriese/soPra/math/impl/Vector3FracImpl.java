@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 26.01.2008 - Version 0.3.2
+ * - BugFix: Methode inv war fehlerhaft implementiert.
  * 07.11.2007 - Version 0.3.1
  * - NullPointer bei Vergleich behoben
  * 17.09.2007 - Version 0.3
@@ -46,7 +48,7 @@ import info.kriese.soPra.math.Vector3Frac;
  * 
  * @author Michael Kriese
  * @since 11.04.2007
- * @version 0.3.1
+ * @version 0.3.2
  */
 final class Vector3FracImpl implements Vector3Frac {
 
@@ -112,17 +114,17 @@ final class Vector3FracImpl implements Vector3Frac {
     }
 
     public Vector3Frac inv() {
-	Vector3Frac res = this.clone();
+	Vector3Frac res = clone();
 
-	res.getCoordX().mul(-1);
-	res.getCoordY().mul(-1);
-	res.getCoordZ().mul(-1);
+	res.setCoordX(this.x.mul(-1));
+	res.setCoordY(this.y.mul(-1));
+	res.setCoordZ(this.z.mul(-1));
 
 	return res;
     }
 
     public Vector3Frac scale(int i) {
-	Vector3Frac res = this.clone();
+	Vector3Frac res = clone();
 	if (res.equals(ZERO))
 	    return res;
 
