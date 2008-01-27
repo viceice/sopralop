@@ -49,6 +49,7 @@ public final class TestSolve {
     public static void main(String[] args) {
 	// Parse commandline arguments
 	SettingsFactory.parseArgs(args);
+	SettingsFactory.setDebug(true);
 
 	SettingsFactory.initJava();
 
@@ -59,9 +60,6 @@ public final class TestSolve {
 	LOPSolver solver = new LOPSolver();
 	solver.setEditor(editor);
 
-	editor.open(IOUtils.getURL("problems/4ononeside.lop"));
-	System.out.println();
-	System.out.println("Problem: ");
-	IOUtils.print(lop, System.out);
+	editor.open(IOUtils.getURL("problems/ray_solution2.lop"));
     }
 }
