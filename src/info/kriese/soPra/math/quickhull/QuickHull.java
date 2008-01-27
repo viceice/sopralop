@@ -19,10 +19,14 @@
  * 
  * ChangeLog:
  * 
+ * 27.01.2008 - Version 0.2.2
+ * - setDebug hinzugefügt (aktiviert den Debug-Modus von Quickhull)
+ * - DebugStatements hinzugefügt
  * 26.01.2008 - Version 0.2.1
  * - BugFix: Quickhull filtert jetzt keinen ungewollten vektoren mehr
  * 23.10.2007 - Version 0.2
- * - Quickhull angepasst, Vektoren, die in einer Ebene liegen, werden nicht mehr herausgefiltert
+ * - Quickhull angepasst, Vektoren, die in einer Ebene liegen, werden nicht
+ *    mehr herausgefiltert
  * 16.09.2007 - Version 0.1.1
  * - Runden im Konstruktor des Point3fWrapper hinzugefügt
  * 14.09.2007 - Version 0.1
@@ -45,10 +49,10 @@ import ca.ubc.cs.spider.lloyed.quickhull3d.QuickHull3D;
  * WrapperKlasse für den QuickHull Algorithmus.
  * 
  * @author Michael Kriese
- * @version 0.2.1
+ * @version 0.2.2
  * @since 14.09.2007
  * 
- * @see http://www.cs.ubc.ca/spider/lloyd/index.html
+ * @see http://www.cs.ubc.ca/spider/lloyd
  */
 public final class QuickHull {
 
@@ -60,8 +64,6 @@ public final class QuickHull {
 
     public QuickHull() {
 	this.hull = new QuickHull3D();
-	// this.hull.setDebug(true);
-
 	this.vertices = new ArrayList<Vertex>();
     }
 
@@ -70,15 +72,33 @@ public final class QuickHull {
     }
 
     public void build(List<Vector3Frac> points, boolean all) {
+	boolean debug = this.hull.getDebug();
+
+	if (debug)
+	    System.out
+		    .println("Quickhull start ...\nCreating Points-Array ...");
 	Point3d[] pts = new Point3d[points.size() + 1];
 	for (int i = 0; i < points.size(); i++)
 	    pts[i] = new Point3DWrapper(points.get(i));
 
 	pts[pts.length - 1] = new Point3DWrapper();
+
+	if (debug) {
+	    System.out.println("Running Quickhull-Algorithm ...");
+	    System.out.println("----------------------------------");
+	}
+
 	this.hull.build(pts);
 
 	this.faces = this.hull.getFaces(QuickHull3D.INDEXED_FROM_ZERO);
 	this.oldVertices = this.hull.getVertices();
+
+	if (debug) {
+	    System.out.println("----------------------------------");
+	    System.out.println("Found " + this.faces.length + " faces & "
+		    + this.oldVertices.length + " vertices");
+	    System.out.println("Converting results ...");
+	}
 
 	this.vertices.clear();
 
@@ -86,13 +106,19 @@ public final class QuickHull {
 	    if (face.length == 3)
 		this.vertices.add(getVertex(this.oldVertices[face[0]],
 			this.oldVertices[face[1]], this.oldVertices[face[2]]));
-	    else
+	    else {
+		if (debug)
+		    System.out.println("Triangulate face with " + face.length
+			    + " edges ...");
 		triangulate(face, all);
+	    }
 
-	System.out.println();
-
-	if (this.oldVertices.length == points.size() + 1)
+	if (this.oldVertices.length == points.size() + 1) {
+	    if (debug)
+		System.out.println("Quickhull finished ...");
 	    return; // kein Vektor wurde gefiltert
+	} else if (debug)
+	    System.out.println("Find lost vectors ...");
 
 	List<Vector3Frac> lost = new ArrayList<Vector3Frac>(points);
 	List<Vertex> nvertices = new ArrayList<Vertex>(this.vertices), tvtx = new ArrayList<Vertex>();
@@ -101,10 +127,17 @@ public final class QuickHull {
 	for (Point3d pnt : this.oldVertices)
 	    lost.remove(Vector3FracFactory.getInstance(pnt.x, pnt.y, pnt.z));
 
+	if (debug)
+	    System.out.println("Found " + lost.size()
+		    + " lost vectors, trying to merge them back ...");
+
 	for (Vector3Frac vec : lost) {
 	    for (Vertex vertex : nvertices)
-		if (vertex.isPointInVertex(vec)
-			&& vertex.p1.equals(Vector3Frac.ZERO)) {
+		if (vertex.p1.equals(Vector3Frac.ZERO)
+			&& vertex.isPointInVertex(vec)) {
+
+		    if (debug)
+			System.out.println("Merging vector: " + vec);
 		    // ok, spalte vertex auf
 
 		    if (all)
@@ -129,6 +162,9 @@ public final class QuickHull {
 
 	this.vertices.clear();
 	this.vertices.addAll(nvertices);
+
+	if (debug)
+	    System.out.println("Quickhull finished ...");
     }
 
     public List<Vertex> getVerticesList() {
@@ -137,6 +173,10 @@ public final class QuickHull {
 
     public void print() {
 	this.hull.print(System.out, QuickHull3D.INDEXED_FROM_ZERO);
+    }
+
+    public void setDebug(boolean debug) {
+	this.hull.setDebug(debug);
     }
 
     private Vertex getVertex(Point3d p1, Point3d p2, Point3d p3) {
