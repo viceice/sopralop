@@ -19,7 +19,9 @@
  * 
  * ChangeLog:
  * 
- *  * 25.01.2008 - Version 0.2.1
+ * 27.01.2008 - Version 0.2.1.1
+ * - BugFix: Exception bei Spezialfääle der Lösung in Methode update()
+ * 25.01.2008 - Version 0.2.1
  * - Variablennamen für Spezialfälle angepasst
  * - Fallprüfung für Spezialfälle erweitert
  * 25.01.2008 - Version 0.2
@@ -37,8 +39,6 @@ import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPAdapter;
 import info.kriese.soPra.lop.LOPEditor;
 import info.kriese.soPra.lop.LOPEditorAdapter;
-import info.kriese.soPra.lop.LOPSolution;
-import info.kriese.soPra.math.Gauss;
 import info.kriese.soPra.math.Vector3Frac;
 
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ import javax.swing.table.AbstractTableModel;
  * Wandelt das duale LOP in ein von JTable lesbares Format um.
  * 
  * @author Peer Sterner
- * @version 0.2
+ * @version 0.2.1.1
  * @since 09.11.2007
  * 
  */
@@ -213,44 +213,49 @@ public final class DualLOPTableModel extends AbstractTableModel {
 	this.target = lop.getTarget().clone();
 	this.max = lop.isMaximum();
 
-	// TODO: Prüfen, welche Fälle auftreten können /behandelt werden müssen (gibt ja jetzt noch mehr Permutationen...)
-	LOPSolution solution = lop.getSolution();
-	if (solution.getSpecialCase() == (LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY | LOPSolution.SOLUTION_AREA_EMPTY 
-			| LOPSolution.TARGET_FUNCTION_EMPTY)) {
-	    this.sol[0] = LOPInfinity.INFINITY;
-	    this.sol[1] = LOPInfinity.INFINITY;
-	    this.sol[2] = LOPInfinity.INFINITY;
-	} else if (solution.getSpecialCase() == (LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY | LOPSolution.SOLUTION_AREA_UNLIMITED 
-			| LOPSolution.TARGET_FUNCTION_EMPTY)) {
-	    this.sol[0] = LOPNotExsitent.NOT_EXISTENT;
-	    this.sol[1] = LOPNotExsitent.NOT_EXISTENT;
-	    this.sol[2] = LOPNotExsitent.NOT_EXISTENT;
-	} else {
-	    Vector3Frac vec1 = solution.getAreas().get(0).getL1();
-	    Vector3Frac vec2 = solution.getAreas().get(0).getL2();
-
-	    Vector3Frac Vector1 = Vector3Frac.ZERO.clone();
-	    Vector3Frac Vector2 = Vector3Frac.ZERO.clone();
-	    Vector3Frac Vector3 = Vector3Frac.ZERO.clone();
-
-	    Vector1.setCoordX(vec1.getCoordX());
-	    Vector1.setCoordY(vec2.getCoordX());
-	    Vector1.setCoordZ(this.target.getCoordX());
-
-	    Vector2.setCoordX(vec1.getCoordY());
-	    Vector2.setCoordY(vec2.getCoordY());
-	    Vector2.setCoordZ(this.target.getCoordY());
-
-	    Vector3.setCoordX(vec1.getCoordZ());
-	    Vector3.setCoordY(vec2.getCoordZ());
-	    Vector3.setCoordZ(this.target.getCoordZ());
-
-	    Vector3Frac tmp = Gauss
-		    .gaussElimination2(Vector1, Vector2, Vector3);
-	    this.sol[0] = tmp.getCoordX().toString();
-	    this.sol[1] = tmp.getCoordY().toString();
-	    this.sol[2] = tmp.getCoordZ().toString();
-	}
+	// TODO: Prüfen, welche Fälle auftreten können /behandelt werden müssen
+	// (gibt ja jetzt noch mehr Permutationen...)
+	// LOPSolution solution = lop.getSolution();
+	// if (solution.getSpecialCase() ==
+	// (LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY |
+	// LOPSolution.SOLUTION_AREA_EMPTY
+	// | LOPSolution.TARGET_FUNCTION_EMPTY)) {
+	// this.sol[0] = LOPInfinity.INFINITY;
+	// this.sol[1] = LOPInfinity.INFINITY;
+	// this.sol[2] = LOPInfinity.INFINITY;
+	// } else if (solution.getSpecialCase() ==
+	// (LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY |
+	// LOPSolution.SOLUTION_AREA_UNLIMITED
+	// | LOPSolution.TARGET_FUNCTION_EMPTY)) {
+	// this.sol[0] = LOPNotExsitent.NOT_EXISTENT;
+	// this.sol[1] = LOPNotExsitent.NOT_EXISTENT;
+	// this.sol[2] = LOPNotExsitent.NOT_EXISTENT;
+	// } else {
+	// Vector3Frac vec1 = solution.getAreas().get(0).getL1();
+	// Vector3Frac vec2 = solution.getAreas().get(0).getL2();
+	//
+	// Vector3Frac Vector1 = Vector3Frac.ZERO.clone();
+	// Vector3Frac Vector2 = Vector3Frac.ZERO.clone();
+	// Vector3Frac Vector3 = Vector3Frac.ZERO.clone();
+	//
+	// Vector1.setCoordX(vec1.getCoordX());
+	// Vector1.setCoordY(vec2.getCoordX());
+	// Vector1.setCoordZ(this.target.getCoordX());
+	//
+	// Vector2.setCoordX(vec1.getCoordY());
+	// Vector2.setCoordY(vec2.getCoordY());
+	// Vector2.setCoordZ(this.target.getCoordY());
+	//
+	// Vector3.setCoordX(vec1.getCoordZ());
+	// Vector3.setCoordY(vec2.getCoordZ());
+	// Vector3.setCoordZ(this.target.getCoordZ());
+	//
+	// Vector3Frac tmp = Gauss
+	// .gaussElimination2(Vector1, Vector2, Vector3);
+	// this.sol[0] = tmp.getCoordX().toString();
+	// this.sol[1] = tmp.getCoordY().toString();
+	// this.sol[2] = tmp.getCoordZ().toString();
+	// }
 
 	fireTableStructureChanged();
     }
