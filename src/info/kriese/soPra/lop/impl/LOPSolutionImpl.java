@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,7 +19,10 @@
  * 
  * ChangeLog:
  * 
- *  * 25.01.2008 - Version 0.3.1
+ * 27.01.2008 - Version 0.4
+ * - An neues Interface angepasst
+ * - Exceptions in IllegalArgumentException geändert
+ * 25.01.2008 - Version 0.3.1
  * - Variablennamen für Spezialfälle angepasst
  * 06.11.2007 - Version 0.3
  * - Neue Interfacemethoden implementiert
@@ -32,10 +35,6 @@
  */
 package info.kriese.soPra.lop.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import info.kriese.soPra.exceptions.NotAllowedException;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPSolution;
 import info.kriese.soPra.lop.LOPSolutionArea;
@@ -43,10 +42,13 @@ import info.kriese.soPra.math.Fractional;
 import info.kriese.soPra.math.Vector3Frac;
 import info.kriese.soPra.math.impl.FractionalFactory;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * 
  * @author Michael Kriese
- * @version 0.3
+ * @version 0.4
  * @since 23.08.2007
  * 
  */
@@ -62,15 +64,15 @@ final class LOPSolutionImpl implements LOPSolution {
 
     public LOPSolutionImpl(LOP problem) {
 	this.value = null;
-	this.sCase = (OPTIMAL_SOLUTION_AREA_POINT | SOLUTION_AREA_LIMITED | TARGET_FUNCTION_LIMITED);
+	this.sCase = 0;
 	this.problem = problem;
-	this.areas = new ArrayList<LOPSolutionArea>();
+	this.areas = new LinkedList<LOPSolutionArea>();
     }
 
     public void addArea(Vector3Frac l1, Vector3Frac l2, Fractional f1,
 	    Fractional f2) {
 	if (l1 == null || l2 == null || f1 == null || f2 == null)
-	    throw new IllegalArgumentException();
+	    throw new IllegalArgumentException("Zero value is not allowed!");
 
 	this.areas.add(new LOPSolutionAreaImpl(l1, l2, f1, f2));
     }
@@ -103,13 +105,10 @@ final class LOPSolutionImpl implements LOPSolution {
 	return this.value.clone();
     }
 
-    public boolean isSpecialCase() {
-	return this.sCase != (OPTIMAL_SOLUTION_AREA_POINT | SOLUTION_AREA_LIMITED | TARGET_FUNCTION_LIMITED);
-    }
-
     public void setSpecialCase(int sCase) {
 	if (sCase < 0)
-	    throw new NotAllowedException(sCase);
+	    throw new IllegalArgumentException(
+		    "Special case can't be smaller than zero!");
 	this.sCase = sCase;
     }
 
@@ -119,7 +118,7 @@ final class LOPSolutionImpl implements LOPSolution {
 
     public void setValue(Fractional value) {
 	if (value == null)
-	    throw new NotAllowedException();
+	    throw new IllegalArgumentException("Zero value is not allowed!");
 	Vector3Frac vec = this.problem.getTarget().clone();
 	vec.setCoordZ(value);
 	setValue(vec);
@@ -127,7 +126,7 @@ final class LOPSolutionImpl implements LOPSolution {
 
     public void setValue(Vector3Frac value) {
 	if (value == null)
-	    throw new NotAllowedException();
+	    throw new IllegalArgumentException("Zero value is not allowed!");
 	this.value = value.clone();
     }
 }

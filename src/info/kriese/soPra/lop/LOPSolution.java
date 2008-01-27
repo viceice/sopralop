@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 27.01.2008 - Version 0.5
+ * - isSpecialCase gelöscht, da Problem immer ein Spezialfall.
  * 25.01.2008 - Version 0.4.1
  * - Variablen für Spezialfälle geändert (jetzt Bitfeld)
  * 06.11.2007 - Version 0.4
@@ -45,23 +47,23 @@ import info.kriese.soPra.math.Vector3Frac;
 /**
  * 
  * @author Michael Kriese
- * @version 0.4
+ * @version 0.5
  * @since 23.08.2007
  * 
  */
 public interface LOPSolution {
 
+    static final int OPTIMAL_SOLUTION_AREA_EMPTY = 0x0c;
+    static final int OPTIMAL_SOLUTION_AREA_MULTIPLE = 0x08;
+    static final int OPTIMAL_SOLUTION_AREA_POINT = 0x04;
+
+    static final int SOLUTION_AREA_EMPTY = 0x03;
     static final int SOLUTION_AREA_LIMITED = 0x01;
     static final int SOLUTION_AREA_UNLIMITED = 0x02;
-    static final int SOLUTION_AREA_EMPTY = 0x03;
-    
-    static final int OPTIMAL_SOLUTION_AREA_POINT = 0x04;
-    static final int OPTIMAL_SOLUTION_AREA_MULTIPLE = 0x08;
-    static final int OPTIMAL_SOLUTION_AREA_EMPTY = 0x0c;
-    
+
+    static final int TARGET_FUNCTION_EMPTY = 0x30;
     static final int TARGET_FUNCTION_LIMITED = 0x10;
     static final int TARGET_FUNCTION_UNLIMITED = 0x20;
-    static final int TARGET_FUNCTION_EMPTY = 0x30;
 
     /**
      * Fügt eine Fläche hinzu.
@@ -99,8 +101,6 @@ public interface LOPSolution {
     double getValue();
 
     Vector3Frac getVector();
-
-    boolean isSpecialCase();
 
     void setSpecialCase(int sCase);
 
