@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 27.01.2008 - Version 0.4.3
+ * - Beschriftung der Input-Panels jetzt auch dynamisch über die Sprachdateien
  * 26.01.2008 - Version 0.4.2
  * - Operatoren-Handling entfernt
  * 25.01.2008 - Version 0.4.1
