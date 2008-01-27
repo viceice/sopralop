@@ -592,18 +592,18 @@ public final class LOPTableModel extends AbstractTableModel {
 	bg = new ButtonGroup();
 	pn = new JPanel();
 	pn.setBorder(InputPanel
-		.createBorder("Lösungsbereich des Problems ist:"));
+		.createBorder(Lang.getString("Input.Panel.SolutionArea.Title")));
 	this.specialCases.add(pn);
 
-	rb = new JRadioButton("<html>&empty;</html>");
+	rb = new JRadioButton(Lang.getString("Input.Panel.SolutionArea.IsEmpty"));
 	pn.add(rb);
 	bg.add(rb);
 
-	rb = new JRadioButton("beschränkt");
+	rb = new JRadioButton(Lang.getString("Input.Panel.SolutionArea.IsLimited"));
 	pn.add(rb);
 	bg.add(rb);
 
-	rb = new JRadioButton("unbeschränkt");
+	rb = new JRadioButton(Lang.getString("Input.Panel.SolutionArea.IsUnlimited"));
 	pn.add(rb);
 	bg.add(rb);
 
@@ -611,54 +611,53 @@ public final class LOPTableModel extends AbstractTableModel {
 	pn = new JPanel();
 	pn
 		.setBorder(InputPanel
-			.createBorder("Lösungsbereich des Problems wird abgebildet auf:"));
+			.createBorder(Lang.getString("Input.Panel.SolutionProjectedTo.Title")));
 	this.specialCases.add(pn);
 
-	rb = new JRadioButton("<html>&empty;</html>");
+	rb = new JRadioButton(Lang.getString("Input.Panel.SolutionProjectedTo.Nothing"));
 	pn.add(rb);
 	bg.add(rb);
 
-	rb = new JRadioButton("Strahl");
+	rb = new JRadioButton(Lang.getString("Input.Panel.SolutionProjectedTo.Ray"));
 	pn.add(rb);
 	bg.add(rb);
 
-	rb = new JRadioButton("Strecke");
+	rb = new JRadioButton(Lang.getString("Input.Panel.SolutionProjectedTo.Line"));
 	pn.add(rb);
 	bg.add(rb);
 
 	bg = new ButtonGroup();
 	pn = new JPanel();
 	pn.setBorder(InputPanel
-		.createBorder("Bereich der optimalen Lösung ist:"));
+		.createBorder(Lang.getString("Input.Panel.OptimalSolutionArea.Title")));
 	this.specialCases.add(pn);
 
-	rb = new JRadioButton("<html>&empty;</html>");
+	rb = new JRadioButton(Lang.getString("Input.Panel.OptimalSolutionArea.IsEmpty"));
 	pn.add(rb);
 	bg.add(rb);
 
-	rb = new JRadioButton("ein Punkt");
+	rb = new JRadioButton(Lang.getString("Input.Panel.OptimalSolutionArea.IsPoint"));
 	pn.add(rb);
 	bg.add(rb);
 
-	rb = new JRadioButton("mehr als ein Punkt");
+	rb = new JRadioButton(Lang.getString("Input.Panel.OptimalSolutionArea.IsMultiple"));
 	pn.add(rb);
 	bg.add(rb);
 
 	bg = new ButtonGroup();
 	pn = new JPanel();
-	pn.setBorder(InputPanel.createBorder(
-		"Die Zielfunktion des Problems ist:", true));
+	pn.setBorder(InputPanel.createBorder(Lang.getString("Input.Panel.TargetFunction.Title"), true));
 	this.specialCases.add(pn);
 
-	rb = new JRadioButton("beschränkt");
+	rb = new JRadioButton(Lang.getString("Input.Panel.TargetFunction.IsLimited"));
 	pn.add(rb);
 	bg.add(rb);
 
-	rb = new JRadioButton("unbeschränkt");
+	rb = new JRadioButton(Lang.getString("Input.Panel.TargetFunction.IsUnlimited"));
 	pn.add(rb);
 	bg.add(rb);
 
-	rb = new JRadioButton("weder / noch");
+	rb = new JRadioButton(Lang.getString("Input.Panel.TargetFunction.IsEmpty"));
 	pn.add(rb);
 	bg.add(rb);
 
