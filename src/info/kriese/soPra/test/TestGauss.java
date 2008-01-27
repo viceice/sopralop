@@ -20,7 +20,7 @@
  * ChangeLog:
  * 
  * 27.01.2008 - Version 0.2.4
- * - Neue Testgleichung
+ * - Neue Testgleichungen
  * 26.01.2008 - Version 0.2.3
  * - An neue SettingsFactory angepasst.
  * 09.11.2007 - Version 0.2.2
@@ -139,6 +139,14 @@ public class TestGauss {
 	vert.p1 = Vector3FracFactory.getInstance(0, 0, 0);
 	vert.p2 = Vector3FracFactory.getInstance(0, 0, 8);
 	vert.p3 = Vector3FracFactory.getInstance(4, 4, 4);
+	vertices.add(vert);
+	pnts.add(Vector3FracFactory.getInstance(2, 0, 2));
+	sols.add(Vector3FracFactory.getInstance(-1, -1, 0));
+
+	vert = new Vertex();
+	vert.p1 = Vector3FracFactory.getInstance(0, 0, 0);
+	vert.p2 = Vector3FracFactory.getInstance(2, -2, 2);
+	vert.p3 = Vector3FracFactory.getInstance(0, 0, 8);
 	vertices.add(vert);
 	pnts.add(Vector3FracFactory.getInstance(2, 0, 2));
 	sols.add(Vector3FracFactory.getInstance(-1, -1, 0));
