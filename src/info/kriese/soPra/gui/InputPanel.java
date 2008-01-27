@@ -300,7 +300,7 @@ public final class InputPanel extends JPanel {
 	body.setBorder(BorderFactory.createEmptyBorder());
 
 	scrollPane = new JScrollPane(this.table);
-	scrollPane.setBorder(createBorder("Problem"));
+	scrollPane.setBorder(createBorder(Lang.getString("Input.Title")));
 	scrollPane.setPreferredSize(new Dimension(300, 200));
 	body.add(scrollPane, BorderLayout.CENTER);
 
