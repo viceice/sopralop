@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 27.01.2008
+ * - BugFix: weiter Fallprüfung eingefügt für den Fall, 
+ *   daß die x- und y-Koordinaten eines Vektors Null sind
  * 09.11.2007 - Version 0.4.1
  * - BugFix: Falsche Lösung für Fall c.y = 0 behoben
  * - BugFix: Lineare Abhängigkeit wurde nicht erkannt, führte zu falschen
@@ -43,7 +46,7 @@ import info.kriese.soPra.math.impl.FractionalFactory;
  * 
  * @author Peer Sterner
  * @since 27.04.2007
- * @version 0.4.1
+ * @version 0.4.2
  */
 public final class Gauss {
 
@@ -99,10 +102,24 @@ public final class Gauss {
 	} else if (c.getCoordX().isZero() && b.getCoordY().isZero()) {
 	    z.setCoordX(z.getCoordX().div(b.getCoordX()));
 	    z.setCoordY(z.getCoordY().div(c.getCoordY()));
-	} else if (c.getCoordY().isZero() && b.getCoordX().isZero()) {
-	    temp = z.getCoordX();
-	    z.setCoordX(c.getCoordY().div(b.getCoordY()));
-	    z.setCoordY(temp.div(c.getCoordX()));
+	} else if (c.getCoordX().isZero() && c.getCoordY().isZero()) {
+	    z.setCoordX(z.getCoordX().div(b.getCoordX()));
+	    z.setCoordY(z.getCoordY().div(b.getCoordY()));
+	    if (!z.getCoordX().equals(z.getCoordY())) {
+	    	z.setCoordX(FractionalFactory.getInstance(-1));
+	    	z.setCoordY(FractionalFactory.getInstance(-1));
+	    	z.setCoordZ(FractionalFactory.getInstance());
+	    	return z;
+	    }
+	} else if (b.getCoordX().isZero() && b.getCoordY().isZero()) {
+	    z.setCoordX(z.getCoordX().div(c.getCoordX()));
+	    z.setCoordY(z.getCoordY().div(c.getCoordY()));
+	    if (!z.getCoordX().equals(z.getCoordY())) {
+	    	z.setCoordX(FractionalFactory.getInstance(-1));
+	    	z.setCoordY(FractionalFactory.getInstance(-1));
+	    	z.setCoordZ(FractionalFactory.getInstance());
+	    	return z;
+	    }
 	} else if (c.getCoordX().isZero()) {
 	    z.setCoordX(z.getCoordX().div(b.getCoordX()));
 	    z.setCoordY((z.getCoordY().sub(b.getCoordY().mul(z.getCoordX())))
