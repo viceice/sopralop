@@ -21,9 +21,10 @@
  * 
  * 27.01.2008 - Version 0.5.9
  * - BugFix: Liste der Lösungflächen wurde nicht geleert, nachdem das Problem
- *    geändert wurde
+ *    geändert wurde.
  * - BugFix: Liste der Lösungflächen wurde nicht geleert, wenn die Lösung
- *    unendlich war
+ *    unendlich war.
+ * - BugFix: Der Algorithmus hatte einige Flächen ausgelassen.
  * 26.01.2008 - Version 0.5.8
  * - Operator-Handling entfernt, da nicht mehr benötigt
  * - BugFix: Unter bestimmten Bedingungen brach der Algorithmus zu früh ab
@@ -238,10 +239,8 @@ public final class LOPSolver {
     private void solve(LOP lop) {
 
 	// TODO: Falsche Lösungen:
-	// - edge_solution -> es fehlt eine Lösung
 	// - negative -> es fehlt eine Lösung
 	// - line_solution -> es fehlt eine Lösung
-	// - ray_solution -> total falsch gezeichnet :-(
 
 	LOPSolution sol = lop.getSolution();
 	sol.clearAreas();
@@ -256,10 +255,25 @@ public final class LOPSolver {
 	value_high = Fractional.MAX_VALUE;
 	value_low = Fractional.MIN_VALUE;
 
-	for (Vertex vertex : this.hull.getVerticesList()) {
-	    sln = Gauss.eliminate(vertex, lop.getTarget());
-
+	for (Vertex vertex : this.hull.getVerticesList())
 	    if (vertex.p1.equals(Vector3Frac.ZERO)) {
+		sln = Gauss.eliminate(vertex, lop.getTarget());
+
+		if (SettingsFactory.getInstance().isDebug())
+		    System.out
+			    .println("[X"
+				    + (lop.getVectors().indexOf(vertex.p2) + 1)
+				    + " , X"
+				    + (lop.getVectors().indexOf(vertex.p3) + 1)
+				    + "\t=\t"
+				    + sln
+				    + "\t["
+				    + (sln.getCoordX().is(
+					    Fractional.GEQUAL_ZERO) && sln
+					    .getCoordY().is(
+						    Fractional.GEQUAL_ZERO))
+				    + "]");
+
 		opt_vector.setCoordZ(sln.getCoordZ());
 
 		if (sln.getCoordX().is(Fractional.GEQUAL_ZERO)
@@ -269,34 +283,34 @@ public final class LOPSolver {
 			opt = sln.getCoordZ();
 			sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(), sln
 				.getCoordY());
+			if (SettingsFactory.getInstance().isDebug())
+			    System.out
+				    .println("No recent opt! New opt: " + opt);
+			continue;
 		    }
 
-		    if (max && sln.getCoordZ().equals(opt)
-			    && !value_high.equals(Fractional.MAX_VALUE)) {
+		    if (sln.getCoordZ().equals(opt)) {
 			sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(), sln
 				.getCoordY());
+			if (SettingsFactory.getInstance().isDebug())
+			    System.out.println("New solution for opt!");
 			continue;
 		    }
-		    if (!max && sln.getCoordZ().equals(opt)
-			    && !value_low.equals(Fractional.MIN_VALUE)) {
-			sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(), sln
-				.getCoordY());
-			continue;
-		    }
+
 		    if (sln.getCoordZ().compareTo(value_high) < 0) {
-			if (!max) {
-			    sol.clearAreas();
-			    sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(),
-				    sln.getCoordY());
-			}
+			if (SettingsFactory.getInstance().isDebug())
+			    System.out
+				    .println("Solution is smaller than value_high! Sol: "
+					    + sln + "\t" + value_high);
+
 			value_low = sln.getCoordZ();
 		    }
 		    if (sln.getCoordZ().compareTo(value_low) > 0) {
-			if (max) {
-			    sol.clearAreas();
-			    sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(),
-				    sln.getCoordY());
-			}
+			if (SettingsFactory.getInstance().isDebug())
+			    System.out
+				    .println("Solution is bigger than value_low! Sol: "
+					    + sln + "\t" + value_low);
+
 			value_high = sln.getCoordZ();
 		    }
 		    if (sln.getCoordZ().compareTo(opt) > 0) {
@@ -305,6 +319,8 @@ public final class LOPSolver {
 			    sol.clearAreas();
 			    sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(),
 				    sln.getCoordY());
+			    if (SettingsFactory.getInstance().isDebug())
+				System.out.println("Found new max opt: " + opt);
 			}
 			value_high = sln.getCoordZ();
 		    }
@@ -314,6 +330,8 @@ public final class LOPSolver {
 			    sol.clearAreas();
 			    sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(),
 				    sln.getCoordY());
+			    if (SettingsFactory.getInstance().isDebug())
+				System.out.println("Found new min opt: " + opt);
 			}
 			value_low = sln.getCoordZ();
 		    }
@@ -321,15 +339,32 @@ public final class LOPSolver {
 	    } else {
 		// Überprüfe ob Zielvektor den Kegelboden durchstößt
 		// Falls ja ist MAX oder MIN unendlich
+		sln = Gauss.eliminate(vertex.scale(1000), lop.getTarget());
+
+		if (SettingsFactory.getInstance().isDebug())
+		    System.out
+			    .println("[X"
+				    + (lop.getVectors().indexOf(vertex.p1) + 1)
+				    + ", X"
+				    + (lop.getVectors().indexOf(vertex.p2) + 1)
+				    + " , X"
+				    + (lop.getVectors().indexOf(vertex.p3) + 1)
+				    + "\t=\t"
+				    + sln
+				    + "\t["
+				    + (sln.getCoordX().is(
+					    Fractional.GEQUAL_ZERO) && sln
+					    .getCoordY().is(
+						    Fractional.GEQUAL_ZERO))
+				    + "]");
 
 		opt_vector.setCoordZ(sln.getCoordZ());
 
-		if (vertex.isPointInVertex(opt_vector)) {
+		if (vertex.scale(1000).isPointInVertex(opt_vector)) {
 		    unlimited = true;
 		    value_unlimit = sln.getCoordZ();
 		}
 	    }
-	}
 
 	if (unlimited && opt != null) {
 	    if (max && opt.compareTo(value_unlimit) < 0) {
@@ -382,6 +417,6 @@ public final class LOPSolver {
 	lop.problemSolved();
 
 	if (SettingsFactory.getInstance().isDebug())
-	    IOUtils.print(lop, System.err);
+	    IOUtils.print(lop, System.out);
     }
 }

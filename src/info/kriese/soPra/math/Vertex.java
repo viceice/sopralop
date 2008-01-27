@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 27.01.2008 - Version 0.3
+ * - Methode scale hinzugefügt
  * 08.11.2007 - Version 0.2
  * - isPointInTriangle überarbeitet
  * 23.10.2007 - Version 0.1
@@ -30,7 +32,7 @@ package info.kriese.soPra.math;
  * Stellt ein Dreieck im Raum dar.
  * 
  * @author Michael Kriese
- * @version 0.2
+ * @version 0.3
  * @since 23.10.2007
  * 
  */
@@ -63,6 +65,16 @@ public class Vertex {
 
     public boolean isPointInVertex(Vector3Frac pnt) {
 	return Math2.isPointInTriangle(this.p1, this.p2, this.p3, pnt);
+    }
+
+    public Vertex scale(int scale) {
+	Vertex res = new Vertex();
+
+	res.p1 = this.p1.scale(scale);
+	res.p2 = this.p2.scale(scale);
+	res.p3 = this.p3.scale(scale);
+
+	return res;
     }
 
     @Override
