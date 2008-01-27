@@ -102,6 +102,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -238,6 +240,8 @@ public final class LOPSolver {
 
     private void solve(LOP lop) {
 
+	List<Vector3Frac> edges = new LinkedList<Vector3Frac>();
+
 	// TODO: Falsche Lösungen:
 	// - negative -> es fehlt eine Lösung
 	// - line_solution -> es fehlt eine Lösung
@@ -283,6 +287,10 @@ public final class LOPSolver {
 			opt = sln.getCoordZ();
 			sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(), sln
 				.getCoordY());
+			if (sln.getCoordX().equals(Fractional.ZERO))
+			    edges.add(vertex.p2);
+			if (sln.getCoordY().equals(Fractional.ZERO))
+			    edges.add(vertex.p3);
 			if (SettingsFactory.getInstance().isDebug())
 			    System.out
 				    .println("No recent opt! New opt: " + opt);
@@ -292,6 +300,10 @@ public final class LOPSolver {
 		    if (sln.getCoordZ().equals(opt)) {
 			sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(), sln
 				.getCoordY());
+			if (sln.getCoordX().equals(Fractional.ZERO))
+			    edges.add(vertex.p2);
+			if (sln.getCoordY().equals(Fractional.ZERO))
+			    edges.add(vertex.p3);
 			if (SettingsFactory.getInstance().isDebug())
 			    System.out.println("New solution for opt!");
 			continue;
@@ -319,6 +331,12 @@ public final class LOPSolver {
 			    sol.clearAreas();
 			    sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(),
 				    sln.getCoordY());
+
+			    edges.clear();
+			    if (sln.getCoordX().equals(Fractional.ZERO))
+				edges.add(vertex.p2);
+			    if (sln.getCoordY().equals(Fractional.ZERO))
+				edges.add(vertex.p3);
 			    if (SettingsFactory.getInstance().isDebug())
 				System.out.println("Found new max opt: " + opt);
 			}
@@ -330,6 +348,12 @@ public final class LOPSolver {
 			    sol.clearAreas();
 			    sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(),
 				    sln.getCoordY());
+
+			    edges.clear();
+			    if (sln.getCoordX().equals(Fractional.ZERO))
+				edges.add(vertex.p2);
+			    if (sln.getCoordY().equals(Fractional.ZERO))
+				edges.add(vertex.p3);
 			    if (SettingsFactory.getInstance().isDebug())
 				System.out.println("Found new min opt: " + opt);
 			}
@@ -365,6 +389,8 @@ public final class LOPSolver {
 		    value_unlimit = sln.getCoordZ();
 		}
 	    }
+
+	// TODO: edges auswerten
 
 	if (unlimited && opt != null) {
 	    if (max && opt.compareTo(value_unlimit) < 0) {
