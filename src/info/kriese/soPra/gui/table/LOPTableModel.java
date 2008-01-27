@@ -647,7 +647,7 @@ public final class LOPTableModel extends AbstractTableModel {
 	bg = new ButtonGroup();
 	pn = new JPanel();
 	pn.setBorder(InputPanel.createBorder(
-		"Die Zielfunktion des Problems ist", true));
+		"Die Zielfunktion des Problems ist:", true));
 	this.specialCases.add(pn);
 
 	rb = new JRadioButton("beschränkt");
