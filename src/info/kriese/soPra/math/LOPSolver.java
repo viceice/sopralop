@@ -19,6 +19,11 @@
  * 
  * ChangeLog:
  * 
+ * 27.01.2008 - Version 0.5.9
+ * - BugFix: Liste der Lösungflächen wurde nicht geleert, nachdem das Problem
+ *    geändert wurde
+ * - BugFix: Liste der Lösungflächen wurde nicht geleert, wenn die Lösung
+ *    unendlich war
  * 26.01.2008 - Version 0.5.8
  * - Operator-Handling entfernt, da nicht mehr benötigt
  * - BugFix: Unter bestimmten Bedingungen brach der Algorithmus zu früh ab
@@ -108,7 +113,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author Michael Kriese
- * @version 0.5.8
+ * @version 0.5.9
  * @since 10.05.2007
  * 
  */
@@ -231,7 +236,15 @@ public final class LOPSolver {
     }
 
     private void solve(LOP lop) {
+
+	// TODO: Falsche Lösungen:
+	// - edge_solution -> es fehlt eine Lösung
+	// - negative -> es fehlt eine Lösung
+	// - line_solution -> es fehlt eine Lösung
+	// - ray_solution -> total falsch gezeichnet :-(
+
 	LOPSolution sol = lop.getSolution();
+	sol.clearAreas();
 
 	this.hull.build(lop.getVectors());
 
@@ -323,6 +336,7 @@ public final class LOPSolver {
 		sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
 			| LOPSolution.SOLUTION_AREA_EMPTY
 			| LOPSolution.TARGET_FUNCTION_EMPTY);
+		sol.clearAreas();
 		opt = Fractional.MAX_VALUE;
 	    }
 
@@ -330,6 +344,7 @@ public final class LOPSolver {
 		sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
 			| LOPSolution.SOLUTION_AREA_EMPTY
 			| LOPSolution.TARGET_FUNCTION_EMPTY);
+		sol.clearAreas();
 		opt = Fractional.MIN_VALUE;
 	    }
 
