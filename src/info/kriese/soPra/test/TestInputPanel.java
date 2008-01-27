@@ -57,11 +57,12 @@ public class TestInputPanel {
 
     private static boolean DUAL = true;
     private static LOP lop;
-    private static final String SAMPLE = "S02";
+    private static final String SAMPLE = "S08";
 
     public static void main(String[] args) {
 	// Parse commandline arguments
 	SettingsFactory.parseArgs(args);
+	SettingsFactory.setDebug(true);
 
 	SettingsFactory.initJava();
 
