@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 27.01.2008 - Verison 0.1.1
+ * - Anderer TestCase
+ * - Quickhull Debug-Modus aktiviert
  * 26.01.2008 - Version 0.1
  *  - Datei hinzugefuegt
  */
@@ -36,7 +39,7 @@ import java.util.List;
 /**
  * 
  * @author Michael Kriese
- * @version 0.1
+ * @version 0.1.1
  * @since 26.01.2008
  * 
  */
@@ -52,16 +55,15 @@ public final class TestQuickhull {
 	SettingsFactory.showTitle("QuickhullTest");
 
 	List<Vector3Frac> vecs = new LinkedList<Vector3Frac>(), vecsnew = new LinkedList<Vector3Frac>();
-	vecs.add(Vector3FracFactory.getInstance(2, 2, 2));
-	vecs.add(Vector3FracFactory.getInstance(-2, 2, 2));
-	vecs.add(Vector3FracFactory.getInstance(-2, -2, 2));
+	vecs.add(Vector3FracFactory.getInstance(0, 0, 8));
+	vecs.add(Vector3FracFactory.getInstance(4, 4, 4));
 	vecs.add(Vector3FracFactory.getInstance(2, -2, 2));
-	vecs.add(Vector3FracFactory.getInstance(4, 0, 4));
-	vecs.add(Vector3FracFactory.getInstance(4, 0.5, 4));
+	vecs.add(Vector3FracFactory.getInstance(2, 0, 2));
 
 	QuickHull hull = new QuickHull();
+	hull.setDebug(true);
 
-	hull.build(vecs, true);
+	hull.build(vecs);
 
 	for (Vertex vtx : hull.getVerticesList()) {
 	    if (!vecsnew.contains(vtx.p1))
