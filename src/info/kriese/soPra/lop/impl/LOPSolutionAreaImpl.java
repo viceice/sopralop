@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 27.01.2007 - Version 0.4
+ * - Objekte vergleichbar gemacht
  * 06.11.2007 - Version 0.3
  * - Neue Interfacemethoden implementiert
  * 11.10.2007 - Version 0.2
@@ -35,7 +37,7 @@ import info.kriese.soPra.math.Vector3Frac;
 /**
  * 
  * @author Michael Kriese
- * @version 0.3
+ * @version 0.4
  * @since 09.10.2007
  * 
  */
@@ -51,6 +53,19 @@ public final class LOPSolutionAreaImpl implements LOPSolutionArea {
 	this.l2 = l2;
 	this.l1a = f1;
 	this.l2a = f2;
+    }
+
+    public boolean equals(LOPSolutionArea obj) {
+	return this.l1.equals(obj.getL1()) && this.l2.equals(obj.getL2())
+		&& this.l1a.equals(obj.getL1Amount())
+		&& this.l2a.equals(obj.getL2Amount());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+	if (obj instanceof LOPSolutionArea)
+	    return equals((LOPSolutionArea) obj);
+	return super.equals(obj);
     }
 
     public Vector3Frac getL1() {

@@ -22,6 +22,7 @@
  * 27.01.2008 - Version 0.4
  * - An neues Interface angepasst
  * - Exceptions in IllegalArgumentException geändert
+ * - Lösungsflächen werden nicht mehr doppelt hinzugefügt
  * 25.01.2008 - Version 0.3.1
  * - Variablennamen für Spezialfälle angepasst
  * 06.11.2007 - Version 0.3
@@ -74,7 +75,10 @@ final class LOPSolutionImpl implements LOPSolution {
 	if (l1 == null || l2 == null || f1 == null || f2 == null)
 	    throw new IllegalArgumentException("Zero value is not allowed!");
 
-	this.areas.add(new LOPSolutionAreaImpl(l1, l2, f1, f2));
+	LOPSolutionArea sol = new LOPSolutionAreaImpl(l1, l2, f1, f2);
+
+	if (!this.areas.contains(sol))
+	    this.areas.add(sol);
     }
 
     public void clearAreas() {
