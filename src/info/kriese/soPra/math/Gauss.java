@@ -110,7 +110,8 @@ public final class Gauss {
 	    	z.setCoordY(FractionalFactory.getInstance(-1));
 	    	z.setCoordZ(FractionalFactory.getInstance());
 	    	return z;
-	    }
+	    } 
+	    z.setCoordY(Fractional.ZERO);
 	} else if (b.getCoordX().isZero() && b.getCoordY().isZero()) {
 	    z.setCoordX(z.getCoordX().div(c.getCoordX()));
 	    z.setCoordY(z.getCoordY().div(c.getCoordY()));
@@ -120,6 +121,7 @@ public final class Gauss {
 	    	z.setCoordZ(FractionalFactory.getInstance());
 	    	return z;
 	    }
+	    z.setCoordX(Fractional.ZERO);
 	} else if (c.getCoordX().isZero()) {
 	    z.setCoordX(z.getCoordX().div(b.getCoordX()));
 	    z.setCoordY((z.getCoordY().sub(b.getCoordY().mul(z.getCoordX())))
@@ -152,9 +154,9 @@ public final class Gauss {
 	    z.setCoordY((z.getCoordY().sub(b.getCoordY().mul(z.getCoordX())))
 		    .div(c.getCoordY()));
 	}
-
-	z.setCoordZ(((b.getCoordZ().mul(z.getCoordX())).add((c.getCoordZ()
-		.mul(z.getCoordY())))).add(a.getCoordZ()));
+	
+	z.setCoordZ((b.getCoordZ().mul(z.getCoordX())).add((c.getCoordZ()
+		.mul(z.getCoordY()))).add(a.getCoordZ()));
 
 	return z;
     }
