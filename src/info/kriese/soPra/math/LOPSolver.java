@@ -243,10 +243,6 @@ public final class LOPSolver {
 	Vector3Frac edge = null;
 	Fractional edge_value = null;
 
-	// TODO: Falsche Lösungen:
-	// - negative -> es fehlt eine Lösung
-	// - line_solution -> es fehlt eine Lösung
-
 	LOPSolution sol = lop.getSolution();
 	sol.clearAreas();
 
@@ -411,7 +407,8 @@ public final class LOPSolver {
 
 	if (edge != null) {
 	    if (SettingsFactory.getInstance().isDebug())
-		System.out.println("Found edge: " + edge + "\t->\t" + edge_value);
+		System.out.println("Found edge: " + edge + "\t->\t"
+			+ edge_value);
 	    for (Vertex vertex : this.hull.getVerticesList())
 		if (vertex.p1.equals(Vector3Frac.ZERO))
 		    if (vertex.p2.equals(edge))
