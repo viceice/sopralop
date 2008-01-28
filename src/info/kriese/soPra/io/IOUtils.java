@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 28.01.2008 - Version 0.5.1
+ * - Fallüberprüfung für die Lösungen erweitert (mehr Abstufungen)
  * 26.01.2008 - Version 0.5
  * - Operatoren-Handling-Funktionen gelöscht, da nicht mehr benötigt
  * - Lösung-Handling-Funktionen gelöscht, werden auch nicht mehr benötigt
@@ -234,12 +236,18 @@ public final class IOUtils {
 	out.println();
 	out.println("Lösung: " + sol.getValue());
 
-	// TODO: Prüfen, welche Fälle auftreten können /behandelt werden müssen
-	// (gibt ja jetzt noch mehr Permutationen...)
 	switch (sol.getSpecialCase()) {
 	    case (LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
 		    | LOPSolution.SOLUTION_AREA_EMPTY | LOPSolution.TARGET_FUNCTION_EMPTY):
 		out.println(Lang.getString("Strings.NoSolution"));
+		break;
+	    case (LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
+			    | LOPSolution.SOLUTION_AREA_UNLIMITED | LOPSolution.TARGET_FUNCTION_UNLIMITED):
+			out.println(Lang.getString("Strings.UnlimitedSol"));
+		break;
+	    case (LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
+			    | LOPSolution.SOLUTION_AREA_UNLIMITED | LOPSolution.TARGET_FUNCTION_LIMITED):
+			out.println(Lang.getString("Strings.UnlimitedButSolution"));
 		break;
 	    case (LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE
 		    | LOPSolution.SOLUTION_AREA_LIMITED | LOPSolution.TARGET_FUNCTION_LIMITED):
@@ -247,9 +255,11 @@ public final class IOUtils {
 			new Object[] { sol.countAreas() }));
 		// out.println(sol.getAreas());
 		break;
-	    case (LOPSolution.SOLUTION_AREA_UNLIMITED
-		    | LOPSolution.SOLUTION_AREA_EMPTY | LOPSolution.TARGET_FUNCTION_EMPTY):
-		out.println(Lang.getString("Strings.UnlimitedSol"));
+	    case (LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE
+			    | LOPSolution.SOLUTION_AREA_UNLIMITED | LOPSolution.TARGET_FUNCTION_LIMITED):
+			out.println(Lang.getString("Strings.UnlimitedButMoreSolutions",
+				new Object[] { sol.countAreas() }));
+			// out.println(sol.getAreas());
 		break;
 	    case (LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
 		    | LOPSolution.SOLUTION_AREA_LIMITED | LOPSolution.TARGET_FUNCTION_LIMITED):

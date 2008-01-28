@@ -41,8 +41,8 @@ interpretation. There is a minimum of three variables, due to the fact
 that LOP with 2 variables are better solved in the 1st geometric
 interpretation or by a simple linear algebraic equation. The arrays of
 the table have to be filled with the factors of the x(i) of objective
-function (OF) and auxiliary conditions (AC). Variables who are not present in the
-objective function or in one of the auxiliary conditions have the factor
+function (OF) and side conditions (SC). Variables who are not present in the
+objective function or in one of the side conditions have the factor
 zero. The choice of minimizing or maximizing the LOP is done by a pulldown-menu. 
 This point of the menu can be called at every stage of editing a LOP.</p>
 
@@ -140,8 +140,9 @@ reverted! All unsaved data will be lost!</p>
 
 <h3><a name="take">Accept values</a></h3>
 <p>With this step the edited data will be applied to the actual LOP.
+The LOP will be solved automatically with the given data.
 PAY ATTENTION: As long as there are invalid data within one of the
-arrays (border of the array is red) the window can not be closed, and
+arrays (border of the array is red) an error message will appear, and
 the data will not be applied to the LOP!</p>
 
 <br />

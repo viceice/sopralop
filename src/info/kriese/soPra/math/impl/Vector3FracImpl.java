@@ -94,7 +94,7 @@ final class Vector3FracImpl implements Vector3Frac {
 	return this.x.equals(vec.getCoordX()) && this.y.equals(vec.getCoordY())
 		&& this.z.equals(vec.getCoordZ());
     }
-
+    
     public Fractional getCoordX() {
 	return this.x;
     }

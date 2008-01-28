@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 28.01.2008 - Version 0.2.1.2
+ * - HTML-Zeichen für größer/gleich und kleiner/gleich eingefügt
  * 27.01.2008 - Version 0.2.1.1
  * - BugFix: Exception bei Spezialfääle der Lösung in Methode update()
  * 25.01.2008 - Version 0.2.1
@@ -82,8 +84,7 @@ public final class DualLOPTableModel extends AbstractTableModel {
 	this.columnNames[0] = " ";
 	this.columnNames[1] = "<html><center><b>y<sub>1</sub></b></center></html>";
 	this.columnNames[2] = "<html><center><b>y<sub>2</sub></b></center></html>";
-	this.columnNames[3] = "<html><center><b>" + "&lt; / > / ="
-		+ "</b></center></html>";
+	this.columnNames[3] = "<html><center><b>" + "&ge; / &le; / =" + "</b></center></html>";
 	this.columnNames[4] = "<html><center><b>w</b></center></html>";
     }
 
@@ -142,7 +143,7 @@ public final class DualLOPTableModel extends AbstractTableModel {
 			|| row == getRowCount() - 1)
 		    return "=";
 		else
-		    return (this.max ? ">=" : "<=");
+		    return (this.max ? "<html>&ge;</html>" : "<html>&le;</html>");
 	    case 4:
 		if (row == 0)
 		    return (this.max ? "min" : "max");

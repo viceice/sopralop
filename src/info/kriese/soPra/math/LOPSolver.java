@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 28.01.2008 - Version 0.5.9.1
+ * - Kanten werden erkannt, und benachbarte Flächen wieder der Lösung hinzugefügt
  * 27.01.2008 - Version 0.5.9
  * - BugFix: Liste der Lösungflächen wurde nicht geleert, nachdem das Problem
  *    geändert wurde.
@@ -288,9 +290,9 @@ public final class LOPSolver {
 			sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(), sln
 				.getCoordY());
 			if (sln.getCoordX().equals(Fractional.ZERO))
-			    edges.add(vertex.p2);
-			if (sln.getCoordY().equals(Fractional.ZERO))
 			    edges.add(vertex.p3);
+			if (sln.getCoordY().equals(Fractional.ZERO))
+			    edges.add(vertex.p2);
 			if (SettingsFactory.getInstance().isDebug())
 			    System.out
 				    .println("No recent opt! New opt: " + opt);
@@ -301,9 +303,9 @@ public final class LOPSolver {
 			sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(), sln
 				.getCoordY());
 			if (sln.getCoordX().equals(Fractional.ZERO))
-			    edges.add(vertex.p2);
-			if (sln.getCoordY().equals(Fractional.ZERO))
 			    edges.add(vertex.p3);
+			if (sln.getCoordY().equals(Fractional.ZERO))
+			    edges.add(vertex.p2);
 			if (SettingsFactory.getInstance().isDebug())
 			    System.out.println("New solution for opt!");
 			continue;
@@ -334,9 +336,9 @@ public final class LOPSolver {
 
 			    edges.clear();
 			    if (sln.getCoordX().equals(Fractional.ZERO))
-				edges.add(vertex.p2);
-			    if (sln.getCoordY().equals(Fractional.ZERO))
 				edges.add(vertex.p3);
+			    if (sln.getCoordY().equals(Fractional.ZERO))
+				edges.add(vertex.p2);
 			    if (SettingsFactory.getInstance().isDebug())
 				System.out.println("Found new max opt: " + opt);
 			}
@@ -351,9 +353,9 @@ public final class LOPSolver {
 
 			    edges.clear();
 			    if (sln.getCoordX().equals(Fractional.ZERO))
-				edges.add(vertex.p2);
-			    if (sln.getCoordY().equals(Fractional.ZERO))
 				edges.add(vertex.p3);
+			    if (sln.getCoordY().equals(Fractional.ZERO))
+				edges.add(vertex.p2);
 			    if (SettingsFactory.getInstance().isDebug())
 				System.out.println("Found new min opt: " + opt);
 			}
@@ -390,21 +392,31 @@ public final class LOPSolver {
 		}
 	    }
 
-	// TODO: edges auswerten
-
+	// TODO: X- und Y-Koordinaten retten
+	
+	if (!edges.isEmpty()) {
+		for (Vector3Frac edge : edges) {
+			for (Vertex vertex : this.hull.getVerticesList()) {
+				if (vertex.p1.equals(Vector3Frac.ZERO) && (vertex.p2.equals(edge) || vertex.p2.equals(edge))) {
+					sol.addArea(vertex.p2, vertex.p3, edge.getCoordX(), edge.getCoordY());
+				}
+			}
+		}
+	}
+	
 	if (unlimited && opt != null) {
 	    if (max && opt.compareTo(value_unlimit) < 0) {
 		sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
-			| LOPSolution.SOLUTION_AREA_EMPTY
-			| LOPSolution.TARGET_FUNCTION_EMPTY);
+			| LOPSolution.SOLUTION_AREA_UNLIMITED
+			| LOPSolution.TARGET_FUNCTION_UNLIMITED);
 		sol.clearAreas();
 		opt = Fractional.MAX_VALUE;
 	    }
 
 	    if (!max && opt.compareTo(value_unlimit) > 0) {
 		sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
-			| LOPSolution.SOLUTION_AREA_EMPTY
-			| LOPSolution.TARGET_FUNCTION_EMPTY);
+			| LOPSolution.SOLUTION_AREA_UNLIMITED
+			| LOPSolution.TARGET_FUNCTION_UNLIMITED);
 		sol.clearAreas();
 		opt = Fractional.MIN_VALUE;
 	    }

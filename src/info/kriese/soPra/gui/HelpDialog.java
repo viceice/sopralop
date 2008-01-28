@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 28.01.2008 - Version 0.1.4
+ * - Fenstergröße des Hilfefensters etwas verändert
  * 29.12.2007 - Version 0.1.3
  * - BugFix: Wenn Programm als Jar-Datei gepackt war, fand es die Hilfe-Dateien nicht.
  * - BugFix: Fehler beim Laden der StyleSheets behoben.
@@ -159,7 +161,7 @@ public final class HelpDialog extends JDialog {
 		+ " - Version " + PROPS.getVersion(), true);
 
 	setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
-	setSize(400, 400);
+	setSize(500, 400);
 
 	this.content = new JEditorPane("text/html;charset=utf-8", DEFAULT);
 	this.content.setBorder(BorderFactory.createEmptyBorder());
