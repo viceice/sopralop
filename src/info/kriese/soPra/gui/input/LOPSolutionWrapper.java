@@ -52,7 +52,7 @@ public final class LOPSolutionWrapper {
 	    return new LOPSolutionWrapper(FractionalFactory.getInstance());
 
 	else if (text.equals(Empty))
-	    return new LOPSolutionWrapper(LOPNotExsitent.NOT_EXISTENT);
+	    return new LOPSolutionWrapper(LOPEmpty.EMPTY);
 	else if (text.equals(Unlimited))
 	    return new LOPSolutionWrapper(LOPInfinity.INFINITY);
 	else {

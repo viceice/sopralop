@@ -22,6 +22,7 @@
  * 25.01.2008 - Version 0.1.3
  * - Hintergrund geändert
  * - Tooltips für Relationszeichen gelöscht, da nicht mehr benötigt
+ * - NotExistent in Empty umbenannt
  * 17.12.2007 - Version 0.1.2
  * - SelectionBorder auch für nicht editierbare Felder
  * 09.11.2007 - Version 0.1.1
@@ -137,7 +138,7 @@ public class LOPTableCellRenderer implements TableCellRenderer {
 		this.content.setToolTipText(Lang.getString("Strings.Solution"));
 	} else if (value instanceof LOPInfinity)
 	    this.content.setToolTipText(Lang.getString("Strings.Infinity"));
-	else if (value instanceof LOPNotExsitent)
+	else if (value instanceof LOPEmpty)
 	    this.content.setToolTipText(Lang.getString("Strings.NotExistent"));
 	else
 	    this.content.setToolTipText(null);

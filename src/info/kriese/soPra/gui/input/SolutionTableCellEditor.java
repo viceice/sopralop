@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 28.01.2008 - Version 0.1.1
+ *  - NotExistent in Empty umbenannt
  * 04.12.2007 - Version 0.1
  *  - Kopie von FractionalTableCellEditor
  */
@@ -42,7 +44,7 @@ import javax.swing.border.Border;
  * Ein CellEditor zum Bearbeiten der Lösung in einer JTable.
  * 
  * @author Michael Kriese
- * @version 0.1
+ * @version 0.1.1
  * @since 04.12.2007
  * 
  */
@@ -93,8 +95,8 @@ public class SolutionTableCellEditor extends DefaultCellEditor {
 
 	if (value == null)
 	    comp.setText("0");
-	else if (value instanceof LOPNotExsitent)
-	    comp.setText("ne");
+	else if (value instanceof LOPEmpty)
+	    comp.setText("e");
 	else if (value instanceof LOPInfinity)
 	    comp.setText("u");
 	else

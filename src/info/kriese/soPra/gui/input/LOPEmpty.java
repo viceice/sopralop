@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 28.01.2008 - Verison 0.2
+ * - In LOPEmpty geändert
  * 10.01.2008 - Version 0.1.1
  * - Zeichen geändert ( "nicht Element von" -> "Leere Menge")
  * 09.11.2007 - Version 0.1
@@ -29,15 +31,15 @@ package info.kriese.soPra.gui.input;
 /**
  * 
  * @author Michael Kriese
- * @version 0.1.1
+ * @version 0.2
  * @since 09.11.2007
  * 
  */
-public final class LOPNotExsitent {
+public final class LOPEmpty {
 
-    public static final LOPNotExsitent NOT_EXISTENT = new LOPNotExsitent();
+    public static final LOPEmpty EMPTY = new LOPEmpty();
 
-    private LOPNotExsitent() {
+    private LOPEmpty() {
     }
 
     @Override

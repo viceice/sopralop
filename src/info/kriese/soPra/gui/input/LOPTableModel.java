@@ -22,6 +22,7 @@
  * 28.01.2008 - Version 0.4.4
  * - Lösungsüberprüfung komplett.
  * - Xi-Lösungseingabefelder nur noch für Fractional
+ * - NotExistent in Empty umbenannt
  * 27.01.2008 - Version 0.4.3
  * - Beschriftung der Input-Panels jetzt auch dynamisch über die Sprachdateien
  * 26.01.2008 - Version 0.4.2
@@ -414,7 +415,7 @@ public final class LOPTableModel extends AbstractTableModel {
 
 	if ((lop.getSolution().getSpecialCase() & LOPSolution.TARGET_FUNCTION_EMPTY) == LOPSolution.TARGET_FUNCTION_EMPTY) {
 	    // Es gibt keine Lösung
-	    if (this.sol.getValue() instanceof LOPNotExsitent)
+	    if (this.sol.getValue() instanceof LOPEmpty)
 		MessageHandler.showInfo(Lang.getString("Strings.Solution"),
 			Lang.getString("Strings.CorrectSolution"));
 	    else {
