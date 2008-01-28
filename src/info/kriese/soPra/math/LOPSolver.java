@@ -104,8 +104,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -242,7 +240,8 @@ public final class LOPSolver {
 
     private void solve(LOP lop) {
 
-	List<Vector3Frac> edges = new LinkedList<Vector3Frac>();
+	Vector3Frac edge = null;
+	Fractional edge_value = null;
 
 	// TODO: Falsche Lösungen:
 	// - negative -> es fehlt eine Lösung
@@ -289,10 +288,15 @@ public final class LOPSolver {
 			opt = sln.getCoordZ();
 			sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(), sln
 				.getCoordY());
-			if (sln.getCoordX().equals(Fractional.ZERO))
-			    edges.add(vertex.p3);
-			if (sln.getCoordY().equals(Fractional.ZERO))
-			    edges.add(vertex.p2);
+
+			if (sln.getCoordX().equals(Fractional.ZERO)) {
+			    edge = vertex.p3;
+			    edge_value = sln.getCoordY();
+			} else if (sln.getCoordY().equals(Fractional.ZERO)) {
+			    edge = vertex.p2;
+			    edge_value = sln.getCoordX();
+			}
+
 			if (SettingsFactory.getInstance().isDebug())
 			    System.out
 				    .println("No recent opt! New opt: " + opt);
@@ -302,10 +306,15 @@ public final class LOPSolver {
 		    if (sln.getCoordZ().equals(opt)) {
 			sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(), sln
 				.getCoordY());
-			if (sln.getCoordX().equals(Fractional.ZERO))
-			    edges.add(vertex.p3);
-			if (sln.getCoordY().equals(Fractional.ZERO))
-			    edges.add(vertex.p2);
+
+			if (sln.getCoordX().equals(Fractional.ZERO)) {
+			    edge = vertex.p3;
+			    edge_value = sln.getCoordY();
+			} else if (sln.getCoordY().equals(Fractional.ZERO)) {
+			    edge = vertex.p2;
+			    edge_value = sln.getCoordX();
+			}
+
 			if (SettingsFactory.getInstance().isDebug())
 			    System.out.println("New solution for opt!");
 			continue;
@@ -334,11 +343,15 @@ public final class LOPSolver {
 			    sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(),
 				    sln.getCoordY());
 
-			    edges.clear();
-			    if (sln.getCoordX().equals(Fractional.ZERO))
-				edges.add(vertex.p3);
-			    if (sln.getCoordY().equals(Fractional.ZERO))
-				edges.add(vertex.p2);
+			    edge = null;
+			    if (sln.getCoordX().equals(Fractional.ZERO)) {
+				edge = vertex.p3;
+				edge_value = sln.getCoordY();
+			    } else if (sln.getCoordY().equals(Fractional.ZERO)) {
+				edge = vertex.p2;
+				edge_value = sln.getCoordX();
+			    }
+
 			    if (SettingsFactory.getInstance().isDebug())
 				System.out.println("Found new max opt: " + opt);
 			}
@@ -351,11 +364,15 @@ public final class LOPSolver {
 			    sol.addArea(vertex.p2, vertex.p3, sln.getCoordX(),
 				    sln.getCoordY());
 
-			    edges.clear();
-			    if (sln.getCoordX().equals(Fractional.ZERO))
-				edges.add(vertex.p3);
-			    if (sln.getCoordY().equals(Fractional.ZERO))
-				edges.add(vertex.p2);
+			    edge = null;
+			    if (sln.getCoordX().equals(Fractional.ZERO)) {
+				edge = vertex.p3;
+				edge_value = sln.getCoordY();
+			    } else if (sln.getCoordY().equals(Fractional.ZERO)) {
+				edge = vertex.p2;
+				edge_value = sln.getCoordX();
+			    }
+
 			    if (SettingsFactory.getInstance().isDebug())
 				System.out.println("Found new min opt: " + opt);
 			}
@@ -392,18 +409,19 @@ public final class LOPSolver {
 		}
 	    }
 
-	// TODO: X- und Y-Koordinaten retten
-	
-	if (!edges.isEmpty()) {
-		for (Vector3Frac edge : edges) {
-			for (Vertex vertex : this.hull.getVerticesList()) {
-				if (vertex.p1.equals(Vector3Frac.ZERO) && (vertex.p2.equals(edge) || vertex.p2.equals(edge))) {
-					sol.addArea(vertex.p2, vertex.p3, edge.getCoordX(), edge.getCoordY());
-				}
-			}
-		}
+	if (edge != null) {
+	    if (SettingsFactory.getInstance().isDebug())
+		System.out.println("Found edge: " + edge + "\t->\t" + edge_value);
+	    for (Vertex vertex : this.hull.getVerticesList())
+		if (vertex.p1.equals(Vector3Frac.ZERO))
+		    if (vertex.p2.equals(edge))
+			sol.addArea(vertex.p2, vertex.p3, edge_value,
+				Fractional.ZERO);
+		    else if (vertex.p3.equals(edge))
+			sol.addArea(vertex.p2, vertex.p3, Fractional.ZERO,
+				edge_value);
 	}
-	
+
 	if (unlimited && opt != null) {
 	    if (max && opt.compareTo(value_unlimit) < 0) {
 		sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
