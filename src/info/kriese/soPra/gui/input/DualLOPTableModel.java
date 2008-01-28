@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 28.01.2008 - Version 0.3
+ * - Vorbereitung für Spezialfall überprüfung
  * 28.01.2008 - Version 0.2.1.2
  * - HTML-Zeichen für größer/gleich und kleiner/gleich eingefügt
  * 27.01.2008 - Version 0.2.1.1
@@ -33,12 +35,11 @@
  * 09.11.2007 - Version 0.1
  * - Kopie von LOPTableModel
  */
-package info.kriese.soPra.gui.table;
+package info.kriese.soPra.gui.input;
 
 import info.kriese.soPra.gui.MessageHandler;
 import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.lop.LOP;
-import info.kriese.soPra.lop.LOPAdapter;
 import info.kriese.soPra.lop.LOPEditor;
 import info.kriese.soPra.lop.LOPEditorAdapter;
 import info.kriese.soPra.math.Vector3Frac;
@@ -46,7 +47,6 @@ import info.kriese.soPra.math.Vector3Frac;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
@@ -54,7 +54,7 @@ import javax.swing.table.AbstractTableModel;
  * Wandelt das duale LOP in ein von JTable lesbares Format um.
  * 
  * @author Peer Sterner
- * @version 0.2.1.1
+ * @version 0.3
  * @since 09.11.2007
  * 
  */
@@ -67,7 +67,7 @@ public final class DualLOPTableModel extends AbstractTableModel {
 
     private final Object sol[];
 
-    private JComponent specialCases;
+    private SpecialCasesInput specialCases;
 
     private JTable table;
 
@@ -84,7 +84,8 @@ public final class DualLOPTableModel extends AbstractTableModel {
 	this.columnNames[0] = " ";
 	this.columnNames[1] = "<html><center><b>y<sub>1</sub></b></center></html>";
 	this.columnNames[2] = "<html><center><b>y<sub>2</sub></b></center></html>";
-	this.columnNames[3] = "<html><center><b>" + "&ge; / &le; / =" + "</b></center></html>";
+	this.columnNames[3] = "<html><center><b>" + "&ge; / &le; / ="
+		+ "</b></center></html>";
 	this.columnNames[4] = "<html><center><b>w</b></center></html>";
     }
 
@@ -143,7 +144,8 @@ public final class DualLOPTableModel extends AbstractTableModel {
 			|| row == getRowCount() - 1)
 		    return "=";
 		else
-		    return (this.max ? "<html>&ge;</html>" : "<html>&le;</html>");
+		    return (this.max ? "<html>&ge;</html>"
+			    : "<html>&le;</html>");
 	    case 4:
 		if (row == 0)
 		    return (this.max ? "min" : "max");
@@ -187,18 +189,10 @@ public final class DualLOPTableModel extends AbstractTableModel {
 		DualLOPTableModel.this.update(lop);
 	    }
 	});
-
-	editor.getLOP().addProblemListener(new LOPAdapter() {
-	    @Override
-	    public void showDualProblem(LOP lop) {
-		DualLOPTableModel.this.specialCases.removeAll();
-		DualLOPTableModel.this.specialCases.setVisible(false);
-	    }
-	});
     }
 
-    public void setSpecialCasesComponent(JComponent c) {
-	this.specialCases = c;
+    public void setSpecialCasesComponent(SpecialCasesInput csci) {
+	this.specialCases = csci;
     }
 
     public void setTable(JTable table) {
@@ -213,6 +207,8 @@ public final class DualLOPTableModel extends AbstractTableModel {
 	    this.vectors.add(vec.clone());
 	this.target = lop.getTarget().clone();
 	this.max = lop.isMaximum();
+
+	this.specialCases.getSpecialCase();
 
 	// TODO: Prüfen, welche Fälle auftreten können /behandelt werden müssen
 	// (gibt ja jetzt noch mehr Permutationen...)

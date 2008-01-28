@@ -22,7 +22,7 @@
  * 03.11.2007 - Version 0.1
  *  - Datei hinzugefuegt
  */
-package info.kriese.soPra.gui.table;
+package info.kriese.soPra.gui.input;
 
 /**
  * WrapperKlasse, dient dazu, dass die JTable den richtigen CellEditor benutzt.

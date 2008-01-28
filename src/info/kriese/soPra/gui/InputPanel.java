@@ -79,14 +79,15 @@
 
 package info.kriese.soPra.gui;
 
+import info.kriese.soPra.gui.input.DualLOPTableModel;
+import info.kriese.soPra.gui.input.FractionalTableCellEditor;
+import info.kriese.soPra.gui.input.LOPMinMax;
+import info.kriese.soPra.gui.input.LOPSolutionWrapper;
+import info.kriese.soPra.gui.input.LOPTableCellRenderer;
+import info.kriese.soPra.gui.input.LOPTableModel;
+import info.kriese.soPra.gui.input.SolutionTableCellEditor;
+import info.kriese.soPra.gui.input.SpecialCaseInputPanel;
 import info.kriese.soPra.gui.lang.Lang;
-import info.kriese.soPra.gui.table.DualLOPTableModel;
-import info.kriese.soPra.gui.table.FractionalTableCellEditor;
-import info.kriese.soPra.gui.table.LOPMinMax;
-import info.kriese.soPra.gui.table.LOPSolutionWrapper;
-import info.kriese.soPra.gui.table.LOPTableCellRenderer;
-import info.kriese.soPra.gui.table.LOPTableModel;
-import info.kriese.soPra.gui.table.SolutionTableCellEditor;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPAdapter;
 import info.kriese.soPra.lop.LOPEditor;
@@ -95,7 +96,6 @@ import info.kriese.soPra.math.Fractional;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -159,17 +159,21 @@ public final class InputPanel extends JPanel {
 
     private JButton reset = null;
 
+    private final SpecialCaseInputPanel sci;
     private final JTable table;
-    private JButton take = null;
 
+    private JButton take = null;
     private JMenuItem take2, check2, reset2;
+
     private final JToolBar toolbar;
 
     private final List<Component> toolbarBtns;
 
     public InputPanel() {
 	JScrollPane scrollPane;
-	JPanel body, pn;
+	JPanel body;
+
+	this.sci = new SpecialCaseInputPanel();
 
 	this.maxEditor = new JComboBox();
 	this.maxEditor.setFocusable(false);
@@ -191,6 +195,7 @@ public final class InputPanel extends JPanel {
 	this.maxEditor.setBorder(BorderFactory.createEmptyBorder());
 
 	this.primalModel = new LOPTableModel();
+	this.primalModel.setSpecialCasesComponent(this.sci);
 	this.primalModel.addTableModelListener(new TableModelListener() {
 	    public void tableChanged(TableModelEvent e) {
 		setSaveBtn();
@@ -199,6 +204,7 @@ public final class InputPanel extends JPanel {
 	});
 
 	this.dualModel = new DualLOPTableModel();
+	this.dualModel.setSpecialCasesComponent(this.sci);
 	this.dualModel.addTableModelListener(new TableModelListener() {
 	    public void tableChanged(TableModelEvent e) {
 		initColumnSizes();
@@ -255,7 +261,7 @@ public final class InputPanel extends JPanel {
 	     */
 	    @Override
 	    public TableCellEditor getCellEditor(int row, int column) {
-		if (row == getRowCount() - 1)
+		if (row == getRowCount() - 1 && column == getColumnCount() - 1)
 		    return getDefaultEditor(LOPSolutionWrapper.class);
 
 		if (column > 0 && column < getColumnCount() - 2)
@@ -304,12 +310,7 @@ public final class InputPanel extends JPanel {
 	scrollPane.setPreferredSize(new Dimension(300, 200));
 	body.add(scrollPane, BorderLayout.CENTER);
 
-	pn = new JPanel();
-	pn.setLayout(new GridLayout(0, 1));
-	pn.setBorder(BorderFactory.createEmptyBorder());
-	this.primalModel.setSpecialCasesComponent(pn);
-	this.dualModel.setSpecialCasesComponent(pn);
-	body.add(pn, BorderLayout.SOUTH);
+	body.add(this.sci, BorderLayout.SOUTH);
 
 	scrollPane = new JScrollPane(body);
 	scrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -331,12 +332,14 @@ public final class InputPanel extends JPanel {
 	    @Override
 	    public void showDualProblem(LOP lop) {
 		InputPanel.this.dualModel.setTable(InputPanel.this.table);
+		InputPanel.this.sci.reset();
 		setToolbarEnabled(false);
 	    }
 
 	    @Override
 	    public void showPrimalProblem(LOP lop) {
 		InputPanel.this.primalModel.setTable(InputPanel.this.table);
+		InputPanel.this.sci.reset();
 		setToolbarEnabled(true);
 	    }
 	});

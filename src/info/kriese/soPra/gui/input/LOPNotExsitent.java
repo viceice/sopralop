@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,28 +19,29 @@
  * 
  * ChangeLog:
  * 
+ * 10.01.2008 - Version 0.1.1
+ * - Zeichen geändert ( "nicht Element von" -> "Leere Menge")
  * 09.11.2007 - Version 0.1
  *  - Datei hinzugefuegt
  */
-package info.kriese.soPra.gui.table;
+package info.kriese.soPra.gui.input;
 
 /**
  * 
  * @author Michael Kriese
- * @version 0.1
+ * @version 0.1.1
  * @since 09.11.2007
  * 
  */
-public final class LOPInfinity {
+public final class LOPNotExsitent {
 
-    public static final LOPInfinity INFINITY = new LOPInfinity();
+    public static final LOPNotExsitent NOT_EXISTENT = new LOPNotExsitent();
 
-    private LOPInfinity() {
+    private LOPNotExsitent() {
     }
 
     @Override
     public String toString() {
-	return "<html><center>&infin;</center></html>";
+	return "<html><center>&empty;</center></html>";
     }
-
 }

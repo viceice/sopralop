@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,12 +19,14 @@
  * 
  * ChangeLog:
  * 
+ * 28.01.2008 - Version 0.1.2
+ * - NotExistent in Empty umbenannt
  * 19.12.2007 - Version 0.1.1
  * - equals überladen.
  * 04.12.2007 - Version 0.1
  *  - Datei hinzugefuegt
  */
-package info.kriese.soPra.gui.table;
+package info.kriese.soPra.gui.input;
 
 import info.kriese.soPra.math.Fractional;
 import info.kriese.soPra.math.impl.FractionalFactory;
@@ -32,13 +34,13 @@ import info.kriese.soPra.math.impl.FractionalFactory;
 /**
  * 
  * @author Michael Kriese
- * @version 0.1.1
+ * @version 0.1.2
  * @since 04.12.2007
  * 
  */
 public final class LOPSolutionWrapper {
 
-    public static String NotExistent = "ne";
+    public static String Empty = "e";
     public static String Unlimited = "u";
 
     public static LOPSolutionWrapper getInstance() {
@@ -49,7 +51,7 @@ public final class LOPSolutionWrapper {
 	if (text == null)
 	    return new LOPSolutionWrapper(FractionalFactory.getInstance());
 
-	else if (text.equals(NotExistent))
+	else if (text.equals(Empty))
 	    return new LOPSolutionWrapper(LOPNotExsitent.NOT_EXISTENT);
 	else if (text.equals(Unlimited))
 	    return new LOPSolutionWrapper(LOPInfinity.INFINITY);

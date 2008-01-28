@@ -19,29 +19,20 @@
  * 
  * ChangeLog:
  * 
- * 10.01.2008 - Version 0.1.1
- * - Zeichen geändert ( "nicht Element von" -> "Leere Menge")
- * 09.11.2007 - Version 0.1
- *  - Datei hinzugefuegt
+ * 28.01.2008 - Version 0.1
+ *  - Datei hinzugefügt
  */
-package info.kriese.soPra.gui.table;
+package info.kriese.soPra.gui.input;
 
 /**
  * 
  * @author Michael Kriese
- * @version 0.1.1
- * @since 09.11.2007
+ * @version 0.1
+ * @since 28.01.2008
  * 
  */
-public final class LOPNotExsitent {
+public interface SpecialCasesInput {
 
-    public static final LOPNotExsitent NOT_EXISTENT = new LOPNotExsitent();
+    int getSpecialCase();
 
-    private LOPNotExsitent() {
-    }
-
-    @Override
-    public String toString() {
-	return "<html><center>&empty;</center></html>";
-    }
 }

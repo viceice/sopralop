@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 28.01.2008 - Version 0.4.4
+ * - Lösungsüberprüfung komplett.
+ * - Xi-Lösungseingabefelder nur noch für Fractional
  * 27.01.2008 - Version 0.4.3
  * - Beschriftung der Input-Panels jetzt auch dynamisch über die Sprachdateien
  * 26.01.2008 - Version 0.4.2
@@ -54,15 +57,15 @@
  * 30.10.2007 - Version 0.1
  * - Aus InputPanel ausgelagert
  */
-package info.kriese.soPra.gui.table;
+package info.kriese.soPra.gui.input;
 
-import info.kriese.soPra.gui.InputPanel;
 import info.kriese.soPra.gui.MessageHandler;
 import info.kriese.soPra.gui.lang.Lang;
+import info.kriese.soPra.io.impl.SettingsFactory;
 import info.kriese.soPra.lop.LOP;
-import info.kriese.soPra.lop.LOPAdapter;
 import info.kriese.soPra.lop.LOPEditor;
 import info.kriese.soPra.lop.LOPEditorAdapter;
+import info.kriese.soPra.lop.LOPSolution;
 import info.kriese.soPra.lop.LOPSolutionArea;
 import info.kriese.soPra.math.Fractional;
 import info.kriese.soPra.math.Vector3Frac;
@@ -73,10 +76,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.ButtonGroup;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
@@ -84,7 +83,7 @@ import javax.swing.table.AbstractTableModel;
  * Wandelt das LOP in ein von JTable lesbares Format um.
  * 
  * @author Peer Sterner
- * @version 0.4.2
+ * @version 0.4.4
  * @since 01.11.2007
  * 
  */
@@ -100,19 +99,19 @@ public final class LOPTableModel extends AbstractTableModel {
 
     private LOPSolutionWrapper sol;
 
-    private JComponent specialCases;
+    private SpecialCasesInput specialCases;
 
     private JTable table;
     private Vector3Frac target;
 
-    private final List<LOPSolutionWrapper> values;
+    private final List<Fractional> values;
 
     private final List<Vector3Frac> vectors;
 
     public LOPTableModel() {
 	this.columnNames = new Vector<String>();
 	this.vectors = new ArrayList<Vector3Frac>();
-	this.values = new ArrayList<LOPSolutionWrapper>();
+	this.values = new ArrayList<Fractional>();
 	this.sol = LOPSolutionWrapper.getInstance(null);
 	this.editor = null;
 
@@ -187,7 +186,7 @@ public final class LOPTableModel extends AbstractTableModel {
 	    case 3:
 		return vec.getCoordY();
 	    case 5:
-		return this.values.get(col - 1).getValue();
+		return this.values.get(col - 1);
 	}
 
 	return "";
@@ -255,17 +254,10 @@ public final class LOPTableModel extends AbstractTableModel {
 		LOPTableModel.this.update(lop);
 	    }
 	});
-
-	editor.getLOP().addProblemListener(new LOPAdapter() {
-	    @Override
-	    public void showPrimalProblem(LOP lop) {
-		showSpecialCases();
-	    }
-	});
     }
 
-    public void setSpecialCasesComponent(JComponent c) {
-	this.specialCases = c;
+    public void setSpecialCasesComponent(SpecialCasesInput sci) {
+	this.specialCases = sci;
     }
 
     /**
@@ -320,7 +312,7 @@ public final class LOPTableModel extends AbstractTableModel {
 	    Vector3Frac vec = this.vectors.get(col - 1);
 
 	    if (row == 5)
-		this.values.set(col - 1, (LOPSolutionWrapper) value);
+		this.values.set(col - 1, (Fractional) value);
 	    else {
 
 		Fractional frac = (value != null ? (Fractional) value
@@ -363,7 +355,7 @@ public final class LOPTableModel extends AbstractTableModel {
 	this.values.clear();
 	for (Vector3Frac vec : lop.getVectors()) {
 	    this.vectors.add(vec.clone());
-	    this.values.add(LOPSolutionWrapper.getInstance());
+	    this.values.add(FractionalFactory.getInstance());
 	}
 	this.target = lop.getTarget().clone();
 	this.max = lop.isMaximum();
@@ -384,7 +376,7 @@ public final class LOPTableModel extends AbstractTableModel {
 	    return;
 
 	this.vectors.add(Vector3FracFactory.getInstance());
-	this.values.add(LOPSolutionWrapper.getInstance());
+	this.values.add(FractionalFactory.getInstance());
 	num++;
 	this.columnNames.insertElementAt("<html><center><b>x<sub>" + num
 		+ "</sub></b></center></html>", num);
@@ -400,56 +392,58 @@ public final class LOPTableModel extends AbstractTableModel {
      */
     private void check(LOP lop) {
 
-	// TODO: erweitern
-
 	if (!isVisible())
 	    return;
+
 	if (isEdited()) {
 	    MessageHandler.showError(Lang.getString("Strings.Solution"), Lang
 		    .getString("Errors.TakeNewValues"));
 	    return;
 	}
+
 	int idx1, idx2, vals = 0;
-	boolean res = true;
 
-	if (lop.getSolution().getSpecialCase() == (info.kriese.soPra.lop.LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
-		| info.kriese.soPra.lop.LOPSolution.SOLUTION_AREA_EMPTY | info.kriese.soPra.lop.LOPSolution.TARGET_FUNCTION_EMPTY)) {
-	    if (!(this.sol.getValue() instanceof LOPNotExsitent))
-		res = false;
-
-	    if (res)
-		MessageHandler.showInfo(Lang.getString("Strings.Solution"),
-			Lang.getString("Strings.CorrectSolution"));
-	    else
-		MessageHandler.showError(Lang.getString("Strings.Solution"),
-			Lang.getString("Strings.IncorrectSolution"));
+	if (lop.getSolution().getSpecialCase() != this.specialCases
+		.getSpecialCase()) {
+	    if (SettingsFactory.getInstance().isDebug())
+		System.out.println("Wrong user special case!");
+	    MessageHandler.showError(Lang.getString("Strings.Solution"), Lang
+		    .getString("Strings.IncorrectSolution"));
 	    return;
-	} else if (lop.getSolution().getSpecialCase() == (info.kriese.soPra.lop.LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
-		| info.kriese.soPra.lop.LOPSolution.SOLUTION_AREA_UNLIMITED | info.kriese.soPra.lop.LOPSolution.TARGET_FUNCTION_UNLIMITED)) {
-	    if (!(this.sol.getValue() instanceof LOPInfinity))
-		res = false;
+	}
 
-	    if (res)
+	if ((lop.getSolution().getSpecialCase() & LOPSolution.TARGET_FUNCTION_EMPTY) == LOPSolution.TARGET_FUNCTION_EMPTY) {
+	    // Es gibt keine Lösung
+	    if (this.sol.getValue() instanceof LOPNotExsitent)
 		MessageHandler.showInfo(Lang.getString("Strings.Solution"),
 			Lang.getString("Strings.CorrectSolution"));
-	    else
+	    else {
+		if (SettingsFactory.getInstance().isDebug())
+		    System.out.println("Wrong user solution! Should be empty.");
 		MessageHandler.showError(Lang.getString("Strings.Solution"),
 			Lang.getString("Strings.IncorrectSolution"));
+	    }
+	    return;
+	} else if ((lop.getSolution().getSpecialCase() & LOPSolution.TARGET_FUNCTION_UNLIMITED) == LOPSolution.TARGET_FUNCTION_UNLIMITED) {
+	    // Lösung ist unendlich, bzw -unendlich bei Minimum gesucht
+	    if (this.sol.getValue() instanceof LOPInfinity)
+		MessageHandler.showInfo(Lang.getString("Strings.Solution"),
+			Lang.getString("Strings.CorrectSolution"));
+	    else {
+		if (SettingsFactory.getInstance().isDebug())
+		    System.out
+			    .println("Wrong user solution! Should be infinity.");
+		MessageHandler.showError(Lang.getString("Strings.Solution"),
+			Lang.getString("Strings.IncorrectSolution"));
+	    }
 	    return;
 	} else {
 
-	    for (LOPSolutionWrapper sol : this.values)
-		if (sol.getValue() instanceof Fractional) {
-		    if (!((Fractional) sol.getValue()).isZero())
-			vals++;
-		} else
-		    res = false;
+	    // Überprüfe normale Lösung
 
-	    if (!res) {
-		MessageHandler.showError(Lang.getString("Strings.Solution"),
-			Lang.getString("Strings.IncorrectSolution"));
-		return;
-	    }
+	    for (Fractional sol : this.values)
+		if (sol.isZero())
+		    vals++;
 
 	    if (vals > 2) {
 		MessageHandler.showError(Lang.getString("Strings.Solution"),
@@ -458,6 +452,9 @@ public final class LOPTableModel extends AbstractTableModel {
 	    }
 
 	    if (!this.sol.equals(lop.getSolution().getVector().getCoordZ())) {
+		if (SettingsFactory.getInstance().isDebug())
+		    System.out.println("Wrong user solution! Z should be "
+			    + lop.getSolution().getValue());
 		MessageHandler.showError(Lang.getString("Strings.Solution"),
 			Lang.getString("Strings.IncorrectSolution"));
 		return;
@@ -467,15 +464,17 @@ public final class LOPTableModel extends AbstractTableModel {
 		idx1 = lop.getVectors().indexOf(area.getL1());
 		idx2 = lop.getVectors().indexOf(area.getL2());
 
-		if (area.getL1Amount().equals(this.values.get(idx1).getValue())
-			&& area.getL2Amount().equals(
-				this.values.get(idx2).getValue())) {
+		if (area.getL1Amount().equals(this.values.get(idx1))
+			&& area.getL2Amount().equals(this.values.get(idx2))) {
 		    MessageHandler.showInfo(Lang.getString("Strings.Solution"),
 			    Lang.getString("Strings.CorrectSolution"));
 		    return;
 		}
-
 	    }
+
+	    if (SettingsFactory.getInstance().isDebug())
+		System.out
+			.println("Wrong user solution! One or more Xi are incorrect.");
 
 	    MessageHandler.showError(Lang.getString("Strings.Solution"), Lang
 		    .getString("Strings.IncorrectSolution"));
@@ -503,7 +502,7 @@ public final class LOPTableModel extends AbstractTableModel {
 		    break;
 	    }
 	    this.vectors.set(i, vec);
-	    this.values.set(i, LOPSolutionWrapper.getInstance());
+	    this.values.set(i, FractionalFactory.getInstance());
 	}
 
 	this.target.getCoordX().setNumerator(0);
@@ -575,95 +574,5 @@ public final class LOPTableModel extends AbstractTableModel {
 	this.columnNames.add("<html><center><b>=</b></center></html>");
 	this.columnNames.add("<html><center><b>z</b></center></html>");
 	fireTableStructureChanged();
-    }
-
-    /**
-     * Wird noch umgebaut!!!
-     * 
-     * TODO: optimieren
-     */
-    private void showSpecialCases() {
-
-	this.specialCases.setVisible(true);
-	this.specialCases.removeAll();
-
-	ButtonGroup bg;
-	JRadioButton rb;
-	JPanel pn;
-
-	bg = new ButtonGroup();
-	pn = new JPanel();
-	pn.setBorder(InputPanel
-		.createBorder(Lang.getString("Input.Panel.SolutionArea.Title")));
-	this.specialCases.add(pn);
-
-	rb = new JRadioButton(Lang.getString("Input.Panel.SolutionArea.IsEmpty"));
-	pn.add(rb);
-	bg.add(rb);
-
-	rb = new JRadioButton(Lang.getString("Input.Panel.SolutionArea.IsLimited"));
-	pn.add(rb);
-	bg.add(rb);
-
-	rb = new JRadioButton(Lang.getString("Input.Panel.SolutionArea.IsUnlimited"));
-	pn.add(rb);
-	bg.add(rb);
-
-	bg = new ButtonGroup();
-	pn = new JPanel();
-	pn
-		.setBorder(InputPanel
-			.createBorder(Lang.getString("Input.Panel.SolutionProjectedTo.Title")));
-	this.specialCases.add(pn);
-
-	rb = new JRadioButton(Lang.getString("Input.Panel.SolutionProjectedTo.Nothing"));
-	pn.add(rb);
-	bg.add(rb);
-
-	rb = new JRadioButton(Lang.getString("Input.Panel.SolutionProjectedTo.Ray"));
-	pn.add(rb);
-	bg.add(rb);
-
-	rb = new JRadioButton(Lang.getString("Input.Panel.SolutionProjectedTo.Line"));
-	pn.add(rb);
-	bg.add(rb);
-
-	bg = new ButtonGroup();
-	pn = new JPanel();
-	pn.setBorder(InputPanel
-		.createBorder(Lang.getString("Input.Panel.OptimalSolutionArea.Title")));
-	this.specialCases.add(pn);
-
-	rb = new JRadioButton(Lang.getString("Input.Panel.OptimalSolutionArea.IsEmpty"));
-	pn.add(rb);
-	bg.add(rb);
-
-	rb = new JRadioButton(Lang.getString("Input.Panel.OptimalSolutionArea.IsPoint"));
-	pn.add(rb);
-	bg.add(rb);
-
-	rb = new JRadioButton(Lang.getString("Input.Panel.OptimalSolutionArea.IsMultiple"));
-	pn.add(rb);
-	bg.add(rb);
-
-	bg = new ButtonGroup();
-	pn = new JPanel();
-	pn.setBorder(InputPanel.createBorder(Lang.getString("Input.Panel.TargetFunction.Title"), true));
-	this.specialCases.add(pn);
-
-	rb = new JRadioButton(Lang.getString("Input.Panel.TargetFunction.IsLimited"));
-	pn.add(rb);
-	bg.add(rb);
-
-	rb = new JRadioButton(Lang.getString("Input.Panel.TargetFunction.IsUnlimited"));
-	pn.add(rb);
-	bg.add(rb);
-
-	rb = new JRadioButton(Lang.getString("Input.Panel.TargetFunction.IsEmpty"));
-	pn.add(rb);
-	bg.add(rb);
-
-	this.specialCases.validate();
-	this.specialCases.repaint();
     }
 }

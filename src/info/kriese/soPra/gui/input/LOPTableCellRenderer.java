@@ -29,7 +29,7 @@
  * 03.11.2007 - Version 0.1
  *  - Datei hinzugefuegt
  */
-package info.kriese.soPra.gui.table;
+package info.kriese.soPra.gui.input;
 
 import info.kriese.soPra.gui.MessageHandler;
 import info.kriese.soPra.gui.lang.Lang;

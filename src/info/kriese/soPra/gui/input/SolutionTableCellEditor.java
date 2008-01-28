@@ -22,7 +22,7 @@
  * 04.12.2007 - Version 0.1
  *  - Kopie von FractionalTableCellEditor
  */
-package info.kriese.soPra.gui.table;
+package info.kriese.soPra.gui.input;
 
 import info.kriese.soPra.gui.MessageHandler;
 import info.kriese.soPra.gui.lang.Lang;
