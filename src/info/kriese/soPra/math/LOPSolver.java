@@ -19,8 +19,9 @@
  * 
  * ChangeLog:
  * 
- * 28.01.2008 - Version 0.5.9.1
+ * 28.01.2008 - Version 0.5.9.2
  * - Kanten werden erkannt, und benachbarte Flächen wieder der Lösung hinzugefügt
+ * - Bugfix: Erkennung der Spezialfälle sollte jetzt korrekt funktionieren
  * 27.01.2008 - Version 0.5.9
  * - BugFix: Liste der Lösungflächen wurde nicht geleert, nachdem das Problem
  *    geändert wurde.
@@ -436,12 +437,12 @@ public final class LOPSolver {
 		opt = Fractional.MIN_VALUE;
 	    }
 
-	    if (max && opt.compareTo(value_unlimit) > 0)
+	    if (max && opt.compareTo(value_high) < 0)
 		sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
 			| LOPSolution.SOLUTION_AREA_UNLIMITED
 			| LOPSolution.TARGET_FUNCTION_LIMITED);
-
-	    if (!max && opt.compareTo(value_unlimit) < 0)
+ 
+	    if (!max && opt.compareTo(value_high) > 0)
 		sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
 			| LOPSolution.SOLUTION_AREA_UNLIMITED
 			| LOPSolution.TARGET_FUNCTION_LIMITED);

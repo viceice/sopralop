@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 28.01.2008 - Version 0.5.6
+ * - Fallüberprüfung, ob Problem gültige Lösungen hat, angepasst
  * 25.01.2008 - Version 0.5.5
  * - Variablennamen für Spezialfälle angepasst
  * 21.01.2008 - Version 0.5.4
@@ -87,6 +89,7 @@ import info.kriese.soPra.gui.Virtual3DFrame;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPAdapter;
 import info.kriese.soPra.lop.LOPSolution;
+import info.kriese.soPra.lop.LOPSolutionArea;
 import info.kriese.soPra.math.Vector3Frac;
 import info.kriese.soPra.math.quickhull.QuickHull;
 
@@ -291,7 +294,7 @@ public final class Engine3D {
     }
 
     /**
-     * Berechnet den die Größen und Positionen aller 3D-Objekte.
+     * Berechnet die Größen und Positionen aller 3D-Objekte.
      * 
      * Funktion wird aufgerufen, wenn das LOP gelöst wurde.
      * 
@@ -301,18 +304,16 @@ public final class Engine3D {
     private void computeSolution(LOP lop) {
 	Vector3Frac vec = lop.getTarget();
 	// TODO: Spezialfälle behandeln
-	// int sCase = lop.getSolution().getSpecialCase();
+	int sCase = lop.getSolution().getSpecialCase();
 
 	this.size = (vec.getCoordX().toFloat() > vec.getCoordY().toFloat() ? vec
 		.getCoordX().toFloat()
 		: vec.getCoordY().toFloat()) + 3.0f;
 
-	// Gibt es eine oder mehrere Lösungen?
-	// if ((sCase & LOPSolution.OPTIMAL_SOLUTION_AREA_POINT) != 0
-	// || (sCase & LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE) != 0)
-	// this.size = (this.size > lop.getSolution().getValue() + 3.0f ?
-	// this.size
-	// : (float) lop.getSolution().getValue()) + 3.0f;
+	 // Gibt es eine oder mehrere Lösungen?
+	 if (sCase == 21 || sCase == 22 || sCase == 25 || sCase == 26)
+	 this.size = (this.size > lop.getSolution().getValue() + 3.0f ?
+	 this.size : (float) lop.getSolution().getValue()) + 3.0f;
 
 	this.hull.build(lop.getVectors(), false);
 
@@ -331,13 +332,12 @@ public final class Engine3D {
 	this.intersection.setDualLineVisible(false);
 
 	// Gibt es eine oder mehrere Lösungen?
-	// if ((sCase & LOPSolution.OPTIMAL_SOLUTION_AREA_POINT) != 0
-	// || (sCase & LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE) != 0) {
-	// LOPSolutionArea area = lop.getSolution().getAreas().get(0);
-	// this.intersection.compute(lop.getSolution().getVector()
-	// .toVector3f(), area.getL1().toVector3f(), area.getL2()
-	// .toVector3f());
-	// } else
+	if (sCase == 21 || sCase == 22 || sCase == 25 || sCase == 26) {
+		LOPSolutionArea area = lop.getSolution().getAreas().get(0);
+		this.intersection.compute(lop.getSolution().getVector()
+				.toVector3f(), area.getL1().toVector3f(), area.getL2()
+				.toVector3f());
+	 } else
 	this.intersection.compute(lop.getSolution().getVector().toVector3f(),
 		null, null);
 
