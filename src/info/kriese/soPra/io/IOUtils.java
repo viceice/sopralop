@@ -19,7 +19,7 @@
  * 
  * ChangeLog:
  * 
- * 29.01.2008
+ * 29.01.2008 - Version 0.5.2
  * - Debug-Statement für die Ausgabe des Spezialfalles eingefügt
  * 28.01.2008 - Version 0.5.1
  * - Fallüberprüfung für die Lösungen erweitert (mehr Abstufungen)
@@ -88,7 +88,7 @@ import org.w3c.dom.NamedNodeMap;
 /**
  * 
  * @author Michael Kriese
- * @version 0.5
+ * @version 0.5.2
  * @since 29.07.2007
  * 
  */
@@ -244,12 +244,12 @@ public final class IOUtils {
 		out.println(Lang.getString("Strings.NoSolution"));
 		break;
 	    case (LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
-			    | LOPSolution.SOLUTION_AREA_UNLIMITED | LOPSolution.TARGET_FUNCTION_UNLIMITED):
-			out.println(Lang.getString("Strings.UnlimitedSol"));
+		    | LOPSolution.SOLUTION_AREA_UNLIMITED | LOPSolution.TARGET_FUNCTION_UNLIMITED):
+		out.println(Lang.getString("Strings.UnlimitedSol"));
 		break;
 	    case (LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
-			    | LOPSolution.SOLUTION_AREA_UNLIMITED | LOPSolution.TARGET_FUNCTION_LIMITED):
-			out.println(Lang.getString("Strings.UnlimitedButSolution"));
+		    | LOPSolution.SOLUTION_AREA_UNLIMITED | LOPSolution.TARGET_FUNCTION_LIMITED):
+		out.println(Lang.getString("Strings.UnlimitedButSolution"));
 		break;
 	    case (LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE
 		    | LOPSolution.SOLUTION_AREA_LIMITED | LOPSolution.TARGET_FUNCTION_LIMITED):
@@ -258,10 +258,10 @@ public final class IOUtils {
 		// out.println(sol.getAreas());
 		break;
 	    case (LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE
-			    | LOPSolution.SOLUTION_AREA_UNLIMITED | LOPSolution.TARGET_FUNCTION_LIMITED):
-			out.println(Lang.getString("Strings.UnlimitedButMoreSolutions",
-				new Object[] { sol.countAreas() }));
-			// out.println(sol.getAreas());
+		    | LOPSolution.SOLUTION_AREA_UNLIMITED | LOPSolution.TARGET_FUNCTION_LIMITED):
+		out.println(Lang.getString("Strings.UnlimitedButMoreSolutions",
+			new Object[] { sol.countAreas() }));
+		// out.println(sol.getAreas());
 		break;
 	    case (LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
 		    | LOPSolution.SOLUTION_AREA_LIMITED | LOPSolution.TARGET_FUNCTION_LIMITED):
