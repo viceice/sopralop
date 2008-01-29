@@ -63,7 +63,7 @@ import javax.swing.table.AbstractTableModel;
  * Wandelt das duale LOP in ein von JTable lesbares Format um.
  * 
  * @author Peer Sterner
- * @version 0.3
+ * @version 0.3.1
  * @since 09.11.2007
  * 
  */
@@ -209,8 +209,8 @@ public final class DualLOPTableModel extends AbstractTableModel {
 	});
     }
 
-    public void setSpecialCasesComponent(SpecialCasesInput csci) {
-	this.specialCases = csci;
+    public void setSpecialCasesComponent(SpecialCasesInput sci) {
+	this.specialCases = sci;
     }
 
     public void setTable(JTable table) {
@@ -239,7 +239,6 @@ public final class DualLOPTableModel extends AbstractTableModel {
 		break;
 	}
 	fireTableCellUpdated(row, col);
-
     }
 
     private void update(LOP lop) {
@@ -266,7 +265,8 @@ public final class DualLOPTableModel extends AbstractTableModel {
 	switch (solution.getSpecialCase() & LOPSolution.TARGET_FUNCTION) {
 	    case LOPSolution.TARGET_FUNCTION_EMPTY:
 		this.lopSol = Vector3Frac.ZERO;
-		// TODO : Fall 2 oder 4?
+		// TODO : Fall 2 oder 4? Hier muss irgentwie unterschieden
+		// werden!
 		this.sCase = LOPSolution.TARGET_FUNCTION_UNLIMITED
 			| LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
 			| LOPSolution.SOLUTION_AREA_UNLIMITED;
