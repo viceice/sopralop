@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 29.01.2008
+ * - Debug-Statement für die Ausgabe des Spezialfalles eingefügt
  * 28.01.2008 - Version 0.5.1
  * - Fallüberprüfung für die Lösungen erweitert (mehr Abstufungen)
  * 26.01.2008 - Version 0.5
@@ -278,6 +280,7 @@ public final class IOUtils {
 		    + area.getL2Amount() + " ]");
 
 	out.println("--------------------------------------------------------");
+	out.println("Spezialfall: " + sol.getSpecialCase());
     }
 
     /**
