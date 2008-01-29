@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 29.01.2008 - Version 0.2.0.1
+ * - BugFix: Min & Max in get waren vertauscht
  * 29.01.2008 - Version 0.2
  * - Konstanten für min und max
  * 04.11.2007 - Version 0.1
@@ -30,7 +32,7 @@ package info.kriese.soPra.gui.input;
  * WrapperKlasse, dient dazu, dass die JTable den richtigen CellEditor benutzt.
  * 
  * @author Michael Kriese
- * @version 0.2
+ * @version 0.2.0.1
  * @since 04.11.2007
  * 
  */
@@ -40,7 +42,7 @@ public class LOPMinMax {
     public static final String MIN = "min!";
 
     public static LOPMinMax get(boolean value) {
-	return new LOPMinMax(value ? MIN : MAX);
+	return new LOPMinMax(value ? MAX : MIN);
     }
 
     public static LOPMinMax get(String value) {

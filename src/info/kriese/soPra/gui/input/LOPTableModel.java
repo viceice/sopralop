@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 29.01.2008 - Version 0.4.6
+ * - Eingabe der Lösungen toleranter gemacht
  * 29.01.2008 - Version 0.4.5
  * - Lösungsüberprüfung überarbeitet / vereinfacht
  * - An LOPMinMax angepasst
@@ -87,7 +89,7 @@ import javax.swing.table.AbstractTableModel;
  * Wandelt das LOP in ein von JTable lesbares Format um.
  * 
  * @author Peer Sterner
- * @version 0.4.5
+ * @version 0.4.6
  * @since 01.11.2007
  * 
  */
@@ -462,7 +464,7 @@ public final class LOPTableModel extends AbstractTableModel {
 		// Überprüfe normale Lösung
 
 		for (Fractional sol : this.values)
-		    if (sol != null)
+		    if (sol != null && !sol.isZero())
 			vals++;
 
 		if (vals > 2) {

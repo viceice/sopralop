@@ -46,7 +46,7 @@ import javax.swing.JRadioButton;
  * Panel, welches die Elemente zur eingabe der Spezialfälle enthält.
  * 
  * @author Michael Kriese
- * @version 0.1.1
+ * @version 0.1.2
  * @since 28.01.2008
  * 
  */
