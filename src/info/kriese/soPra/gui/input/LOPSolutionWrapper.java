@@ -21,6 +21,8 @@
  * 
  * 29.01.2008 - Version 0.1.2.1
  * - BugFix: Nullpointer bei Vergleich behoben.
+ * - Wenn "text"-Länge = 0 soll value null sein, damit keine Ausgabe in der
+ *    Tabelle erscheint
  * 28.01.2008 - Version 0.1.2
  * - NotExistent in Empty umbenannt
  * 19.12.2007 - Version 0.1.1
@@ -50,7 +52,7 @@ public final class LOPSolutionWrapper {
     }
 
     public static LOPSolutionWrapper getInstance(String text) {
-	if (text == null)
+	if (text == null || text.length() == 0)
 	    return new LOPSolutionWrapper((Fractional) null);
 
 	else if (text.equals(Empty))

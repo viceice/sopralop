@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 29.01.2008 - Version 0.1.1.1
+ * - Wenn Textfeld leer soll null zurückgegeben, damit keine Ausgabe in der
+ *    Tabelle erscheint.
  * 03.12.2007 - Version 0.1.1
  * - Grünen Rahmen und gelben Hintergrund eingefügt
  * 04.11.2007 - Version 0.1
@@ -41,7 +44,7 @@ import javax.swing.border.Border;
  * Ein CellEditor zum bearbeiten von Fractionals in einer JTable.
  * 
  * @author Michael Kriese
- * @version 0.1.1
+ * @version 0.1.1.1
  * @since 04.11.2007
  * 
  */
@@ -67,6 +70,8 @@ public class FractionalTableCellEditor extends DefaultCellEditor {
 
     @Override
     public Object getCellEditorValue() {
+	if (this.tf.getText() == null || this.tf.getText().length() == 0)
+	    return null;
 	return FractionalFactory.getInstance(this.tf.getText());
     }
 

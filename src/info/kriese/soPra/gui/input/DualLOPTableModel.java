@@ -21,6 +21,7 @@
  * 
  * 29.01.2008 - Version 0.3.1
  * - Teilweise implementierung der Lösungsüberprüfung
+ * - Eingabe der Lösung jetzt möglich
  * - BugFix: Nullpointer behoben
  * 28.01.2008 - Version 0.3
  * - Vorbereitung für Spezialfall überprüfung
@@ -48,6 +49,7 @@ import info.kriese.soPra.lop.LOPEditor;
 import info.kriese.soPra.lop.LOPEditorAdapter;
 import info.kriese.soPra.lop.LOPSolution;
 import info.kriese.soPra.lop.LOPSolutionArea;
+import info.kriese.soPra.math.Fractional;
 import info.kriese.soPra.math.Gauss;
 import info.kriese.soPra.math.Vector3Frac;
 
@@ -69,6 +71,8 @@ public final class DualLOPTableModel extends AbstractTableModel {
 
     private static final long serialVersionUID = 13L;
 
+    private final Fractional[] amounts;
+
     private final String[] columnNames;
 
     private Vector3Frac lopSol;
@@ -77,7 +81,7 @@ public final class DualLOPTableModel extends AbstractTableModel {
 
     private int sCase = 0;
 
-    private final LOPSolutionWrapper sol[];
+    private LOPSolutionWrapper sol;
 
     private SpecialCasesInput specialCases;
 
@@ -91,11 +95,9 @@ public final class DualLOPTableModel extends AbstractTableModel {
 	this.vectors = new ArrayList<Vector3Frac>();
 	this.target = Vector3Frac.ZERO;
 	this.lopSol = Vector3Frac.ZERO;
-	this.sol = new LOPSolutionWrapper[3];
+	this.sol = LOPSolutionWrapper.getInstance();
 
-	this.sol[0] = LOPSolutionWrapper.getInstance();
-	this.sol[1] = LOPSolutionWrapper.getInstance();
-	this.sol[2] = LOPSolutionWrapper.getInstance();
+	this.amounts = new Fractional[2];
 
 	this.columnNames = new String[5];
 	this.columnNames[0] = " ";
@@ -145,14 +147,14 @@ public final class DualLOPTableModel extends AbstractTableModel {
 		if (row == 0)
 		    return this.target.getCoordX();
 		else if (row == getRowCount() - 1)
-		    return this.sol[0].getValue();
+		    return this.amounts[0];
 		else
 		    return this.vectors.get(row - 2).getCoordX().toString();
 	    case 2:
 		if (row == 0)
 		    return this.target.getCoordY();
 		else if (row == getRowCount() - 1)
-		    return this.sol[1].getValue();
+		    return this.amounts[1];
 		else
 		    return this.vectors.get(row - 2).getCoordY().toString();
 	    case 3:
@@ -166,7 +168,7 @@ public final class DualLOPTableModel extends AbstractTableModel {
 		if (row == 0)
 		    return (this.max ? LOPMinMax.MIN : LOPMinMax.MAX);
 		else if (row == getRowCount() - 1)
-		    return this.sol[2].getValue();
+		    return this.sol.getValue();
 		else
 		    return this.vectors.get(row - 2).getCoordZ();
 
@@ -214,10 +216,30 @@ public final class DualLOPTableModel extends AbstractTableModel {
     public void setTable(JTable table) {
 	this.table = table;
 	table.setModel(this);
-	this.sol[0] = LOPSolutionWrapper.getInstance();
-	this.sol[1] = LOPSolutionWrapper.getInstance();
-	this.sol[2] = LOPSolutionWrapper.getInstance();
+	this.sol = LOPSolutionWrapper.getInstance();
+	this.amounts[0] = null;
+	this.amounts[1] = null;
 	fireTableStructureChanged();
+    }
+
+    @Override
+    public void setValueAt(Object value, int row, int col) {
+
+	switch (col) {
+	    case 1:
+		this.amounts[0] = (Fractional) value;
+		break;
+
+	    case 2:
+		this.amounts[1] = (Fractional) value;
+		break;
+
+	    case 4:
+		this.sol = (LOPSolutionWrapper) value;
+		break;
+	}
+	fireTableCellUpdated(row, col);
+
     }
 
     private void update(LOP lop) {
@@ -260,25 +282,32 @@ public final class DualLOPTableModel extends AbstractTableModel {
 		    Vector3Frac vec1 = area.getL1();
 		    Vector3Frac vec2 = area.getL2();
 
-		    Vector3Frac Vector1 = Vector3Frac.ZERO.clone();
-		    Vector3Frac Vector2 = Vector3Frac.ZERO.clone();
-		    Vector3Frac Vector3 = Vector3Frac.ZERO.clone();
+		    Vector3Frac vector1 = Vector3Frac.ZERO.clone();
+		    Vector3Frac vector2 = Vector3Frac.ZERO.clone();
+		    Vector3Frac vector3 = Vector3Frac.ZERO.clone();
 
-		    Vector1.setCoordX(vec1.getCoordX());
-		    Vector1.setCoordY(vec2.getCoordX());
-		    Vector1.setCoordZ(this.target.getCoordX());
+		    vector1.setCoordX(vec1.getCoordX());
+		    vector1.setCoordY(vec2.getCoordX());
+		    vector1.setCoordZ(this.target.getCoordX());
 
-		    Vector2.setCoordX(vec1.getCoordY());
-		    Vector2.setCoordY(vec2.getCoordY());
-		    Vector2.setCoordZ(this.target.getCoordY());
+		    vector2.setCoordX(vec1.getCoordY());
+		    vector2.setCoordY(vec2.getCoordY());
+		    vector2.setCoordZ(this.target.getCoordY());
 
-		    Vector3.setCoordX(vec1.getCoordZ());
-		    Vector3.setCoordY(vec2.getCoordZ());
-		    Vector3.setCoordZ(this.target.getCoordZ());
+		    vector3.setCoordX(vec1.getCoordZ());
+		    vector3.setCoordY(vec2.getCoordZ());
+		    vector3.setCoordZ(this.target.getCoordZ());
 
-		    this.lopSol = Gauss.gaussElimination2(Vector1, Vector2,
-			    Vector3);
-		    System.out.println("Possible solution: " + this.lopSol);
+		    vec1 = Gauss.gaussElimination2(vector1, vector2, vector3);
+
+		    if (vec1.getCoordZ().equals(solution.getValue())) {
+			this.lopSol = vec1;
+
+			if (SettingsFactory.getInstance().isDebug())
+			    System.out.println("Possible solution: "
+				    + this.lopSol);
+		    }
+
 		}
 		break;
 	}
@@ -305,7 +334,7 @@ public final class DualLOPTableModel extends AbstractTableModel {
 	    case LOPSolution.TARGET_FUNCTION_EMPTY:
 		// Es gibt keine Lösung
 
-		if (this.sol[2].getValue() instanceof LOPEmpty)
+		if (this.sol.getValue() instanceof LOPEmpty)
 		    MessageHandler.showInfo(Lang.getString("Strings.Solution"),
 			    Lang.getString("Strings.CorrectSolution"));
 		else {
@@ -322,7 +351,7 @@ public final class DualLOPTableModel extends AbstractTableModel {
 	    case LOPSolution.TARGET_FUNCTION_UNLIMITED:
 		// Lösung ist unendlich, bzw -unendlich bei Minimum gesucht
 
-		if (this.sol[2].getValue() instanceof LOPInfinity)
+		if (this.sol.getValue() instanceof LOPInfinity)
 		    MessageHandler.showInfo(Lang.getString("Strings.Solution"),
 			    Lang.getString("Strings.CorrectSolution"));
 		else {
@@ -335,7 +364,9 @@ public final class DualLOPTableModel extends AbstractTableModel {
 				    .getString("Strings.IncorrectSolution"));
 		}
 		return;
+
 	    default:
+		// Normale Lösung überprüfen
 		// TODO: implementieren
 		// return;
 	}
