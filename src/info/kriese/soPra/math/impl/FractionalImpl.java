@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 29.01.2008 - Version 0.4.0.1
+ * - BugFix: Nullpointer im Vergleich behoben
  * 07.11.2007 - Version 0.4
  * - Neue Interfacemethode implementiert
  * 17.09.2007 - Version 0.3.3
@@ -48,7 +50,7 @@ import info.kriese.soPra.math.Math2;
  * 
  * @author Michael Kriese
  * @since 11.04.2007
- * @version 0.4
+ * @version 0.4.0.1
  */
 class FractionalImpl implements Fractional {
 
@@ -113,6 +115,8 @@ class FractionalImpl implements Fractional {
     }
 
     public boolean equals(Fractional frac) {
+	if (frac == null)
+	    return false;
 	return ((this.numerator * frac.getDenominator()) == frac.getNumerator()
 		* this.denominator);
     }
