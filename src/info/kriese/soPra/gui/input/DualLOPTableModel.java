@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 29.01.2008 - Version 0.3.1
+ * - Teilweise implementierung der Lösungsüberprüfung
+ * - BugFix: Nullpointer behoben
  * 28.01.2008 - Version 0.3
  * - Vorbereitung für Spezialfall überprüfung
  * 28.01.2008 - Version 0.2.1.2
@@ -163,7 +166,7 @@ public final class DualLOPTableModel extends AbstractTableModel {
 		if (row == 0)
 		    return (this.max ? LOPMinMax.MIN : LOPMinMax.MAX);
 		else if (row == getRowCount() - 1)
-		    return this.sol[2];
+		    return this.sol[2].getValue();
 		else
 		    return this.vectors.get(row - 2).getCoordZ();
 
@@ -231,9 +234,9 @@ public final class DualLOPTableModel extends AbstractTableModel {
 
 	// Gegeben sei ein Paar aus primalem und dualem LP. Dann trit immer
 	// einer der folgenden Falle zu:
-	// 1. Beide Probleme besitzen eine optimale Losung.
-	// 2. Das primale Problem ist unbeschrankt, das duale unlosbar.
-	// 3. Das primale Problem ist unlosbar, das duale unbeschrankt.
+	// 1. Beide Probleme besitzen eine optimale Lösung.
+	// 2. Das primale Problem ist unbeschränkt, das duale unlösbar.
+	// 3. Das primale Problem ist unlösbar, das duale unbeschränkt.
 	// 4. Beide Probleme sind unlosbar.
 
 	LOPSolution solution = lop.getSolution();
@@ -252,6 +255,7 @@ public final class DualLOPTableModel extends AbstractTableModel {
 			| LOPSolution.SOLUTION_AREA_EMPTY;
 		break;
 	    default:
+		// TODO: Was sind korrekte Lösungen?
 		for (LOPSolutionArea area : solution.getAreas()) {
 		    Vector3Frac vec1 = area.getL1();
 		    Vector3Frac vec2 = area.getL2();
