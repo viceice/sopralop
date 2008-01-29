@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 29.01.2008 - Version 0.2.1
+ * - Informationsdialoge werden asynchron angezeigt.
  * 19.12.2007 - Version 0.2
  * - getString mit Ersetzungsparametern hinzugefügt
  * 17.12.2007 - Version 0.1.2
@@ -36,12 +38,13 @@ import info.kriese.soPra.io.impl.SettingsFactory;
 import java.awt.Component;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 /**
  * Klasse zum Anzeigen von Standard-Dialogen.
  * 
  * @author Michael Kriese
- * @version 0.2
+ * @version 0.2.1
  * @since 03.12.2007
  * 
  */
@@ -76,9 +79,13 @@ public final class MessageHandler {
 	return JOptionPane.showConfirmDialog(PARENT, msg, title, opt);
     }
 
-    public static void showError(String title, String msg) {
-	JOptionPane.showMessageDialog(PARENT, msg, title,
-		JOptionPane.ERROR_MESSAGE);
+    public static void showError(final String title, final String msg) {
+	SwingUtilities.invokeLater(new Runnable() {
+	    public void run() {
+		JOptionPane.showMessageDialog(PARENT, msg, title,
+			JOptionPane.ERROR_MESSAGE);
+	    }
+	});
     }
 
     public static void showHelp() {
@@ -90,9 +97,13 @@ public final class MessageHandler {
 	    HELP.showHelp(msg);
     }
 
-    public static void showInfo(String title, String msg) {
-	JOptionPane.showMessageDialog(PARENT, msg, title,
-		JOptionPane.INFORMATION_MESSAGE);
+    public static void showInfo(final String title, final String msg) {
+	SwingUtilities.invokeLater(new Runnable() {
+	    public void run() {
+		JOptionPane.showMessageDialog(PARENT, msg, title,
+			JOptionPane.INFORMATION_MESSAGE);
+	    }
+	});
     }
 
     public static void showNotImplemented() {
