@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 29.01.2008 - Version 0.1.1
+ * - Weiterer Spezialfall wird geprüft
  * 28.01.2008 - Version 0.1
  *  - Datei hinzugefuegt
  */
@@ -40,22 +42,36 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
 /**
+ * Panel, welches die Elemente zur eingabe der Spezialfälle enthält.
  * 
  * @author Michael Kriese
- * @version 0.1
+ * @version 0.1.1
  * @since 28.01.2008
  * 
  */
 public class SpecialCaseInputPanel extends JPanel implements SpecialCasesInput {
 
-    /** */
+    /**
+     * Dient zur Serialisierung (für uns ohne Bedeutung)
+     */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Liste von ButtonGroup, welche RadioButtons zu logischen Gruppen zuordnet.
+     * Mit ihnen werden die Selektionen zurückgesetzt.
+     */
     private final List<ButtonGroup> groups;
 
+    /**
+     * Variablen für die einzelnen Spezialfälle
+     */
     private int optimalSolArea = 0, solArea = 0, targetFunction = 0,
 	    solProjTo = 0;
 
+    /**
+     * Konstruktor. Er erstellt alle Eingabeelemente und initialisiert die
+     * entsprechenden ActionListener.
+     */
     public SpecialCaseInputPanel() {
 
 	setLayout(new GridLayout(0, 1));
@@ -95,37 +111,34 @@ public class SpecialCaseInputPanel extends JPanel implements SpecialCasesInput {
 	    }
 	});
 
-	// bg = new ButtonGroup();
-	// this.groups.add(bg);
-	// pn = createPanel(Lang
-	// .getString("Input.Panel.SolutionProjectedTo.Title"));
-	//
-	// rb = createBtn(bg, pn, Lang
-	// .getString("Input.Panel.SolutionProjectedTo.Nothing"));
-	// rb.addActionListener(new ActionListener() {
-	// public void actionPerformed(ActionEvent e) {
-	// SpecialCaseInputPanel.this.solProjTo =
-	// LOPSolution.SOLUTION_AREA_EMPTY;
-	// }
-	// });
-	//
-	// rb = createBtn(bg, pn, Lang
-	// .getString("Input.Panel.SolutionProjectedTo.Ray"));
-	// rb.addActionListener(new ActionListener() {
-	// public void actionPerformed(ActionEvent e) {
-	// SpecialCaseInputPanel.this.solProjTo =
-	// LOPSolution.SOLUTION_AREA_LIMITED;
-	// }
-	// });
-	//
-	// rb = createBtn(bg, pn, Lang
-	// .getString("Input.Panel.SolutionProjectedTo.Line"));
-	// rb.addActionListener(new ActionListener() {
-	// public void actionPerformed(ActionEvent e) {
-	// SpecialCaseInputPanel.this.solProjTo =
-	// LOPSolution.SOLUTION_AREA_UNLIMITED;
-	// }
-	// });
+	bg = new ButtonGroup();
+	this.groups.add(bg);
+	pn = createPanel(Lang
+		.getString("Input.Panel.SolutionProjectedTo.Title"));
+
+	rb = createBtn(bg, pn, Lang
+		.getString("Input.Panel.SolutionProjectedTo.Nothing"));
+	rb.addActionListener(new ActionListener() {
+	    public void actionPerformed(ActionEvent e) {
+		SpecialCaseInputPanel.this.solProjTo = LOPSolution.SOLUTION_AREA_EMPTY;
+	    }
+	});
+
+	rb = createBtn(bg, pn, Lang
+		.getString("Input.Panel.SolutionProjectedTo.Ray"));
+	rb.addActionListener(new ActionListener() {
+	    public void actionPerformed(ActionEvent e) {
+		SpecialCaseInputPanel.this.solProjTo = LOPSolution.SOLUTION_AREA_LIMITED;
+	    }
+	});
+
+	rb = createBtn(bg, pn, Lang
+		.getString("Input.Panel.SolutionProjectedTo.Line"));
+	rb.addActionListener(new ActionListener() {
+	    public void actionPerformed(ActionEvent e) {
+		SpecialCaseInputPanel.this.solProjTo = LOPSolution.SOLUTION_AREA_UNLIMITED;
+	    }
+	});
 
 	bg = new ButtonGroup();
 	this.groups.add(bg);
@@ -186,11 +199,20 @@ public class SpecialCaseInputPanel extends JPanel implements SpecialCasesInput {
 	});
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see info.kriese.soPra.gui.input.SpecialCasesInput#getSpecialCase()
+     */
     public int getSpecialCase() {
-	return this.optimalSolArea | this.solArea | this.targetFunction
-		| this.solProjTo;
+	return this.optimalSolArea
+		| (this.solArea == this.solProjTo ? this.solArea : 0)
+		| this.targetFunction | this.solProjTo;
     }
 
+    /**
+     * Setzt die Selektionen und Spezialfälle zurück.
+     */
     public void reset() {
 	for (ButtonGroup grp : this.groups)
 	    grp.clearSelection();
@@ -202,8 +224,15 @@ public class SpecialCaseInputPanel extends JPanel implements SpecialCasesInput {
     }
 
     /**
-     * @param bg
-     * @param pn
+     * Erstellt einen RadioButton.
+     * 
+     * @param bg -
+     *                ButtonGroup, welcher er hinzugefügt werden soll.
+     * @param pn -
+     *                Panel, auf welchem der der Button erscheinen soll.
+     * @param title -
+     *                Beschriftung des Button
+     * @return Einen RadioButton mit den entsprechenden Eigenschaften.
      */
     private JRadioButton createBtn(ButtonGroup bg, JPanel pn, String title) {
 	JRadioButton rb = new JRadioButton(title);
@@ -213,10 +242,27 @@ public class SpecialCaseInputPanel extends JPanel implements SpecialCasesInput {
 	return rb;
     }
 
+    /**
+     * Erstellt ein Panel mit Titel zur Gruppierung der RadioButtons.
+     * 
+     * @param title -
+     *                Titel des Panels
+     * @return Ein Panel mit entsprechenden Eigenschaften.
+     */
     private JPanel createPanel(String title) {
 	return createPanel(title, false);
     }
 
+    /**
+     * Erstellt ein Panel mit Titel zur Gruppierung der RadioButtons.
+     * 
+     * @param title -
+     *                Titel des Panels
+     * @param last -
+     *                Wenn "true", wird ein zusätlicher Rand unter dem Panel
+     *                hinzugefügt
+     * @return Ein Panel mit entsprechenden Eigenschaften.
+     */
     private JPanel createPanel(String title, boolean last) {
 	JPanel pn;
 	pn = new JPanel();

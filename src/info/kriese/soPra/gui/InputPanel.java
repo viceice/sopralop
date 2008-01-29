@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 29.01.2008 - Version 0.7.2.1
+ * - An LOPMinMax Konstanten angepasst.
  * 25.01.2008 - Version 0.7.2
  * - Vorbereitung zur erweiterten Lösungsüberprüfung
  * 10.01.2008 - Version 0.7.1
@@ -124,7 +126,7 @@ import javax.swing.table.TableColumn;
  * 
  * @author Peer Sterner
  * @since 13.05.2007
- * @version 0.7.2
+ * @version 0.7.2.1
  */
 public final class InputPanel extends JPanel {
 
@@ -190,8 +192,8 @@ public final class InputPanel extends JPanel {
 		MessageHandler.showHelp();
 	    }
 	});
-	this.maxEditor.addItem("max");
-	this.maxEditor.addItem("min");
+	this.maxEditor.addItem(LOPMinMax.MAX);
+	this.maxEditor.addItem(LOPMinMax.MIN);
 	this.maxEditor.setBorder(BorderFactory.createEmptyBorder());
 
 	this.primalModel = new LOPTableModel();

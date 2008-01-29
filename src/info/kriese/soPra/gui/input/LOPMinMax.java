@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 29.01.2008 - Version 0.2
+ * - Konstanten für min und max
  * 04.11.2007 - Version 0.1
  *  - Datei hinzugefuegt
  */
@@ -28,14 +30,17 @@ package info.kriese.soPra.gui.input;
  * WrapperKlasse, dient dazu, dass die JTable den richtigen CellEditor benutzt.
  * 
  * @author Michael Kriese
- * @version 0.1
+ * @version 0.2
  * @since 04.11.2007
  * 
  */
 public class LOPMinMax {
 
+    public static final String MAX = "max!";
+    public static final String MIN = "min!";
+
     public static LOPMinMax get(boolean value) {
-	return new LOPMinMax(value ? "max" : "min");
+	return new LOPMinMax(value ? MIN : MAX);
     }
 
     public static LOPMinMax get(String value) {
@@ -49,7 +54,7 @@ public class LOPMinMax {
     }
 
     public boolean isMax() {
-	return "max".equals(this.value);
+	return MAX.equals(this.value);
     }
 
     @Override

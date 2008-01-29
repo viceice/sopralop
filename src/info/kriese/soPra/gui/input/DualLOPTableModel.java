@@ -39,9 +39,13 @@ package info.kriese.soPra.gui.input;
 
 import info.kriese.soPra.gui.MessageHandler;
 import info.kriese.soPra.gui.lang.Lang;
+import info.kriese.soPra.io.impl.SettingsFactory;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPEditor;
 import info.kriese.soPra.lop.LOPEditorAdapter;
+import info.kriese.soPra.lop.LOPSolution;
+import info.kriese.soPra.lop.LOPSolutionArea;
+import info.kriese.soPra.math.Gauss;
 import info.kriese.soPra.math.Vector3Frac;
 
 import java.util.ArrayList;
@@ -63,9 +67,14 @@ public final class DualLOPTableModel extends AbstractTableModel {
     private static final long serialVersionUID = 13L;
 
     private final String[] columnNames;
+
+    private Vector3Frac lopSol;
+
     private boolean max;
 
-    private final Object sol[];
+    private int sCase = 0;
+
+    private final LOPSolutionWrapper sol[];
 
     private SpecialCasesInput specialCases;
 
@@ -78,14 +87,18 @@ public final class DualLOPTableModel extends AbstractTableModel {
     public DualLOPTableModel() {
 	this.vectors = new ArrayList<Vector3Frac>();
 	this.target = Vector3Frac.ZERO;
-	this.sol = new Object[3];
+	this.lopSol = Vector3Frac.ZERO;
+	this.sol = new LOPSolutionWrapper[3];
+
+	this.sol[0] = LOPSolutionWrapper.getInstance();
+	this.sol[1] = LOPSolutionWrapper.getInstance();
+	this.sol[2] = LOPSolutionWrapper.getInstance();
 
 	this.columnNames = new String[5];
 	this.columnNames[0] = " ";
 	this.columnNames[1] = "<html><center><b>y<sub>1</sub></b></center></html>";
 	this.columnNames[2] = "<html><center><b>y<sub>2</sub></b></center></html>";
-	this.columnNames[3] = "<html><center><b>" + "&ge; / &le; / ="
-		+ "</b></center></html>";
+	this.columnNames[3] = "<html><center><b>&ge; / &le; / = </b></center></html>";
 	this.columnNames[4] = "<html><center><b>w</b></center></html>";
     }
 
@@ -129,14 +142,14 @@ public final class DualLOPTableModel extends AbstractTableModel {
 		if (row == 0)
 		    return this.target.getCoordX();
 		else if (row == getRowCount() - 1)
-		    return this.sol[0];
+		    return this.sol[0].getValue();
 		else
 		    return this.vectors.get(row - 2).getCoordX().toString();
 	    case 2:
 		if (row == 0)
 		    return this.target.getCoordY();
 		else if (row == getRowCount() - 1)
-		    return this.sol[1];
+		    return this.sol[1].getValue();
 		else
 		    return this.vectors.get(row - 2).getCoordY().toString();
 	    case 3:
@@ -148,7 +161,7 @@ public final class DualLOPTableModel extends AbstractTableModel {
 			    : "<html>&le;</html>");
 	    case 4:
 		if (row == 0)
-		    return (this.max ? "min" : "max");
+		    return (this.max ? LOPMinMax.MIN : LOPMinMax.MAX);
 		else if (row == getRowCount() - 1)
 		    return this.sol[2];
 		else
@@ -198,67 +211,131 @@ public final class DualLOPTableModel extends AbstractTableModel {
     public void setTable(JTable table) {
 	this.table = table;
 	table.setModel(this);
+	this.sol[0] = LOPSolutionWrapper.getInstance();
+	this.sol[1] = LOPSolutionWrapper.getInstance();
+	this.sol[2] = LOPSolutionWrapper.getInstance();
 	fireTableStructureChanged();
     }
 
-    public void update(LOP lop) {
+    private void update(LOP lop) {
 	this.vectors.clear();
 	for (Vector3Frac vec : lop.getVectors())
 	    this.vectors.add(vec.clone());
 	this.target = lop.getTarget().clone();
 	this.max = lop.isMaximum();
 
-	this.specialCases.getSpecialCase();
+	this.sCase = 0;
 
 	// TODO: Prüfen, welche Fälle auftreten können /behandelt werden müssen
 	// (gibt ja jetzt noch mehr Permutationen...)
-	// LOPSolution solution = lop.getSolution();
-	// if (solution.getSpecialCase() ==
-	// (LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY |
-	// LOPSolution.SOLUTION_AREA_EMPTY
-	// | LOPSolution.TARGET_FUNCTION_EMPTY)) {
-	// this.sol[0] = LOPInfinity.INFINITY;
-	// this.sol[1] = LOPInfinity.INFINITY;
-	// this.sol[2] = LOPInfinity.INFINITY;
-	// } else if (solution.getSpecialCase() ==
-	// (LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY |
-	// LOPSolution.SOLUTION_AREA_UNLIMITED
-	// | LOPSolution.TARGET_FUNCTION_EMPTY)) {
-	// this.sol[0] = LOPNotExsitent.NOT_EXISTENT;
-	// this.sol[1] = LOPNotExsitent.NOT_EXISTENT;
-	// this.sol[2] = LOPNotExsitent.NOT_EXISTENT;
-	// } else {
-	// Vector3Frac vec1 = solution.getAreas().get(0).getL1();
-	// Vector3Frac vec2 = solution.getAreas().get(0).getL2();
-	//
-	// Vector3Frac Vector1 = Vector3Frac.ZERO.clone();
-	// Vector3Frac Vector2 = Vector3Frac.ZERO.clone();
-	// Vector3Frac Vector3 = Vector3Frac.ZERO.clone();
-	//
-	// Vector1.setCoordX(vec1.getCoordX());
-	// Vector1.setCoordY(vec2.getCoordX());
-	// Vector1.setCoordZ(this.target.getCoordX());
-	//
-	// Vector2.setCoordX(vec1.getCoordY());
-	// Vector2.setCoordY(vec2.getCoordY());
-	// Vector2.setCoordZ(this.target.getCoordY());
-	//
-	// Vector3.setCoordX(vec1.getCoordZ());
-	// Vector3.setCoordY(vec2.getCoordZ());
-	// Vector3.setCoordZ(this.target.getCoordZ());
-	//
-	// Vector3Frac tmp = Gauss
-	// .gaussElimination2(Vector1, Vector2, Vector3);
-	// this.sol[0] = tmp.getCoordX().toString();
-	// this.sol[1] = tmp.getCoordY().toString();
-	// this.sol[2] = tmp.getCoordZ().toString();
-	// }
+
+	// Gegeben sei ein Paar aus primalem und dualem LP. Dann trit immer
+	// einer der folgenden Falle zu:
+	// 1. Beide Probleme besitzen eine optimale Losung.
+	// 2. Das primale Problem ist unbeschrankt, das duale unlosbar.
+	// 3. Das primale Problem ist unlosbar, das duale unbeschrankt.
+	// 4. Beide Probleme sind unlosbar.
+
+	LOPSolution solution = lop.getSolution();
+
+	switch (solution.getSpecialCase() & LOPSolution.TARGET_FUNCTION) {
+	    case LOPSolution.TARGET_FUNCTION_EMPTY:
+		this.lopSol = Vector3Frac.ZERO;
+		// TODO : Fall 2 oder 4?
+		this.sCase = LOPSolution.TARGET_FUNCTION_UNLIMITED
+			| LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
+			| LOPSolution.SOLUTION_AREA_UNLIMITED;
+		break;
+	    case LOPSolution.TARGET_FUNCTION_UNLIMITED:
+		this.sCase = LOPSolution.TARGET_FUNCTION_EMPTY
+			| LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
+			| LOPSolution.SOLUTION_AREA_EMPTY;
+		break;
+	    default:
+		for (LOPSolutionArea area : solution.getAreas()) {
+		    Vector3Frac vec1 = area.getL1();
+		    Vector3Frac vec2 = area.getL2();
+
+		    Vector3Frac Vector1 = Vector3Frac.ZERO.clone();
+		    Vector3Frac Vector2 = Vector3Frac.ZERO.clone();
+		    Vector3Frac Vector3 = Vector3Frac.ZERO.clone();
+
+		    Vector1.setCoordX(vec1.getCoordX());
+		    Vector1.setCoordY(vec2.getCoordX());
+		    Vector1.setCoordZ(this.target.getCoordX());
+
+		    Vector2.setCoordX(vec1.getCoordY());
+		    Vector2.setCoordY(vec2.getCoordY());
+		    Vector2.setCoordZ(this.target.getCoordY());
+
+		    Vector3.setCoordX(vec1.getCoordZ());
+		    Vector3.setCoordY(vec2.getCoordZ());
+		    Vector3.setCoordZ(this.target.getCoordZ());
+
+		    this.lopSol = Gauss.gaussElimination2(Vector1, Vector2,
+			    Vector3);
+		    System.out.println("Possible solution: " + this.lopSol);
+		}
+		break;
+	}
 
 	fireTableStructureChanged();
     }
 
     protected void check(LOP lop) {
-	if (isVisible())
-	    MessageHandler.showNotImplemented();
+	if (!isVisible())
+	    return;
+
+	// Eingegebener Spezialfall muss stimmen
+	if (this.sCase != this.specialCases.getSpecialCase()) {
+	    if (SettingsFactory.getInstance().isDebug())
+		System.out.println("Wrong user special case!");
+
+	    MessageHandler.showError(Lang.getString("Strings.Solution"), Lang
+		    .getString("Strings.IncorrectSolution"));
+	    return;
+	}
+
+	switch (this.sCase & LOPSolution.TARGET_FUNCTION) {
+
+	    case LOPSolution.TARGET_FUNCTION_EMPTY:
+		// Es gibt keine Lösung
+
+		if (this.sol[2].getValue() instanceof LOPEmpty)
+		    MessageHandler.showInfo(Lang.getString("Strings.Solution"),
+			    Lang.getString("Strings.CorrectSolution"));
+		else {
+		    if (SettingsFactory.getInstance().isDebug())
+			System.out
+				.println("Wrong user solution! Should be empty.");
+
+		    MessageHandler.showError(
+			    Lang.getString("Strings.Solution"), Lang
+				    .getString("Strings.IncorrectSolution"));
+		}
+		return;
+
+	    case LOPSolution.TARGET_FUNCTION_UNLIMITED:
+		// Lösung ist unendlich, bzw -unendlich bei Minimum gesucht
+
+		if (this.sol[2].getValue() instanceof LOPInfinity)
+		    MessageHandler.showInfo(Lang.getString("Strings.Solution"),
+			    Lang.getString("Strings.CorrectSolution"));
+		else {
+		    if (SettingsFactory.getInstance().isDebug())
+			System.out
+				.println("Wrong user solution! Should be infinity.");
+
+		    MessageHandler.showError(
+			    Lang.getString("Strings.Solution"), Lang
+				    .getString("Strings.IncorrectSolution"));
+		}
+		return;
+	    default:
+		// TODO: implementieren
+		// return;
+	}
+
+	MessageHandler.showNotImplemented();
     }
 }

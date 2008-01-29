@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 29.01.2008 - Version 0.4.5
+ * - Lösungsüberprüfung überarbeitet / vereinfacht
+ * - An LOPMinMax angepasst
  * 28.01.2008 - Version 0.4.4
  * - Lösungsüberprüfung komplett.
  * - Xi-Lösungseingabefelder nur noch für Fractional
@@ -84,7 +87,7 @@ import javax.swing.table.AbstractTableModel;
  * Wandelt das LOP in ein von JTable lesbares Format um.
  * 
  * @author Peer Sterner
- * @version 0.4.4
+ * @version 0.4.5
  * @since 01.11.2007
  * 
  */
@@ -270,7 +273,12 @@ public final class LOPTableModel extends AbstractTableModel {
     public void setTable(JTable table) {
 	this.table = table;
 	table.setModel(this);
-	fireTableStructureChanged();
+
+	for (int i = 0; i < this.values.size(); i++)
+	    this.values.set(i, null);
+
+	this.sol = LOPSolutionWrapper.getInstance();
+	fireTableRowsUpdated(4, 4);
     }
 
     /**
@@ -356,7 +364,7 @@ public final class LOPTableModel extends AbstractTableModel {
 	this.values.clear();
 	for (Vector3Frac vec : lop.getVectors()) {
 	    this.vectors.add(vec.clone());
-	    this.values.add(FractionalFactory.getInstance());
+	    this.values.add(null);
 	}
 	this.target = lop.getTarget().clone();
 	this.max = lop.isMaximum();
@@ -377,7 +385,7 @@ public final class LOPTableModel extends AbstractTableModel {
 	    return;
 
 	this.vectors.add(Vector3FracFactory.getInstance());
-	this.values.add(FractionalFactory.getInstance());
+	this.values.add(null);
 	num++;
 	this.columnNames.insertElementAt("<html><center><b>x<sub>" + num
 		+ "</sub></b></center></html>", num);
@@ -402,83 +410,98 @@ public final class LOPTableModel extends AbstractTableModel {
 	    return;
 	}
 
-	int idx1, idx2, vals = 0;
+	int idx1, idx2, vals = 0, sCase = lop.getSolution().getSpecialCase();
 
-	if (lop.getSolution().getSpecialCase() != this.specialCases
-		.getSpecialCase()) {
+	// Eingegebener Spezialfall muss stimmen
+	if (sCase != this.specialCases.getSpecialCase()) {
 	    if (SettingsFactory.getInstance().isDebug())
 		System.out.println("Wrong user special case!");
+
 	    MessageHandler.showError(Lang.getString("Strings.Solution"), Lang
 		    .getString("Strings.IncorrectSolution"));
 	    return;
 	}
 
-	if ((lop.getSolution().getSpecialCase() & LOPSolution.TARGET_FUNCTION_EMPTY) == LOPSolution.TARGET_FUNCTION_EMPTY) {
-	    // Es gibt keine Lösung
-	    if (this.sol.getValue() instanceof LOPEmpty)
-		MessageHandler.showInfo(Lang.getString("Strings.Solution"),
-			Lang.getString("Strings.CorrectSolution"));
-	    else {
-		if (SettingsFactory.getInstance().isDebug())
-		    System.out.println("Wrong user solution! Should be empty.");
-		MessageHandler.showError(Lang.getString("Strings.Solution"),
-			Lang.getString("Strings.IncorrectSolution"));
-	    }
-	    return;
-	} else if ((lop.getSolution().getSpecialCase() & LOPSolution.TARGET_FUNCTION_UNLIMITED) == LOPSolution.TARGET_FUNCTION_UNLIMITED) {
-	    // Lösung ist unendlich, bzw -unendlich bei Minimum gesucht
-	    if (this.sol.getValue() instanceof LOPInfinity)
-		MessageHandler.showInfo(Lang.getString("Strings.Solution"),
-			Lang.getString("Strings.CorrectSolution"));
-	    else {
-		if (SettingsFactory.getInstance().isDebug())
-		    System.out
-			    .println("Wrong user solution! Should be infinity.");
-		MessageHandler.showError(Lang.getString("Strings.Solution"),
-			Lang.getString("Strings.IncorrectSolution"));
-	    }
-	    return;
-	} else {
+	switch (sCase & LOPSolution.TARGET_FUNCTION) {
 
-	    // Überprüfe normale Lösung
+	    case LOPSolution.TARGET_FUNCTION_EMPTY:
+		// Es gibt keine Lösung
 
-	    for (Fractional sol : this.values)
-		if (sol.isZero())
-		    vals++;
-
-	    if (vals > 2) {
-		MessageHandler.showError(Lang.getString("Strings.Solution"),
-			Lang.getString("Strings.MoreThan2SolValues"));
-		return;
-	    }
-
-	    if (!this.sol.equals(lop.getSolution().getVector().getCoordZ())) {
-		if (SettingsFactory.getInstance().isDebug())
-		    System.out.println("Wrong user solution! Z should be "
-			    + lop.getSolution().getValue());
-		MessageHandler.showError(Lang.getString("Strings.Solution"),
-			Lang.getString("Strings.IncorrectSolution"));
-		return;
-	    }
-
-	    for (LOPSolutionArea area : lop.getSolution().getAreas()) {
-		idx1 = lop.getVectors().indexOf(area.getL1());
-		idx2 = lop.getVectors().indexOf(area.getL2());
-
-		if (area.getL1Amount().equals(this.values.get(idx1))
-			&& area.getL2Amount().equals(this.values.get(idx2))) {
+		if (this.sol.getValue() instanceof LOPEmpty)
 		    MessageHandler.showInfo(Lang.getString("Strings.Solution"),
 			    Lang.getString("Strings.CorrectSolution"));
+		else {
+		    if (SettingsFactory.getInstance().isDebug())
+			System.out
+				.println("Wrong user solution! Should be empty.");
+
+		    MessageHandler.showError(
+			    Lang.getString("Strings.Solution"), Lang
+				    .getString("Strings.IncorrectSolution"));
+		}
+		return;
+
+	    case LOPSolution.TARGET_FUNCTION_UNLIMITED:
+		// Lösung ist unendlich, bzw -unendlich bei Minimum gesucht
+
+		if (this.sol.getValue() instanceof LOPInfinity)
+		    MessageHandler.showInfo(Lang.getString("Strings.Solution"),
+			    Lang.getString("Strings.CorrectSolution"));
+		else {
+		    if (SettingsFactory.getInstance().isDebug())
+			System.out
+				.println("Wrong user solution! Should be infinity.");
+
+		    MessageHandler.showError(
+			    Lang.getString("Strings.Solution"), Lang
+				    .getString("Strings.IncorrectSolution"));
+		}
+		return;
+
+	    default:
+		// Überprüfe normale Lösung
+
+		for (Fractional sol : this.values)
+		    if (sol != null)
+			vals++;
+
+		if (vals > 2) {
+		    MessageHandler.showError(
+			    Lang.getString("Strings.Solution"), Lang
+				    .getString("Strings.MoreThan2SolValues"));
 		    return;
 		}
-	    }
 
-	    if (SettingsFactory.getInstance().isDebug())
-		System.out
-			.println("Wrong user solution! One or more Xi are incorrect.");
+		if (!this.sol.equals(lop.getSolution().getVector().getCoordZ())) {
+		    if (SettingsFactory.getInstance().isDebug())
+			System.out.println("Wrong user solution! Z should be "
+				+ lop.getSolution().getValue());
 
-	    MessageHandler.showError(Lang.getString("Strings.Solution"), Lang
-		    .getString("Strings.IncorrectSolution"));
+		    MessageHandler.showError(
+			    Lang.getString("Strings.Solution"), Lang
+				    .getString("Strings.IncorrectSolution"));
+		    return;
+		}
+
+		for (LOPSolutionArea area : lop.getSolution().getAreas()) {
+		    idx1 = lop.getVectors().indexOf(area.getL1());
+		    idx2 = lop.getVectors().indexOf(area.getL2());
+
+		    if (area.getL1Amount().equals(this.values.get(idx1))
+			    && area.getL2Amount().equals(this.values.get(idx2))) {
+			MessageHandler.showInfo(Lang
+				.getString("Strings.Solution"), Lang
+				.getString("Strings.CorrectSolution"));
+			return;
+		    }
+		}
+
+		if (SettingsFactory.getInstance().isDebug())
+		    System.out
+			    .println("Wrong user solution! One or more Xi are incorrect.");
+
+		MessageHandler.showError(Lang.getString("Strings.Solution"),
+			Lang.getString("Strings.IncorrectSolution"));
 	}
     }
 
@@ -503,7 +526,7 @@ public final class LOPTableModel extends AbstractTableModel {
 		    break;
 	    }
 	    this.vectors.set(i, vec);
-	    this.values.set(i, FractionalFactory.getInstance());
+	    this.values.set(i, null);
 	}
 
 	this.target.getCoordX().setNumerator(0);

@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 29.01.2008 - Version 0.1.2.1
+ * - BugFix: Nullpointer bei Vergleich behoben.
  * 28.01.2008 - Version 0.1.2
  * - NotExistent in Empty umbenannt
  * 19.12.2007 - Version 0.1.1
@@ -34,7 +36,7 @@ import info.kriese.soPra.math.impl.FractionalFactory;
 /**
  * 
  * @author Michael Kriese
- * @version 0.1.2
+ * @version 0.1.2.1
  * @since 04.12.2007
  * 
  */
@@ -49,7 +51,7 @@ public final class LOPSolutionWrapper {
 
     public static LOPSolutionWrapper getInstance(String text) {
 	if (text == null)
-	    return new LOPSolutionWrapper(FractionalFactory.getInstance());
+	    return new LOPSolutionWrapper((Fractional) null);
 
 	else if (text.equals(Empty))
 	    return new LOPSolutionWrapper(LOPEmpty.EMPTY);
@@ -72,7 +74,7 @@ public final class LOPSolutionWrapper {
 
     @Override
     public boolean equals(Object obj) {
-	return this.value.equals(obj);
+	return this.value != null && this.value.equals(obj);
     }
 
     public Class<?> getType() {

@@ -25,6 +25,7 @@
 package info.kriese.soPra.gui.input;
 
 /**
+ * Interface zur Übergabe der eingegebenen Spezialfälle an das TableModel.
  * 
  * @author Michael Kriese
  * @version 0.1
@@ -33,6 +34,11 @@ package info.kriese.soPra.gui.input;
  */
 public interface SpecialCasesInput {
 
+    /**
+     * Gibt die Spezialfälle als Bitfeld zurück
+     * 
+     * @return Bitfeld der Spezialfälle
+     */
     int getSpecialCase();
 
 }
