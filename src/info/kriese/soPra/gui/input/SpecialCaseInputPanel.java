@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 29.01.2008 - Version 0.1.1.1
+ * - BugFix: Ray & Line vertauscht
  * 29.01.2008 - Version 0.1.1
  * - Weiterer Spezialfall wird geprüft
  * 28.01.2008 - Version 0.1
@@ -45,7 +47,7 @@ import javax.swing.JRadioButton;
  * Panel, welches die Elemente zur eingabe der Spezialfälle enthält.
  * 
  * @author Michael Kriese
- * @version 0.1.1
+ * @version 0.1.1.1
  * @since 28.01.2008
  * 
  */
@@ -128,7 +130,7 @@ public class SpecialCaseInputPanel extends JPanel implements SpecialCasesInput {
 		.getString("Input.Panel.SolutionProjectedTo.Ray"));
 	rb.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent e) {
-		SpecialCaseInputPanel.this.solProjTo = LOPSolution.SOLUTION_AREA_LIMITED;
+		SpecialCaseInputPanel.this.solProjTo = LOPSolution.SOLUTION_AREA_UNLIMITED;
 	    }
 	});
 
@@ -136,7 +138,7 @@ public class SpecialCaseInputPanel extends JPanel implements SpecialCasesInput {
 		.getString("Input.Panel.SolutionProjectedTo.Line"));
 	rb.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent e) {
-		SpecialCaseInputPanel.this.solProjTo = LOPSolution.SOLUTION_AREA_UNLIMITED;
+		SpecialCaseInputPanel.this.solProjTo = LOPSolution.SOLUTION_AREA_LIMITED;
 	    }
 	});
 
