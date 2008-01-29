@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 29.01.2008 - Version 0.5.1
+ * - Konstanten zur Extraktion der Spezialfälle hinzugefügt.
  * 27.01.2008 - Version 0.5
  * - isSpecialCase gelöscht, da Problem immer ein Spezialfall.
  * 25.01.2008 - Version 0.4.1
@@ -45,31 +47,92 @@ import info.kriese.soPra.math.Fractional;
 import info.kriese.soPra.math.Vector3Frac;
 
 /**
+ * Interface, welches die Lösung eines LOP's repräsentiert.
  * 
  * @author Michael Kriese
- * @version 0.5
+ * @version 0.5.1
  * @since 23.08.2007
  * 
  */
 public interface LOPSolution {
 
-    static final int OPTIMAL_SOLUTION_AREA_EMPTY = 0x0c;
-    static final int OPTIMAL_SOLUTION_AREA_MULTIPLE = 0x08;
-    static final int OPTIMAL_SOLUTION_AREA_POINT = 0x04;
+    /**
+     * Konstante zum extrahieren des Spezialfalls "Bereich der optimalen Lösung
+     * ist:".
+     */
+    static final int OPTIMAL_SOLUTION_AREA = 0xC;
 
-    static final int SOLUTION_AREA_EMPTY = 0x03;
-    static final int SOLUTION_AREA_LIMITED = 0x01;
-    static final int SOLUTION_AREA_UNLIMITED = 0x02;
+    /**
+     * Konstante für Spezialfall "Bereich der optimalen Lösung ist leer".
+     */
+    static final int OPTIMAL_SOLUTION_AREA_EMPTY = 0xC;
 
+    /**
+     * Konstante für Spezialfall "Bereich der optimalen Lösung ist mehr als ein
+     * Punkt".
+     */
+    static final int OPTIMAL_SOLUTION_AREA_MULTIPLE = 0x8;
+
+    /**
+     * Konstante für Spezialfall "Bereich der optimalen Lösung ist ein Punkt".
+     */
+    static final int OPTIMAL_SOLUTION_AREA_POINT = 0x4;
+
+    /**
+     * Konstante zum extrahieren des Spezialfalls "Lösungsbereich des Problems
+     * ist:".
+     */
+    static final int SOLUTION_AREA = 0x3;
+
+    /**
+     * Konstante für Spezialfall "Lösungsbereich des Problems ist leer".
+     */
+    static final int SOLUTION_AREA_EMPTY = 0x3;
+
+    /**
+     * Konstante für Spezialfall "Lösungsbereich des Problems ist beschränkt".
+     */
+    static final int SOLUTION_AREA_LIMITED = 0x1;
+
+    /**
+     * Konstante für Spezialfall "Lösungsbereich des Problems ist unbeschränkt".
+     */
+    static final int SOLUTION_AREA_UNLIMITED = 0x2;
+
+    /**
+     * Konstante zum extrahieren des Spezialfalls "Die Zielfunktion des Problems
+     * ist:".
+     */
+    static final int TARGET_FUNCTION = 0x30;
+
+    /**
+     * Konstante für Spezialfall "Die Zielfunktion des Problems ist weder /
+     * noch".
+     */
     static final int TARGET_FUNCTION_EMPTY = 0x30;
+
+    /**
+     * Konstante für Spezialfall "Die Zielfunktion des Problems ist beschränkt".
+     */
     static final int TARGET_FUNCTION_LIMITED = 0x10;
+
+    /**
+     * Konstante für Spezialfall "Die Zielfunktion des Problems ist
+     * unbeschränkt".
+     */
     static final int TARGET_FUNCTION_UNLIMITED = 0x20;
 
     /**
      * Fügt eine Fläche hinzu.
      * 
-     * @param l1
-     * @param l2
+     * @param l1 -
+     *                Erster Vektor, welcher die Fläche aufspannt
+     * @param l2 -
+     *                Zweiter Vektor, welcher die Fläche aufspannt
+     * @param f1 -
+     *                Anteil des ersten Vektors (Linearkombination)
+     * @param f2 -
+     *                Anteil des zweiten Vektors (Linearkombination)
      */
     void addArea(Vector3Frac l1, Vector3Frac l2, Fractional f1, Fractional f2);
 
@@ -83,30 +146,74 @@ public interface LOPSolution {
      * 
      * Dies ist gleichzeitig die Anzahl der Lösungen.
      * 
-     * @return
+     * @return Anzahl der Lösungsflächen
      */
     int countAreas();
 
     /**
      * Gibt eine Liste der Flächen zurück, die den Lösungsraum aufspannen.
      * 
-     * @return
+     * @return Liste der Lösungsflächen.
      */
     List<LOPSolutionArea> getAreas();
 
+    /**
+     * Gibt das Problem zu dieser Lösung zurück.
+     * 
+     * @return Lineares Optimierungsproblem.
+     */
     LOP getProblem();
 
+    /**
+     * Gibt die Spezialfälle des LOP zurück.
+     * 
+     * @return Spezialfälle als Bitfeld
+     */
     int getSpecialCase();
 
+    /**
+     * Gibt den Zielwert des LOP zurück.
+     * 
+     * @return Zielwert
+     */
     double getValue();
 
+    /**
+     * Gibt die Koordinaten des Schnittpunktes zurück.
+     * 
+     * @return Vektor, des Schnittpunktes.
+     */
     Vector3Frac getVector();
 
+    /**
+     * Setzt die Spezialfälle.
+     * 
+     * @param sCase -
+     *                Verknüpfte Spezialfälle.
+     */
     void setSpecialCase(int sCase);
 
+    /**
+     * Setzt den Zielwert.
+     * 
+     * @param value -
+     *                Zielwert als double
+     */
     void setValue(double value);
 
+    /**
+     * Setzt den Zielwert.
+     * 
+     * @param value -
+     *                Zielwert als Fractional
+     */
     void setValue(Fractional value);
 
+    /**
+     * Setzt den Zielwert.
+     * 
+     * @param value -
+     *                Zielwert als Vektor (Ganzer Punkt)
+     */
     void setValue(Vector3Frac value);
 }
