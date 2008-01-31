@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 31.01.2008 - Version 0.3.2
+ * - Lösungsüberprüfung findet jetzt statt
  * 29.01.2008 - Version 0.3.1
  * - Teilweise implementierung der Lösungsüberprüfung
  * - Eingabe der Lösung jetzt möglich
@@ -250,34 +252,23 @@ public final class DualLOPTableModel extends AbstractTableModel {
 
 	this.sCase = 0;
 
-	// TODO: Prüfen, welche Fälle auftreten können /behandelt werden müssen
-	// (gibt ja jetzt noch mehr Permutationen...)
-
-	// Gegeben sei ein Paar aus primalem und dualem LP. Dann trit immer
-	// einer der folgenden Falle zu:
-	// 1. Beide Probleme besitzen eine optimale Lösung.
-	// 2. Das primale Problem ist unbeschränkt, das duale unlösbar.
-	// 3. Das primale Problem ist unlösbar, das duale unbeschränkt.
-	// 4. Beide Probleme sind unlosbar.
-
 	LOPSolution solution = lop.getSolution();
 
 	switch (solution.getSpecialCase() & LOPSolution.TARGET_FUNCTION) {
 	    case LOPSolution.TARGET_FUNCTION_EMPTY:
 		this.lopSol = Vector3Frac.ZERO;
-		// TODO : Fall 2 oder 4? Hier muss irgentwie unterschieden
-		// werden!
 		this.sCase = LOPSolution.TARGET_FUNCTION_UNLIMITED
 			| LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
 			| LOPSolution.SOLUTION_AREA_UNLIMITED;
 		break;
 	    case LOPSolution.TARGET_FUNCTION_UNLIMITED:
+	    this.lopSol = Vector3Frac.ZERO;
 		this.sCase = LOPSolution.TARGET_FUNCTION_EMPTY
 			| LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
 			| LOPSolution.SOLUTION_AREA_EMPTY;
 		break;
 	    default:
-		// TODO: Was sind korrekte Lösungen?
+	    // Transponieren der Vektoren im Dualen LOP
 		for (LOPSolutionArea area : solution.getAreas()) {
 		    Vector3Frac vec1 = area.getL1();
 		    Vector3Frac vec2 = area.getL2();
@@ -299,8 +290,8 @@ public final class DualLOPTableModel extends AbstractTableModel {
 		    vector3.setCoordZ(this.target.getCoordZ());
 
 		    vec1 = Gauss.gaussElimination2(vector1, vector2, vector3);
-
-		    if (vec1.getCoordZ().equals(solution.getValue())) {
+			 
+		    if (vec1.getCoordZ().equals(lop.getSolution().getVector().getCoordZ())) {
 			this.lopSol = vec1;
 
 			if (SettingsFactory.getInstance().isDebug())
@@ -309,6 +300,7 @@ public final class DualLOPTableModel extends AbstractTableModel {
 		    }
 
 		}
+	    this.sCase = solution.getSpecialCase();
 		break;
 	}
 
@@ -316,10 +308,14 @@ public final class DualLOPTableModel extends AbstractTableModel {
     }
 
     protected void check(LOP lop) {
+    	
 	if (!isVisible())
 	    return;
 
 	// Eingegebener Spezialfall muss stimmen
+	
+	//	 TODO: Überprüfung auf den Lösungsbereich des Dualen LOP findet nicht statt (Bitfeld vergrößern?)!
+	
 	if (this.sCase != this.specialCases.getSpecialCase()) {
 	    if (SettingsFactory.getInstance().isDebug())
 		System.out.println("Wrong user special case!");
@@ -366,11 +362,33 @@ public final class DualLOPTableModel extends AbstractTableModel {
 		return;
 
 	    default:
-		// Normale Lösung überprüfen
-		// TODO: implementieren
-		// return;
-	}
+	    if (!this.sol.equals(lop.getSolution().getVector().getCoordZ())) {
+		    if (SettingsFactory.getInstance().isDebug())
+			System.out.println("Wrong user solution! Z should be "
+				+ lop.getSolution().getValue());
 
-	MessageHandler.showNotImplemented();
-    }
+		    MessageHandler.showError(
+			    Lang.getString("Strings.Solution"), Lang
+				    .getString("Strings.IncorrectSolution"));
+		    return;
+		}
+	    
+	    if (lopSol.getCoordX().equals(this.amounts[0])
+			    && lopSol.getCoordY().equals(this.amounts[1])) {
+			MessageHandler.showInfo(Lang
+				.getString("Strings.Solution"), Lang
+				.getString("Strings.CorrectSolution"));
+			return;
+	    }
+	    
+	    if (SettingsFactory.getInstance().isDebug())
+		    System.out
+			    .println("Wrong user solution! One or more Xi are incorrect.");
+
+		MessageHandler.showError(Lang.getString("Strings.Solution"),
+			Lang.getString("Strings.IncorrectSolution"));
+
+		return;
+	}
+	}
 }

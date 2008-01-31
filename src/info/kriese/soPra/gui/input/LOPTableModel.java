@@ -415,6 +415,9 @@ public final class LOPTableModel extends AbstractTableModel {
 	int idx1, idx2, vals = 0, sCase = lop.getSolution().getSpecialCase();
 
 	// Eingegebener Spezialfall muss stimmen
+	
+	//	 TODO: Überprüfung auf den Lösungsbereich des Primalen LOP findet nicht statt (Bitfeld vergrößern?)!
+	
 	if (sCase != this.specialCases.getSpecialCase()) {
 	    if (SettingsFactory.getInstance().isDebug())
 		System.out.println("Wrong user special case!");

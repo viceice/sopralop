@@ -258,10 +258,13 @@ public final class DualLOPPanel extends JPanel {
 
 	// Zeichnen des Strahls, der durch das Optimum geht (nur, wenn es
 	// mindestens eine Lösung gibt)
-	if (this.solution.getSpecialCase() == (LOPSolution.OPTIMAL_SOLUTION_AREA_POINT | LOPSolution.SOLUTION_AREA_LIMITED
-			| LOPSolution.TARGET_FUNCTION_LIMITED))
+	if (this.solution.getSpecialCase() == 21 || this.solution.getSpecialCase() == 22
+			|| this.solution.getSpecialCase() == 25  || this.solution.getSpecialCase() == 26 )
 	    if (this.tmp.getCoordX().toFloat() >= 0
 		    && this.tmp.getCoordY().toFloat() >= 0) {
+	    	
+	    	System.out.println("X: " + this.tmp.getCoordX() + ", Y: "
+	    			+ this.tmp.getCoordY() + ", Z: " + this.tmp.getCoordZ());
 
 		g2.setPaint(optimum);
 		int localOptimumX1 = this.offsetX
