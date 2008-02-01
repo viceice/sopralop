@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 01.02.2008 - Version 0.3.1
+ * Neue Methode cross
  * 17.09.2007 - Version 0.3
  * - Neue Methoden: dot, sub, inv, getArray, scale
  * 15.09.2007 - Version 0.2
@@ -38,7 +40,7 @@ import javax.vecmath.Vector3f;
  * 
  * @author Michael Kriese
  * @since 11.04.2007
- * @version 0.3
+ * @version 0.3.1
  */
 public interface Vector3Frac extends Cloneable {
 
@@ -52,6 +54,17 @@ public interface Vector3Frac extends Cloneable {
     Vector3Frac clone();
 
     /**
+     * Berechnet das Kreuzprodukt.
+     * 
+     * res = this x vec
+     * 
+     * @param vec -
+     *                Vektor, welcher benutz werden soll.
+     * @return Das Kreuzprodukt diese und des übergebenen Vektors.
+     */
+    Vector3Frac cross(Vector3Frac vec);
+
+    /**
      * Berechnet das Skalarprodukt.
      * 
      * res = this . vec
@@ -62,6 +75,13 @@ public interface Vector3Frac extends Cloneable {
      */
     float dot(Vector3Frac vec);
 
+    /**
+     * Vergleicht diesen Vektor mit einem anderen.
+     * 
+     * @param vec -
+     *                Vektor, mit welchem verglichen werden soll.
+     * @return "true" wenn alle Werte (x, y, z) gleich sind.
+     */
     boolean equals(Vector3Frac vec);
 
     /**

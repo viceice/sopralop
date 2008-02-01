@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 01.02.2008 - Version 0.3.3
+ * - Methode cross implementiert
  * 26.01.2008 - Version 0.3.2
  * - BugFix: Methode inv war fehlerhaft implementiert.
  * 07.11.2007 - Version 0.3.1
@@ -48,7 +50,7 @@ import info.kriese.soPra.math.Vector3Frac;
  * 
  * @author Michael Kriese
  * @since 11.04.2007
- * @version 0.3.2
+ * @version 0.3.3
  */
 final class Vector3FracImpl implements Vector3Frac {
 
@@ -60,6 +62,11 @@ final class Vector3FracImpl implements Vector3Frac {
 	this.z = z;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#clone()
+     */
     @Override
     public Vector3Frac clone() {
 	try {
@@ -74,12 +81,40 @@ final class Vector3FracImpl implements Vector3Frac {
 	}
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see info.kriese.soPra.math.Vector3Frac#cross(info.kriese.soPra.math.Vector3Frac)
+     */
+    public Vector3Frac cross(Vector3Frac vec) {
+	Vector3Frac res = clone();
+
+	res.setCoordX(this.y.mul(vec.getCoordZ()).sub(
+		this.z.max(vec.getCoordY())));
+	res.setCoordY(this.z.mul(vec.getCoordX()).sub(
+		this.x.max(vec.getCoordZ())));
+	res.setCoordZ(this.x.mul(vec.getCoordY()).sub(
+		this.y.max(vec.getCoordX())));
+
+	return res;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see info.kriese.soPra.math.Vector3Frac#dot(info.kriese.soPra.math.Vector3Frac)
+     */
     public float dot(Vector3Frac vec) {
 	return this.x.mul(vec.getCoordX()).toFloat()
 		+ this.y.mul(vec.getCoordY()).toFloat()
 		+ this.z.mul(vec.getCoordZ()).toFloat();
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
     public boolean equals(Object obj) {
 	if (obj instanceof Vector3Frac)
@@ -88,31 +123,61 @@ final class Vector3FracImpl implements Vector3Frac {
 	    return super.equals(obj);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see info.kriese.soPra.math.Vector3Frac#equals(info.kriese.soPra.math.Vector3Frac)
+     */
     public boolean equals(Vector3Frac vec) {
 	if (vec == null)
 	    return false;
 	return this.x.equals(vec.getCoordX()) && this.y.equals(vec.getCoordY())
 		&& this.z.equals(vec.getCoordZ());
     }
-    
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see info.kriese.soPra.math.Vector3Frac#getCoordX()
+     */
     public Fractional getCoordX() {
 	return this.x;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see info.kriese.soPra.math.Vector3Frac#getCoordY()
+     */
     public Fractional getCoordY() {
 	return this.y;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see info.kriese.soPra.math.Vector3Frac#getCoordZ()
+     */
     public Fractional getCoordZ() {
 	return this.z;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see info.kriese.soPra.math.Vector3Frac#getNorm()
+     */
     public float getNorm() {
 	return (float) Math.sqrt(Math2.square(this.x.toFloat())
 		+ Math2.square(this.y.toFloat())
 		+ Math2.square(this.z.toFloat()));
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see info.kriese.soPra.math.Vector3Frac#inv()
+     */
     public Vector3Frac inv() {
 	Vector3Frac res = clone();
 
@@ -123,6 +188,11 @@ final class Vector3FracImpl implements Vector3Frac {
 	return res;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see info.kriese.soPra.math.Vector3Frac#scale(int)
+     */
     public Vector3Frac scale(int i) {
 	Vector3Frac res = clone();
 	if (res.equals(ZERO))
@@ -135,18 +205,38 @@ final class Vector3FracImpl implements Vector3Frac {
 	return res;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see info.kriese.soPra.math.Vector3Frac#setCoordX(info.kriese.soPra.math.Fractional)
+     */
     public void setCoordX(Fractional x) {
 	this.x = x;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see info.kriese.soPra.math.Vector3Frac#setCoordY(info.kriese.soPra.math.Fractional)
+     */
     public void setCoordY(Fractional y) {
 	this.y = y;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see info.kriese.soPra.math.Vector3Frac#setCoordZ(info.kriese.soPra.math.Fractional)
+     */
     public void setCoordZ(Fractional z) {
 	this.z = z;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see info.kriese.soPra.math.Vector3Frac#sub(info.kriese.soPra.math.Vector3Frac)
+     */
     public Vector3Frac sub(Vector3Frac vec) {
 	Vector3Frac res = this.clone();
 
@@ -157,15 +247,30 @@ final class Vector3FracImpl implements Vector3Frac {
 	return res;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see info.kriese.soPra.math.Vector3Frac#toPoint3f()
+     */
     public Point3f toPoint3f() {
 	return new Point3f(this.x.toFloat(), this.y.toFloat(), this.z.toFloat());
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString() {
 	return "(" + this.x + ", " + this.y + ", " + this.z + ")";
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see info.kriese.soPra.math.Vector3Frac#toVector3f()
+     */
     public Vector3f toVector3f() {
 	return new Vector3f(this.x.toFloat(), this.y.toFloat(), this.z
 		.toFloat());
