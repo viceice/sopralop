@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 01.02.2008 - Version 0.2
+ * - Fälle für Lösungsbereich können ausgeblendet werden
  * 29.01.2008 - Version 0.1.2
  * - Weiterer Spezialfall wird geprüft
  * - BugFix: Strecke <---> Strahl korrigiert
@@ -38,6 +40,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -46,7 +49,7 @@ import javax.swing.JRadioButton;
  * Panel, welches die Elemente zur eingabe der Spezialfälle enthält.
  * 
  * @author Michael Kriese
- * @version 0.1.2
+ * @version 0.2
  * @since 28.01.2008
  * 
  */
@@ -69,13 +72,15 @@ public class SpecialCaseInputPanel extends JPanel implements SpecialCasesInput {
     private int optimalSolArea = 0, solArea = 0, targetFunction = 0,
 	    solProjTo = 0;
 
+    private final JPanel pnSolArea, pnSolProjTo;
+
     /**
      * Konstruktor. Er erstellt alle Eingabeelemente und initialisiert die
      * entsprechenden ActionListener.
      */
     public SpecialCaseInputPanel() {
 
-	setLayout(new GridLayout(0, 1));
+	setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 	setBorder(BorderFactory.createEmptyBorder());
 
 	this.groups = new LinkedList<ButtonGroup>();
@@ -86,9 +91,10 @@ public class SpecialCaseInputPanel extends JPanel implements SpecialCasesInput {
 
 	bg = new ButtonGroup();
 	this.groups.add(bg);
-	pn = createPanel(Lang.getString("Input.Panel.SolutionArea.Title"));
+	this.pnSolArea = createPanel(Lang
+		.getString("Input.Panel.SolutionArea.Title"));
 
-	rb = createBtn(bg, pn, Lang
+	rb = createBtn(bg, this.pnSolArea, Lang
 		.getString("Input.Panel.SolutionArea.IsEmpty"));
 	rb.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent e) {
@@ -96,7 +102,7 @@ public class SpecialCaseInputPanel extends JPanel implements SpecialCasesInput {
 	    }
 	});
 
-	rb = createBtn(bg, pn, Lang
+	rb = createBtn(bg, this.pnSolArea, Lang
 		.getString("Input.Panel.SolutionArea.IsLimited"));
 	rb.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent e) {
@@ -104,7 +110,7 @@ public class SpecialCaseInputPanel extends JPanel implements SpecialCasesInput {
 	    }
 	});
 
-	rb = createBtn(bg, pn, Lang
+	rb = createBtn(bg, this.pnSolArea, Lang
 		.getString("Input.Panel.SolutionArea.IsUnlimited"));
 	rb.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent e) {
@@ -114,10 +120,10 @@ public class SpecialCaseInputPanel extends JPanel implements SpecialCasesInput {
 
 	bg = new ButtonGroup();
 	this.groups.add(bg);
-	pn = createPanel(Lang
+	this.pnSolProjTo = createPanel(Lang
 		.getString("Input.Panel.SolutionProjectedTo.Title"));
 
-	rb = createBtn(bg, pn, Lang
+	rb = createBtn(bg, this.pnSolProjTo, Lang
 		.getString("Input.Panel.SolutionProjectedTo.Nothing"));
 	rb.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent e) {
@@ -125,7 +131,7 @@ public class SpecialCaseInputPanel extends JPanel implements SpecialCasesInput {
 	    }
 	});
 
-	rb = createBtn(bg, pn, Lang
+	rb = createBtn(bg, this.pnSolProjTo, Lang
 		.getString("Input.Panel.SolutionProjectedTo.Line"));
 	rb.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent e) {
@@ -133,7 +139,7 @@ public class SpecialCaseInputPanel extends JPanel implements SpecialCasesInput {
 	    }
 	});
 
-	rb = createBtn(bg, pn, Lang
+	rb = createBtn(bg, this.pnSolProjTo, Lang
 		.getString("Input.Panel.SolutionProjectedTo.Ray"));
 	rb.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent e) {
@@ -222,6 +228,21 @@ public class SpecialCaseInputPanel extends JPanel implements SpecialCasesInput {
 	this.solArea = 0;
 	this.targetFunction = 0;
 	this.solProjTo = 0;
+    }
+
+    public void setVisible(int sCase, boolean visible) {
+
+	switch (sCase) {
+	    case LOPSolution.SOLUTION_AREA:
+		this.pnSolArea.setVisible(visible);
+		this.pnSolProjTo.setVisible(visible);
+		break;
+
+	    default:
+		break;
+	}
+
+	revalidate();
     }
 
     /**

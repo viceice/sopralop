@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 01.02.2008 - Version 0.4.7
+ * - LOPSolutionWrapper in Fractionals geändert
+ * - Lösungüberprüfung überarbeitet
  * 29.01.2008 - Version 0.4.6
  * - Eingabe der Lösungen toleranter gemacht
  * 29.01.2008 - Version 0.4.5
@@ -89,7 +92,7 @@ import javax.swing.table.AbstractTableModel;
  * Wandelt das LOP in ein von JTable lesbares Format um.
  * 
  * @author Peer Sterner
- * @version 0.4.6
+ * @version 0.4.7
  * @since 01.11.2007
  * 
  */
@@ -103,7 +106,7 @@ public final class LOPTableModel extends AbstractTableModel {
 
     private boolean max;
 
-    private LOPSolutionWrapper sol;
+    private Fractional sol;
 
     private SpecialCasesInput specialCases;
 
@@ -118,7 +121,7 @@ public final class LOPTableModel extends AbstractTableModel {
 	this.columnNames = new Vector<String>();
 	this.vectors = new ArrayList<Vector3Frac>();
 	this.values = new ArrayList<Fractional>();
-	this.sol = LOPSolutionWrapper.getInstance(null);
+	this.sol = null;
 	this.editor = null;
 
 	setColumnCount();
@@ -179,7 +182,7 @@ public final class LOPTableModel extends AbstractTableModel {
 		case 3:
 		    return this.target.getCoordY();
 		default:
-		    return this.sol.getValue();
+		    return this.sol;
 	    }
 
 	Vector3Frac vec = this.vectors.get(col - 1);
@@ -279,7 +282,7 @@ public final class LOPTableModel extends AbstractTableModel {
 	for (int i = 0; i < this.values.size(); i++)
 	    this.values.set(i, null);
 
-	this.sol = LOPSolutionWrapper.getInstance();
+	this.sol = null;
 	fireTableRowsUpdated(4, 4);
     }
 
@@ -316,7 +319,7 @@ public final class LOPTableModel extends AbstractTableModel {
 		    this.target.setCoordY((Fractional) value);
 		    break;
 		case 5:
-		    this.sol = (LOPSolutionWrapper) value;
+		    this.sol = (Fractional) value;
 		    break;
 	    }
 	else {
@@ -371,7 +374,7 @@ public final class LOPTableModel extends AbstractTableModel {
 	this.target = lop.getTarget().clone();
 	this.max = lop.isMaximum();
 
-	this.sol = LOPSolutionWrapper.getInstance();
+	this.sol = null;
 
 	setEdited(false);
 	setColumnCount();
@@ -415,9 +418,6 @@ public final class LOPTableModel extends AbstractTableModel {
 	int idx1, idx2, vals = 0, sCase = lop.getSolution().getSpecialCase();
 
 	// Eingegebener Spezialfall muss stimmen
-	
-	//	 TODO: Überprüfung auf den Lösungsbereich des Primalen LOP findet nicht statt (Bitfeld vergrößern?)!
-	
 	if (sCase != this.specialCases.getSpecialCase()) {
 	    if (SettingsFactory.getInstance().isDebug())
 		System.out.println("Wrong user special case!");
@@ -432,7 +432,19 @@ public final class LOPTableModel extends AbstractTableModel {
 	    case LOPSolution.TARGET_FUNCTION_EMPTY:
 		// Es gibt keine Lösung
 
-		if (this.sol.getValue() instanceof LOPEmpty)
+		for (Fractional sol : this.values)
+		    if (sol != null) {
+			if (SettingsFactory.getInstance().isDebug())
+			    System.out
+				    .println("Wrong user solution! Should be empty.");
+
+			MessageHandler.showError(Lang
+				.getString("Strings.Solution"), Lang
+				.getString("Strings.IncorrectSolution"));
+			return;
+		    }
+
+		if (this.sol == null)
 		    MessageHandler.showInfo(Lang.getString("Strings.Solution"),
 			    Lang.getString("Strings.CorrectSolution"));
 		else {
@@ -449,7 +461,19 @@ public final class LOPTableModel extends AbstractTableModel {
 	    case LOPSolution.TARGET_FUNCTION_UNLIMITED:
 		// Lösung ist unendlich, bzw -unendlich bei Minimum gesucht
 
-		if (this.sol.getValue() instanceof LOPInfinity)
+		for (Fractional sol : this.values)
+		    if (sol != null) {
+			if (SettingsFactory.getInstance().isDebug())
+			    System.out
+				    .println("Wrong user solution! Should be empty.");
+
+			MessageHandler.showError(Lang
+				.getString("Strings.Solution"), Lang
+				.getString("Strings.IncorrectSolution"));
+			return;
+		    }
+
+		if (this.sol == null)
 		    MessageHandler.showInfo(Lang.getString("Strings.Solution"),
 			    Lang.getString("Strings.CorrectSolution"));
 		else {
@@ -467,7 +491,16 @@ public final class LOPTableModel extends AbstractTableModel {
 		// Überprüfe normale Lösung
 
 		for (Fractional sol : this.values)
-		    if (sol != null && !sol.isZero())
+		    if (sol == null) {
+			if (SettingsFactory.getInstance().isDebug())
+			    System.out
+				    .println("Wrong user solution! Shouldn't be empty.");
+
+			MessageHandler.showError(Lang
+				.getString("Strings.Solution"), Lang
+				.getString("Strings.IncorrectSolution"));
+			return;
+		    } else if (!sol.isZero())
 			vals++;
 
 		if (vals > 2) {
@@ -539,7 +572,7 @@ public final class LOPTableModel extends AbstractTableModel {
 
 	this.max = true;
 
-	this.sol = LOPSolutionWrapper.getInstance();
+	this.sol = null;
 
 	setEdited(true);
 	fireTableDataChanged();
