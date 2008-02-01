@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 01.02.2008 - Version 0.5.7.1
+ * - BugFix: Wegen einer fehlerhaften IF-Bedingung wurde Zylinder für duales
+ *   Problem nicht angezeigt
  * 29.01.2008 - Version 0.5.7
  * - Fallüberprüfung vereinfacht
  * 28.01.2008 - Version 0.5.6
@@ -28,7 +31,8 @@
  * 21.01.2008 - Version 0.5.4
  * - Vektor für duales Problem hinzugefügt
  * 15.01.2008 - Version 0.5.3
- * - Zielfunktion bekommt jetz Lösung übergeben (zur Skalierung nach unten oder oben)
+ * - Zielfunktion bekommt jetz Lösung übergeben (zur Skalierung nach unten oder
+ *   oben)
  * 09.11.2007 - Version 0.5.2
  * - Lösung nicht mehr unsichtbar
  * - Änderung der Scene nur noch bei problemsolved, da nach problemChanged das
@@ -121,7 +125,7 @@ import com.sun.j3d.utils.universe.ViewingPlatform;
  * TODO: Beleuchtung verbessern
  * 
  * @author Michael Kriese
- * @version 0.5.7
+ * @version 0.5.7.1
  * @since 26.04.2007
  */
 public final class Engine3D {
@@ -277,8 +281,7 @@ public final class Engine3D {
 
 	    @Override
 	    public void showDualProblem(LOP lop) {
-		if (lop.getSolution().getSpecialCase() == (LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
-			| LOPSolution.SOLUTION_AREA_LIMITED | LOPSolution.TARGET_FUNCTION_LIMITED)) {
+		if ((lop.getSolution().getSpecialCase() & LOPSolution.TARGET_FUNCTION) == LOPSolution.TARGET_FUNCTION_LIMITED) {
 		    Engine3D.this.intersection.setDualLineVisible(true);
 		    resetScene();
 		}
