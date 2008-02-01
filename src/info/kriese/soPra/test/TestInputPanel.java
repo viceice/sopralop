@@ -57,7 +57,7 @@ public class TestInputPanel {
 
     private static boolean DUAL = true;
     private static LOP lop;
-    private static final String SAMPLE = "S08";
+    private static final String SAMPLE = "S01";
 
     public static void main(String[] args) {
 	// Parse commandline arguments

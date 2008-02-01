@@ -89,12 +89,19 @@ final class Vector3FracImpl implements Vector3Frac {
     public Vector3Frac cross(Vector3Frac vec) {
 	Vector3Frac res = clone();
 
-	res.setCoordX(this.y.mul(vec.getCoordZ()).sub(
-		this.z.max(vec.getCoordY())));
-	res.setCoordY(this.z.mul(vec.getCoordX()).sub(
-		this.x.max(vec.getCoordZ())));
-	res.setCoordZ(this.x.mul(vec.getCoordY()).sub(
-		this.y.max(vec.getCoordX())));
+	Fractional a1, a2, a3, b1, b2, b3;
+
+	a1 = this.x;
+	a2 = this.y;
+	a3 = this.z;
+
+	b1 = vec.getCoordX();
+	b2 = vec.getCoordY();
+	b3 = vec.getCoordZ();
+
+	res.setCoordX(a2.mul(b3).sub(a3.mul(b2)));
+	res.setCoordY(a3.mul(b1).sub(a1.mul(b3)));
+	res.setCoordZ(a1.mul(b2).sub(a2.mul(b1)));
 
 	return res;
     }

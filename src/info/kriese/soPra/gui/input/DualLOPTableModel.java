@@ -21,7 +21,7 @@
  * 
  * 01.02.2008 - Version 0.3.2
  * - LOPSolutionWrapper in Fractionals geändert
- * - Lösungsüberprüfung überarbeitet (noch nicht komplett)
+ * - Lösungsüberprüfung überarbeitet
  * 29.01.2008 - Version 0.3.1
  * - Teilweise implementierung der Lösungsüberprüfung
  * - Eingabe der Lösung jetzt möglich
@@ -54,6 +54,9 @@ import info.kriese.soPra.lop.LOPSolution;
 import info.kriese.soPra.lop.LOPSolutionArea;
 import info.kriese.soPra.math.Fractional;
 import info.kriese.soPra.math.Vector3Frac;
+import info.kriese.soPra.math.Vertex;
+import info.kriese.soPra.math.impl.Vector3FracFactory;
+import info.kriese.soPra.math.quickhull.QuickHull;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -78,8 +81,6 @@ public final class DualLOPTableModel extends AbstractTableModel {
 
     private final List<Vector3Frac> dualLOPSols;
 
-    private Vector3Frac lopSol;
-
     private boolean max;
 
     private int sCase = 0;
@@ -97,7 +98,6 @@ public final class DualLOPTableModel extends AbstractTableModel {
     public DualLOPTableModel() {
 	this.vectors = new ArrayList<Vector3Frac>();
 	this.target = Vector3Frac.ZERO;
-	this.lopSol = Vector3Frac.ZERO;
 
 	this.userValues = new Fractional[3];
 
@@ -269,35 +269,83 @@ public final class DualLOPTableModel extends AbstractTableModel {
 
 	switch (solution.getSpecialCase() & LOPSolution.TARGET_FUNCTION) {
 	    case LOPSolution.TARGET_FUNCTION_EMPTY:
-		this.lopSol = Vector3Frac.ZERO;
-		// TODO : Fall 2 oder 4? Hier muss irgentwie unterschieden
-		// werden!
 		// TODO: Wenn U3-Achse in Kegel dann duales Problem keine
 		// Lösung, sonst unbeschränkt
-		this.sCase = LOPSolution.TARGET_FUNCTION_UNLIMITED
-			| LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY;
+
+		List<Vector3Frac> list = new LinkedList<Vector3Frac>(
+			this.vectors);
+		list.add(Vector3FracFactory.getInstance(0, 0, 1));
+
+		QuickHull hull = new QuickHull();
+		hull.build(list);
+		list.clear();
+
+		for (Vertex vtx : hull.getVerticesList()) {
+		    if (!list.contains(vtx.p2))
+			list.add(vtx.p2);
+		    if (!list.contains(vtx.p3))
+			list.add(vtx.p3);
+		}
+
+		if (list.contains(Vector3FracFactory.getInstance(0, 0, 1)))
+		    this.sCase = LOPSolution.TARGET_FUNCTION_EMPTY
+			    | LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY;
+		else
+		    this.sCase = LOPSolution.TARGET_FUNCTION_UNLIMITED
+			    | LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY;
 		break;
+
 	    case LOPSolution.TARGET_FUNCTION_UNLIMITED:
 		this.sCase = LOPSolution.TARGET_FUNCTION_EMPTY
 			| LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY;
 		break;
+
 	    default:
-		// TODO: Was sind korrekte Lösungen?
+
+		if (SettingsFactory.getInstance().isDebug()) {
+		    System.out
+			    .println("--------------------------------------------------------");
+		    System.out
+			    .println("Searching for solutions of the dual problem!");
+		}
 		for (LOPSolutionArea area : solution.getAreas()) {
 
-		    // TODO cross (v1 ,v2) bilden, danach z auf -1 normieren
-		    Vector3Frac vec1 = area.getL1();
-		    // Vector3Frac vec2 = area.getL2();
+		    Vector3Frac vec = area.getL1().cross(area.getL2());
 
-		    if (vec1.getCoordZ().equals(solution.getValue())) {
-			this.lopSol = vec1;
+		    if (SettingsFactory.getInstance().isDebug())
+			System.out.print(area + "\t_|_\t");
 
-			if (SettingsFactory.getInstance().isDebug())
-			    System.out.println("Possible solution: "
-				    + this.lopSol);
-		    }
+		    Fractional z = vec.getCoordZ();
+
+		    if (z.is(Fractional.GEQUAL_ZERO))
+			z = z.mul(-1);
+
+		    vec.setCoordX(vec.getCoordX().div(z));
+		    vec.setCoordY(vec.getCoordY().div(z));
+		    vec.setCoordZ(vec.getCoordZ().div(z));
+
+		    z = vec.getCoordX().mul(this.target.getCoordX()).add(
+			    vec.getCoordY().mul(this.target.getCoordY()));
+
+		    if (SettingsFactory.getInstance().isDebug())
+			System.out.println(vec + "\t|\t" + z);
+
+		    if (z.equals(solution.getValue()))
+			if (!this.dualLOPSols.contains(vec))
+			    this.dualLOPSols.add(vec);
 
 		}
+
+		if (this.dualLOPSols.size() > 1)
+		    this.sCase = LOPSolution.TARGET_FUNCTION_LIMITED
+			    | LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE;
+		else
+		    this.sCase = LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
+			    | LOPSolution.TARGET_FUNCTION_LIMITED;
+
+		if (SettingsFactory.getInstance().isDebug())
+		    System.out
+			    .println("--------------------------------------------------------");
 		break;
 	}
 
@@ -323,7 +371,10 @@ public final class DualLOPTableModel extends AbstractTableModel {
 	    case LOPSolution.TARGET_FUNCTION_EMPTY:
 		// Es gibt keine Lösung
 
-		if (true) // TODO: Wenn alle Felder leer
+		// Benutzer darf nichts eingegeben haben, da Lösung nicht
+		// existiert oder unbeschränkt ist
+		if (this.userValues[0] == null && this.userValues[1] == null
+			&& this.userValues[2] == null)
 		    MessageHandler.showInfo(Lang.getString("Strings.Solution"),
 			    Lang.getString("Strings.CorrectSolution"));
 		else {
@@ -340,13 +391,15 @@ public final class DualLOPTableModel extends AbstractTableModel {
 	    case LOPSolution.TARGET_FUNCTION_UNLIMITED:
 		// Lösung ist unendlich, bzw -unendlich bei Minimum gesucht
 
-		if (true) // TODO: Wenn alle Felder leer
+		// Benutzer darf nichts eingegeben haben
+		if (this.userValues[0] == null && this.userValues[1] == null
+			&& this.userValues[2] == null)
 		    MessageHandler.showInfo(Lang.getString("Strings.Solution"),
 			    Lang.getString("Strings.CorrectSolution"));
 		else {
 		    if (SettingsFactory.getInstance().isDebug())
 			System.out
-				.println("Wrong user solution! Should be infinity.");
+				.println("Wrong user solution! Should be empty.");
 
 		    MessageHandler.showError(
 			    Lang.getString("Strings.Solution"), Lang
@@ -355,11 +408,47 @@ public final class DualLOPTableModel extends AbstractTableModel {
 		return;
 
 	    default:
-		// Normale Lösung überprüfen
-		// TODO: implementieren
-		// return;
-	}
+		// Überprüfe ob Benutzer Werte eingegeben hat
+		if (this.userValues[0] == null || this.userValues[1] == null
+			|| this.userValues[2] == null) {
+		    if (SettingsFactory.getInstance().isDebug())
+			System.out
+				.println("Wrong user solution! Shouldn't be empty.");
 
-	MessageHandler.showNotImplemented();
+		    MessageHandler.showError(
+			    Lang.getString("Strings.Solution"), Lang
+				    .getString("Strings.IncorrectSolution"));
+		    return;
+		}
+
+		// Überprüfe ob Benutzer-Zielwert stimmt
+		if (this.userValues[2].equals(lop.getSolution().getValue())) {
+		    if (SettingsFactory.getInstance().isDebug())
+			System.out
+				.println("Wrong user solution! Target should be: "
+					+ lop.getSolution().getValue());
+
+		    MessageHandler.showError(
+			    Lang.getString("Strings.Solution"), Lang
+				    .getString("Strings.IncorrectSolution"));
+		    return;
+		}
+
+		// Überprüfe ob Benutzer eine richtige BasisLösung eingegeben
+		// hat
+		for (Vector3Frac vec : this.dualLOPSols)
+		    if (vec.getCoordX().equals(this.userValues[0])
+			    && vec.getCoordY().equals(this.userValues[1]))
+			MessageHandler.showInfo(Lang
+				.getString("Strings.Solution"), Lang
+				.getString("Strings.CorrectSolution"));
+
+		if (SettingsFactory.getInstance().isDebug())
+		    System.out.println("Wrong user solution! Wrong values.");
+
+		MessageHandler.showError(Lang.getString("Strings.Solution"),
+			Lang.getString("Strings.IncorrectSolution"));
+		return;
+	}
     }
 }
