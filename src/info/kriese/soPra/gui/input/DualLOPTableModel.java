@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 01.02.2008 - Version 0.3.2.1
+ * - BugFix: Fehler in der Lösungsberechnung behoben
  * 01.02.2008 - Version 0.3.2
  * - LOPSolutionWrapper in Fractionals geändert
  * - Lösungsüberprüfung überarbeitet
@@ -69,7 +71,7 @@ import javax.swing.table.AbstractTableModel;
  * Wandelt das duale LOP in ein von JTable lesbares Format um.
  * 
  * @author Peer Sterner
- * @version 0.3.2
+ * @version 0.3.2.1
  * @since 09.11.2007
  * 
  */
@@ -269,8 +271,6 @@ public final class DualLOPTableModel extends AbstractTableModel {
 
 	switch (solution.getSpecialCase() & LOPSolution.TARGET_FUNCTION) {
 	    case LOPSolution.TARGET_FUNCTION_EMPTY:
-		// TODO: Wenn U3-Achse in Kegel dann duales Problem keine
-		// Lösung, sonst unbeschränkt
 
 		List<Vector3Frac> list = new LinkedList<Vector3Frac>(
 			this.vectors);
@@ -330,7 +330,7 @@ public final class DualLOPTableModel extends AbstractTableModel {
 		    if (SettingsFactory.getInstance().isDebug())
 			System.out.println(vec + "\t|\t" + z);
 
-		    if (z.equals(solution.getValue()))
+		    if (z.equals(solution.getVector().getCoordZ()))
 			if (!this.dualLOPSols.contains(vec))
 			    this.dualLOPSols.add(vec);
 
@@ -436,12 +436,17 @@ public final class DualLOPTableModel extends AbstractTableModel {
 
 		// Überprüfe ob Benutzer eine richtige BasisLösung eingegeben
 		// hat
-		for (Vector3Frac vec : this.dualLOPSols)
+		for (Vector3Frac vec : this.dualLOPSols) {
+		    System.out.println(vec + "\t" + this.userValues[0] + " "
+			    + this.userValues[1]);
 		    if (vec.getCoordX().equals(this.userValues[0])
-			    && vec.getCoordY().equals(this.userValues[1]))
+			    && vec.getCoordY().equals(this.userValues[1])) {
 			MessageHandler.showInfo(Lang
 				.getString("Strings.Solution"), Lang
 				.getString("Strings.CorrectSolution"));
+			return;
+		    }
+		}
 
 		if (SettingsFactory.getInstance().isDebug())
 		    System.out.println("Wrong user solution! Wrong values.");
