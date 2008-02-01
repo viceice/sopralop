@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 01.02.2008 - Version 0.8.4
+ * - Schriftformatierung vom Info-Label in HTML-Code ausgelagert
  * 26.01.2008 - Version 0.8.3.1
  * - Schrift auf Info-Label jetzt fett gedruckt
  * 25.01.2008 - Version 0.8.3
@@ -88,7 +90,6 @@ import info.kriese.soPra.lop.LOPAdapter;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.List;
@@ -109,7 +110,7 @@ import javax.swing.border.Border;
 
 /**
  * @author Michael Kriese
- * @version 0.8.3
+ * @version 0.8.4
  * @since 12.05.2007
  * 
  */
@@ -176,9 +177,6 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 
 	this.problem = new JLabel(Lang.getString("Strings.PrimalProblem"));
 	this.problem.setBorder(BorderFactory.createEmptyBorder(5, 50, 5, 50));
-	this.problem.setHorizontalTextPosition(JLabel.CENTER);
-	Font f = this.problem.getFont();
-	this.problem.setFont(f.deriveFont(Font.BOLD));
 
 	generateMainMenu();
 	generateMainToolbar();
