@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 01.02.2008 - Version 0.7.3
+ * - Fälle für Lösungsbereich werden im dualen ausgeblendet
+ * - Unendlich und Leer kann nicht mehr eingegeben werden
  * 29.01.2008 - Version 0.7.2.1
  * - An LOPMinMax Konstanten angepasst.
  * 25.01.2008 - Version 0.7.2
@@ -84,15 +87,14 @@ package info.kriese.soPra.gui;
 import info.kriese.soPra.gui.input.DualLOPTableModel;
 import info.kriese.soPra.gui.input.FractionalTableCellEditor;
 import info.kriese.soPra.gui.input.LOPMinMax;
-import info.kriese.soPra.gui.input.LOPSolutionWrapper;
 import info.kriese.soPra.gui.input.LOPTableCellRenderer;
 import info.kriese.soPra.gui.input.LOPTableModel;
-import info.kriese.soPra.gui.input.SolutionTableCellEditor;
 import info.kriese.soPra.gui.input.SpecialCaseInputPanel;
 import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPAdapter;
 import info.kriese.soPra.lop.LOPEditor;
+import info.kriese.soPra.lop.LOPSolution;
 import info.kriese.soPra.math.Fractional;
 
 import java.awt.BorderLayout;
@@ -126,7 +128,7 @@ import javax.swing.table.TableColumn;
  * 
  * @author Peer Sterner
  * @since 13.05.2007
- * @version 0.7.2.1
+ * @version 0.7.3
  */
 public final class InputPanel extends JPanel {
 
@@ -263,8 +265,6 @@ public final class InputPanel extends JPanel {
 	     */
 	    @Override
 	    public TableCellEditor getCellEditor(int row, int column) {
-		if (row == getRowCount() - 1 && column == getColumnCount() - 1)
-		    return getDefaultEditor(LOPSolutionWrapper.class);
 
 		if (column > 0 && column < getColumnCount() - 2)
 		    return getDefaultEditor(Fractional.class);
@@ -287,8 +287,6 @@ public final class InputPanel extends JPanel {
 		this.maxEditor));
 	this.table.setDefaultEditor(Fractional.class,
 		new FractionalTableCellEditor());
-	this.table.setDefaultEditor(LOPSolutionWrapper.class,
-		new SolutionTableCellEditor());
 	this.table.setBackground(null);
 	this.table.setOpaque(false);
 	this.table.setBorder(BorderFactory.createEmptyBorder());
@@ -334,6 +332,8 @@ public final class InputPanel extends JPanel {
 	    @Override
 	    public void showDualProblem(LOP lop) {
 		InputPanel.this.dualModel.setTable(InputPanel.this.table);
+		InputPanel.this.sci
+			.setVisible(LOPSolution.SOLUTION_AREA, false);
 		InputPanel.this.sci.reset();
 		setToolbarEnabled(false);
 	    }
@@ -341,6 +341,7 @@ public final class InputPanel extends JPanel {
 	    @Override
 	    public void showPrimalProblem(LOP lop) {
 		InputPanel.this.primalModel.setTable(InputPanel.this.table);
+		InputPanel.this.sci.setVisible(LOPSolution.SOLUTION_AREA, true);
 		InputPanel.this.sci.reset();
 		setToolbarEnabled(true);
 	    }
