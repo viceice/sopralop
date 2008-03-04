@@ -61,6 +61,9 @@ import com.sun.j3d.utils.geometry.Cylinder;
  */
 public final class Target3D extends TransformGroup {
 
+    /**
+     * Gruppen für die Beschriftung der Zielgeraden und die Zielgerade selbst.
+     */
     private final TransformGroup desc, gline;
 
     /**

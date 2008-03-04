@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 04.03.2008 - Version 0.5.8
+ * - Beleuchtung verbessert
  * 01.02.2008 - Version 0.5.7.1
  * - BugFix: Wegen einer fehlerhaften IF-Bedingung wurde Zylinder für duales
  *   Problem nicht angezeigt
@@ -88,7 +90,6 @@ package info.kriese.soPra.engine3D;
 
 import info.kriese.soPra.engine3D.objects.Cone3D;
 import info.kriese.soPra.engine3D.objects.CoordinatePlane3D;
-import info.kriese.soPra.engine3D.objects.GeomObjects;
 import info.kriese.soPra.engine3D.objects.Point3D;
 import info.kriese.soPra.engine3D.objects.Target3D;
 import info.kriese.soPra.gui.Virtual3DFrame;
@@ -105,6 +106,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+import javax.media.j3d.AmbientLight;
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Canvas3D;
 import javax.media.j3d.DirectionalLight;
@@ -112,8 +114,8 @@ import javax.media.j3d.GraphicsConfigTemplate3D;
 import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransformGroup;
 import javax.media.j3d.View;
+import javax.vecmath.Color3f;
 import javax.vecmath.Vector3d;
-import javax.vecmath.Vector3f;
 
 import com.sun.j3d.utils.behaviors.vp.OrbitBehavior;
 import com.sun.j3d.utils.universe.SimpleUniverse;
@@ -122,10 +124,8 @@ import com.sun.j3d.utils.universe.ViewingPlatform;
 /**
  * Stellt Methoden zur Berechnung der 3D-Szene bereit.
  * 
- * TODO: Beleuchtung verbessern
- * 
  * @author Michael Kriese
- * @version 0.5.7.1
+ * @version 0.5.8
  * @since 26.04.2007
  */
 public final class Engine3D {
@@ -281,10 +281,8 @@ public final class Engine3D {
 
 	    @Override
 	    public void showDualProblem(LOP lop) {
-		if ((lop.getSolution().getSpecialCase() & LOPSolution.TARGET_FUNCTION) == LOPSolution.TARGET_FUNCTION_LIMITED) {
+		if ((lop.getSolution().getSpecialCase() & LOPSolution.TARGET_FUNCTION) == LOPSolution.TARGET_FUNCTION_LIMITED)
 		    Engine3D.this.intersection.setDualLineVisible(true);
-		    resetScene();
-		}
 
 	    }
 
@@ -372,13 +370,33 @@ public final class Engine3D {
      * Erstellt die Beleuchtung, ohne die man nichts sehen würde.
      */
     private void createLight() {
-	this.elemsGroup.addChild(GeomObjects.getLight());
+	AmbientLight global = new AmbientLight(new Color3f(0.4f, 0.4f, 0.4f));
+	global.setInfluencingBounds(Tools3D.LIGHT_BOUNDS);
+	this.elemsGroup.addChild(global);
 
-	DirectionalLight headlight = new DirectionalLight();
-	headlight.setColor(Tools3D.WHITE);
-	headlight.setInfluencingBounds(Tools3D.LIGHT_BOUNDS);
-	headlight.setDirection(new Vector3f(0.0f, 0.0f, -1.0f));
-	this.hudGroup.addChild(headlight);
+	DirectionalLight direct = new DirectionalLight();
+	direct.setColor(Tools3D.WHITE);
+	direct.setDirection(-1.0f, -1.0f, -1.0f);
+	direct.setInfluencingBounds(Tools3D.LIGHT_BOUNDS);
+	this.elemsGroup.addChild(direct);
+
+	direct = new DirectionalLight();
+	direct.setColor(Tools3D.WHITE);
+	direct.setDirection(1.0f, -1.0f, 1.0f);
+	direct.setInfluencingBounds(Tools3D.LIGHT_BOUNDS);
+	this.elemsGroup.addChild(direct);
+
+	direct = new DirectionalLight();
+	direct.setColor(Tools3D.WHITE);
+	direct.setDirection(1.0f, 1.0f, -1.0f);
+	direct.setInfluencingBounds(Tools3D.LIGHT_BOUNDS);
+	this.elemsGroup.addChild(direct);
+
+	direct = new DirectionalLight();
+	direct.setColor(Tools3D.WHITE);
+	direct.setDirection(-1.0f, 1.0f, 1.0f);
+	direct.setInfluencingBounds(Tools3D.LIGHT_BOUNDS);
+	this.elemsGroup.addChild(direct);
     }
 
     /**

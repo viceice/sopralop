@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 04.03.2008 - Version 0.5.1
+ * - Falls Normalenvektor der Ebene nach unten zeigt muss die Rotation
+ *    um die x-Achse negiert werden.
  * 17.01.2008 - Version 0.5
  * - Polygonzahl für Primitive erhöht
  * - Vektor für duales Problem hinzugefügt
@@ -55,7 +58,7 @@ import com.sun.j3d.utils.geometry.Sphere;
  * Klasse, welche den Schnittpunkt und die Hilfslinien repräsentiert.
  * 
  * @author Michael Kriese
- * @version 0.5
+ * @version 0.5.1
  * @since 10.09.2007
  * 
  */
@@ -120,20 +123,14 @@ public class Point3D extends TransformGroup {
      * 
      * @param pos -
      *                Position, an der der Schnittpunkt liegt.
-     */
-    @Deprecated
-    public void compute(Vector3f pos) {
-	compute(pos, null, null);
-    }
-
-    /**
-     * Berechnet die Position des Schnittpunkts und der Hilfslinien.
-     * 
-     * @param pos
-     * @param l1
-     * @param l2
+     * @param l1 -
+     *                Erster Spannvektor der Lösungebene
+     * @param l2 -
+     *                Zweiter Spannvektor der Lösungebene
      */
     public void compute(Vector3f pos, Vector3f l1, Vector3f l2) {
+
+	// Settings sets = SettingsFactory.getInstance();
 
 	Vector3d rot = new Vector3d(), scale = new Vector3d(1.0, 1.0, 1.0);
 	Vector3f trans;
@@ -167,12 +164,23 @@ public class Point3D extends TransformGroup {
 	    v1 = new Vector3d(0.0, 1.0, 0.0);
 	    v2 = new Vector3d(targ.x, targ.y, 0.0);
 	    rot.z = -Math2.angle(v1, v2);
+
+	    // Falls Normalenvektor der Ebene nach unten zeigt muss die Rotation
+	    // um die x-Achse negiert werden.
+	    if (targ.z < 0)
+		rot.x *= -1.0;
 	}
 
 	this.grpDualLine.setTransform(Tools3D
 		.createTransform(trans, rot, scale));
     }
 
+    /**
+     * Macht den Normalenvektor der Lösungfläche sichbar oder unsichtbar.
+     * 
+     * @param visible -
+     *                "True" für sichtbar und "False" für unsichbar
+     */
     public void setDualLineVisible(boolean visible) {
 	Appearance apr = this.dualline.getAppearance();
 	RenderingAttributes ra = new RenderingAttributes();
