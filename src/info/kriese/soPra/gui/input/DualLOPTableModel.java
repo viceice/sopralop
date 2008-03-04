@@ -77,26 +77,59 @@ import javax.swing.table.AbstractTableModel;
  */
 public final class DualLOPTableModel extends AbstractTableModel {
 
+    /**
+     * Dient zur Serialisierung.
+     */
     private static final long serialVersionUID = 13L;
 
+    /**
+     * Titel der Tabellenköpfe.
+     */
     private final String[] columnNames;
 
+    /**
+     * Lösungen des dualen Problems.
+     */
     private final List<Vector3Frac> dualLOPSols;
 
+    /**
+     * Duales Problem ist Maximum oder Minimum.
+     */
     private boolean max;
 
+    /**
+     * Spezialfall des dualen Problems.
+     */
     private int sCase = 0;
 
+    /**
+     * Eigabefelder für Spezialfälle.
+     */
     private SpecialCasesInput specialCases;
 
+    /**
+     * Tabelle der dieses Tabellenmodell hinzugefügt wird.
+     */
     private JTable table;
 
+    /**
+     * Zielvektor des primalen Problems.
+     */
     private Vector3Frac target;
 
+    /**
+     * Die durch den Nutzer eingegebenen Lösungswerte.
+     */
     private final Fractional[] userValues;
 
+    /**
+     * Die Vektoren des primalen Problems.
+     */
     private final List<Vector3Frac> vectors;
 
+    /**
+     * Konstruktor, welcher alle nötigen Variablen und Objekte initialisiert.
+     */
     public DualLOPTableModel() {
 	this.vectors = new ArrayList<Vector3Frac>();
 	this.target = Vector3Frac.ZERO;
@@ -113,24 +146,56 @@ public final class DualLOPTableModel extends AbstractTableModel {
 	this.columnNames[4] = "<html><center><b>w</b></center></html>";
     }
 
+    /**
+     * Gibt den Klassentyp der jeweiligen Spalte zurück.
+     * 
+     * @return Klassentyp der Spalte.
+     */
     @Override
     public Class<?> getColumnClass(int c) {
 	return getValueAt(0, c).getClass();
     }
 
+    /**
+     * Gibt die Anzahl der Spalten zurück.
+     * 
+     * @return Anzahl der Spalten.
+     */
     public int getColumnCount() {
 	return 5;
     }
 
+    /**
+     * Gibt den Titel der Spalte zurück.
+     * 
+     * @param col -
+     *                Spalte, für die der Titel zurückgegeben werden soll.
+     * 
+     * @return Titel der Spalte.
+     */
     @Override
     public String getColumnName(int col) {
 	return this.columnNames[col];
     }
 
+    /**
+     * Gibt die Anzahl der Zeilen zurück.
+     * 
+     * @return Anzahl der Zeilen.
+     */
     public int getRowCount() {
 	return this.vectors.size() + 4;
     }
 
+    /**
+     * Gibt den Wert der Tabellenzelle zurück.
+     * 
+     * @param row -
+     *                Zeile der Zelle.
+     * @param col -
+     *                Spalte der Zelle.
+     * @return Wert der Zelle.
+     */
     public Object getValueAt(int row, int col) {
 	if (row == 1 || row == getRowCount() - 2)
 	    return "";
@@ -186,8 +251,11 @@ public final class DualLOPTableModel extends AbstractTableModel {
     /**
      * legt die Editierbarkeit einzelner Zellen fest
      * 
-     * @param row
-     * @param col
+     * @param row -
+     *                Zeile der Zelle.
+     * @param col -
+     *                Spalte der Zelle.
+     * @return "True", falls Zelle editierbar ist, sonst "False".
      */
     @Override
     public boolean isCellEditable(int row, int col) {
@@ -197,10 +265,21 @@ public final class DualLOPTableModel extends AbstractTableModel {
 	    return false;
     }
 
+    /**
+     * Sind die Werte dieses Modells sichbar?
+     * 
+     * @return "True", wenn ja, sonst "False".
+     */
     public boolean isVisible() {
 	return this.table != null && this.table.getModel() == this;
     }
 
+    /**
+     * Setzt den LOPEditor, um auf Interaktion des Users reagieren zu können.
+     * 
+     * @param editor -
+     *                Editor, bei dem die Callbacks registriert werden.
+     */
     public void setEditor(LOPEditor editor) {
 	editor.addListener(new LOPEditorAdapter() {
 	    @Override
@@ -215,10 +294,22 @@ public final class DualLOPTableModel extends AbstractTableModel {
 	});
     }
 
+    /**
+     * Registriert das Eingabeelement für Spezialfälle.
+     * 
+     * @param sci -
+     *                Eingabeelement für Spezialfälle.
+     */
     public void setSpecialCasesComponent(SpecialCasesInput sci) {
 	this.specialCases = sci;
     }
 
+    /**
+     * Aktiviert dieses Modell.
+     * 
+     * @param table -
+     *                Tabelle bei der dieses Modell aktiviert werden soll.
+     */
     public void setTable(JTable table) {
 	this.table = table;
 	table.setModel(this);
@@ -228,6 +319,16 @@ public final class DualLOPTableModel extends AbstractTableModel {
 	fireTableStructureChanged();
     }
 
+    /**
+     * Setzt den Wert einer Zelle.
+     * 
+     * @param value -
+     *                Wert, welcher gesetzt werden soll.
+     * @param row -
+     *                Zeile der Zelle.
+     * @param col -
+     *                Spalte der Zelle.
+     */
     @Override
     public void setValueAt(Object value, int row, int col) {
 
@@ -247,6 +348,12 @@ public final class DualLOPTableModel extends AbstractTableModel {
 	fireTableCellUpdated(row, col);
     }
 
+    /**
+     * Aktualisiert das Tabellenmodell mit dem LOP.
+     * 
+     * @param lop -
+     *                LOP, welches zum aktualisieren verwendet werden soll.
+     */
     private void update(LOP lop) {
 	this.vectors.clear();
 	for (Vector3Frac vec : lop.getVectors())
@@ -256,16 +363,6 @@ public final class DualLOPTableModel extends AbstractTableModel {
 
 	this.dualLOPSols.clear();
 	this.sCase = 0;
-
-	// TODO: Prüfen, welche Fälle auftreten können /behandelt werden müssen
-	// (gibt ja jetzt noch mehr Permutationen...)
-
-	// Gegeben sei ein Paar aus primalem und dualem LP. Dann trit immer
-	// einer der folgenden Fälle zu:
-	// 1. Beide Probleme besitzen eine optimale Lösung.
-	// 2. Das primale Problem ist unbeschränkt, das duale unlösbar.
-	// 3. Das primale Problem ist unlösbar, das duale unbeschränkt.
-	// 4. Beide Probleme sind unlösbar.
 
 	LOPSolution solution = lop.getSolution();
 
@@ -352,6 +449,12 @@ public final class DualLOPTableModel extends AbstractTableModel {
 	fireTableStructureChanged();
     }
 
+    /**
+     * Überprüft die vom Nutzer eingegebenen Werte.
+     * 
+     * @param lop -
+     *                LOP, mit dem die Werte überprüft werden soll.
+     */
     protected void check(LOP lop) {
 	if (!isVisible())
 	    return;
