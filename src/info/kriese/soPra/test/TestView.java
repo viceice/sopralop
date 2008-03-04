@@ -19,6 +19,10 @@
  * 
  * ChangeLog:
  * 
+ * 04.03.2008 - Version 0.1.4
+ * - Fensterposition angepasst
+ * - Mit [F5] kann die Szene zurückgesetzt werden
+ * - Doppelte Ausgabe entfernt
  * 26.01.2008 - Version 0.1.3
  * - An neue SettingsFactory angepasst.
  * 17.01.2008 - Verison 0.1.2
@@ -34,6 +38,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 import javax.media.j3d.Canvas3D;
+import javax.swing.JFrame;
 
 import info.kriese.soPra.engine3D.Engine3D;
 import info.kriese.soPra.gui.Virtual3DFrame;
@@ -47,17 +52,18 @@ import info.kriese.soPra.lop.impl.LOPFactory;
 import info.kriese.soPra.math.LOPSolver;
 
 /**
+ * Programm zum testen der 3D-Szene.
  * 
  * @author Michael Kriese
- * @version 0.1.3
+ * @version 0.1.4
  * @since 17.09.2007
  * 
  */
 public final class TestView {
 
-    private static boolean DUAL = true;
+    private static Engine3D engine;
     private static LOP lop;
-    private static final String SAMPLE = "S02";
+    private static final String SAMPLE = "S03";
 
     /**
      * @param args
@@ -69,6 +75,8 @@ public final class TestView {
 
 	SettingsFactory.initJava();
 
+	SettingsFactory.setDebug(true);
+
 	SettingsFactory.showTitle("VisualTest");
 
 	lop = LOPFactory.newLinearOptimizingProblem();
@@ -77,23 +85,30 @@ public final class TestView {
 	solver.setEditor(editor);
 
 	Visual3DFrame view = new Visual3DFrame(null);
+	view.setExtendedState(JFrame.NORMAL);
+	view.setLocationRelativeTo(null);
 
-	Engine3D engine = new Engine3D();
+	engine = new Engine3D();
 	engine.addConnection(view);
 	engine.addConnection(new Virtual3DFrame() {
 
 	    public void addCanvas(Canvas3D canvas) {
 		canvas.addKeyListener(new KeyAdapter() {
+		    private boolean dual = true;
+
 		    @Override
 		    public void keyPressed(KeyEvent e) {
 			if (e.getKeyCode() == KeyEvent.VK_F7) {
-			    if (DUAL) {
+			    if (this.dual) {
 				lop.showDualProblem();
-				DUAL = false;
+				this.dual = false;
 			    } else {
 				lop.showPrimalProblem();
-				DUAL = true;
+				this.dual = true;
 			    }
+			    e.consume();
+			} else if (e.getKeyCode() == KeyEvent.VK_F5) {
+			    engine.resetScene();
 			    e.consume();
 			}
 		    }
@@ -105,10 +120,6 @@ public final class TestView {
 	editor.open(IOUtils.getURL("problems/"
 		+ Lang.getString("Menu.File.Samples." + SAMPLE + ".File")
 		+ ".lop"));
-
-	System.err.flush();
-	System.out.println("Problem: ");
-	IOUtils.print(lop, System.out);
 
 	view.setVisible(true);
     }
