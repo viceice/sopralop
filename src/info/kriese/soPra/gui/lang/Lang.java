@@ -43,6 +43,7 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 /**
+ * Diese Klasse dient zur Realisierung der Mehrsprachigkeit.
  * 
  * @author Michael Kriese
  * @version 0.4.2
@@ -51,10 +52,24 @@ import java.util.ResourceBundle;
  */
 public final class Lang {
 
+    /**
+     * Name der Resource, in der nach den Sprachdaten gesucht werden soll.
+     */
     private static final String BUNDLE_NAME = "info.kriese.soPra.gui.lang.lang";
 
+    /**
+     * Referenz auch die geladene SprachResource.
+     */
     private static ResourceBundle RESOURCE_BUNDLE = null;
 
+    /**
+     * Sucht in der Sprachresource nach dem "KEY" und gibt den Wert als Ganzzahl
+     * zurück.
+     * 
+     * @param key -
+     *                "KEY", nach dem gesucht werden soll.
+     * @return Wert als Ganzzahl
+     */
     public static int getInt(String key) {
 	try {
 	    return Integer.parseInt(getString(key));
@@ -63,10 +78,30 @@ public final class Lang {
 	}
     }
 
+    /**
+     * Sucht in der Sprachresource nach dem "KEY" und gibt den Wert als
+     * Zeichenkette zurück.
+     * 
+     * @param key -
+     *                "KEY", nach dem gesucht werden soll.
+     * @return Wert als Zeichenkette
+     */
     public static String getString(String key) {
 	return getString(key, "!" + key + "!");
     }
 
+    /**
+     * Sucht in der Sprachresource nach dem "KEY" und gibt den Wert als
+     * Zeichenkette zurück. Zusätzlich werden in der gefundenen Zeichenkette die
+     * Platzhalter durch die übergebenen Objekte ersetzt.
+     * 
+     * @param key -
+     *                "KEY", nach dem gesucht werden soll.
+     * @param args -
+     *                Liste von Objekten, die für die Platzhalter eingesetzt
+     *                werden sollen.
+     * @return Wert als Zeichenkette
+     */
     public static String getString(String key, Object[] args) {
 
 	try {
@@ -78,6 +113,17 @@ public final class Lang {
 	}
     }
 
+    /**
+     * Sucht in der Sprachresource nach dem "KEY" und gibt den Wert als
+     * Zeichenkette zurück. Hier kann ein Standardwert übergeben werden, der
+     * zurückgegeben wird, wenn der "KEY" nicht gefunden wird.
+     * 
+     * @param key -
+     *                "KEY", nach dem gesucht werden soll.
+     * @param def -
+     *                Standardwert, der genutzt werden soll
+     * @return Wert als Zeichenkette
+     */
     public static String getString(String key, String def) {
 	if (RESOURCE_BUNDLE == null)
 	    RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME, Locale
