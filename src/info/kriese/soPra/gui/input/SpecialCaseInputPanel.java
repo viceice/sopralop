@@ -72,6 +72,9 @@ public class SpecialCaseInputPanel extends JPanel implements SpecialCasesInput {
     private int optimalSolArea = 0, solArea = 0, targetFunction = 0,
 	    solProjTo = 0;
 
+    /**
+     * Pannel für Spezialfälle. (Lösungsfläche & Lösungsprojektion)
+     */
     private final JPanel pnSolArea, pnSolProjTo;
 
     /**
@@ -230,6 +233,14 @@ public class SpecialCaseInputPanel extends JPanel implements SpecialCasesInput {
 	this.solProjTo = 0;
     }
 
+    /**
+     * Setzt Eingabefelder sichbar oder unsichbar.
+     * 
+     * @param sCase -
+     *                Spezialfall, dessen Sichtbarkeit geändert werden soll.
+     * @param visible -
+     *                Sichtbarkeit, "TRUE" für sichbar, sonst "FALSE".
+     */
     public void setVisible(int sCase, boolean visible) {
 
 	switch (sCase) {
