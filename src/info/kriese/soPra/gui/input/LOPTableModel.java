@@ -100,25 +100,59 @@ import javax.swing.table.AbstractTableModel;
  */
 public final class LOPTableModel extends AbstractTableModel {
 
+    /**
+     * Dient zur Serialisierung.
+     */
     private static final long serialVersionUID = 13L;
 
+    /**
+     * Spaltenbezeichnungen in der Tabelle.
+     */
     private final Vector<String> columnNames;
 
+    /**
+     * Editor, er benachrichtigt das Model über Änderungen durch den User.
+     */
     private LOPEditor editor;
 
+    /**
+     * Ist dieses LOP ein Maximum?
+     */
     private boolean max;
 
+    /**
+     * Zielwert dieses Problems.
+     */
     private Fractional sol;
 
+    /**
+     * Dient zur Abfrage der durch den Nutzer eingegeben Spezialfälle.
+     */
     private SpecialCasesInput specialCases;
 
+    /**
+     * Tabelle, in dieses Modell registriert ist.
+     */
     private JTable table;
+
+    /**
+     * Zielvektor des LOP.
+     */
     private Vector3Frac target;
 
+    /**
+     * Durch den Nutzer eingegebene Lösung.
+     */
     private final List<Fractional> values;
 
+    /**
+     * Vektoren des LOP.
+     */
     private final List<Vector3Frac> vectors;
 
+    /**
+     * Konstruktor, welcher alle Variablen und Objekte initialisiert.
+     */
     public LOPTableModel() {
 	this.columnNames = new Vector<String>();
 	this.vectors = new ArrayList<Vector3Frac>();
@@ -129,24 +163,56 @@ public final class LOPTableModel extends AbstractTableModel {
 	setColumnCount();
     }
 
+    /**
+     * Gibt den Typ der Spalte zurück, anhand diesem wird ein CellRenderer durch
+     * die Tabelle gewählt.
+     * 
+     * @param c -
+     *                Spalte, von der der Typ zurück gegeben werden soll.
+     * @return Typ der Spalte.
+     */
     @Override
     public Class<?> getColumnClass(int c) {
 	return getValueAt(0, c).getClass();
     }
 
+    /**
+     * Gibt die Anzahl der Spalten im Modell zurück.
+     * 
+     * @return Anzahl der Spalten.
+     */
     public int getColumnCount() {
 	return this.columnNames.size();
     }
 
+    /**
+     * Gibt den Title der Spalte zurück.
+     * 
+     * @param col -
+     *                Spalte, von der der Titel zurückgegeben werden soll.
+     * @return Titel der Spalte.
+     */
     @Override
     public String getColumnName(int col) {
 	return this.columnNames.get(col);
     }
 
+    /**
+     * Alzahl der Zeilen in diesem Modell.
+     */
     public int getRowCount() {
 	return 6;
     }
 
+    /**
+     * Gibt den Wert der entsprechenden Zelle zurück.
+     * 
+     * @param row -
+     *                Zeile der Zelle.
+     * @param col -
+     *                Spalte der Zelle.
+     * @return Wert der Zelle.
+     */
     public Object getValueAt(int row, int col) {
 	int num = this.vectors.size();
 
@@ -204,8 +270,13 @@ public final class LOPTableModel extends AbstractTableModel {
     }
 
     /**
-     * legt die Editierbarkeit einzelner Zellen fest
+     * Legt die Editierbarkeit einzelner Zellen fest.
      * 
+     * @param row -
+     *                Zeile der Zelle
+     * @param col -
+     *                Spalte der Zelle
+     * @return "TRUE", wenn Zelle editierbar ist, sonst "FALSE".
      */
     @Override
     public boolean isCellEditable(int row, int col) {
@@ -216,6 +287,12 @@ public final class LOPTableModel extends AbstractTableModel {
 	    return true;
     }
 
+    /**
+     * Gibt an, ob in diesem Modell Werte geändert worden sind. Wird von
+     * InputPanel aufgerufen, um die Bearbeitungsbuttons entsprechend zu setzen.
+     * 
+     * @return "TRUE", wenn ein Wert geändert worden ist, sonst "FALSE".
+     */
     public boolean isEdited() {
 	if (this.editor != null)
 	    return this.editor.isEdited();
@@ -223,15 +300,22 @@ public final class LOPTableModel extends AbstractTableModel {
 	    return false;
     }
 
+    /**
+     * Gibt an, ob dieses Modell gerade in einer Tabelle aktiv ist.
+     * 
+     * @return "TRUE", wenn dieses Modell aktiv ist, sonst "FALSE".
+     */
     public boolean isVisible() {
 	return this.table != null && this.table.getModel() == this;
     }
 
-    public void setEdited(boolean value) {
-	if (this.editor != null)
-	    this.editor.setEdited(value);
-    }
-
+    /**
+     * Setzt den LOPEditor, bei dem sich dieses Modell registriert, damit es auf
+     * Ereignisse reagieren kann.
+     * 
+     * @param editor -
+     *                LOPEditor, bei dem sich dieses Modell registrieren soll.
+     */
     public void setEditor(LOPEditor editor) {
 	this.editor = editor;
 	editor.addListener(new LOPEditorAdapter() {
@@ -267,6 +351,13 @@ public final class LOPTableModel extends AbstractTableModel {
 	});
     }
 
+    /**
+     * Setzt die Komponente, auf der der Nutzer die Spezialfälle der Lösung des
+     * LOP eingeben kann.
+     * 
+     * @param sci -
+     *                Komponente zum eingeben der Spezialfälle
+     */
     public void setSpecialCasesComponent(SpecialCasesInput sci) {
 	this.specialCases = sci;
     }
@@ -546,7 +637,7 @@ public final class LOPTableModel extends AbstractTableModel {
     }
 
     /**
-     * Löscht die Tabelle und stellt das Standard-Problem wieder her.
+     * Leert die Tabelle und stellt das Standard-Problem wieder her.
      */
     private void clear() {
 	while (this.vectors.size() > LOP.MIN_VECTORS)
@@ -638,5 +729,16 @@ public final class LOPTableModel extends AbstractTableModel {
 	this.columnNames.add("<html><center><b>=</b></center></html>");
 	this.columnNames.add("<html><center><b>z</b></center></html>");
 	fireTableStructureChanged();
+    }
+
+    /**
+     * Setzt den Status diese Modells auf bearbeitet oder nicht.
+     * 
+     * @param value -
+     *                "TRUE" für bearbeitet, sonst "FALSE".
+     */
+    private void setEdited(boolean value) {
+	if (this.editor != null)
+	    this.editor.setEdited(value);
     }
 }
