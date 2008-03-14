@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 05.03.2008 - Version 0.4.8
+ * - An Änderungen in LOPMinMax angepasst.
  * 01.02.2008 - Version 0.4.7
  * - LOPSolutionWrapper in Fractionals geändert
  * - Lösungüberprüfung überarbeitet
@@ -92,7 +94,7 @@ import javax.swing.table.AbstractTableModel;
  * Wandelt das LOP in ein von JTable lesbares Format um.
  * 
  * @author Peer Sterner
- * @version 0.4.7
+ * @version 0.4.8
  * @since 01.11.2007
  * 
  */
@@ -303,7 +305,7 @@ public final class LOPTableModel extends AbstractTableModel {
 	if (col == num + 2)
 	    switch (row) {
 		case 0:
-		    boolean bool = LOPMinMax.get((String) value).isMax();
+		    boolean bool = ((LOPMinMax) value).isMax();
 		    if (this.max && bool)
 			return;
 		    this.max = bool;

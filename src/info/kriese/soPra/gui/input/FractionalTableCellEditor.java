@@ -41,7 +41,7 @@ import javax.swing.JTextField;
 import javax.swing.border.Border;
 
 /**
- * Ein CellEditor zum bearbeiten von Fractionals in einer JTable.
+ * Ein CellEditor zum Bearbeiten von Fractionals in einer JTable.
  * 
  * @author Michael Kriese
  * @version 0.1.1.1
@@ -50,11 +50,24 @@ import javax.swing.border.Border;
  */
 public class FractionalTableCellEditor extends DefaultCellEditor {
 
+    /**
+     * Dient zur Serialisierung.
+     */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Farben für Schrift und Hintergrund des Textfeldes.
+     */
     private final Color bg, fg;
+
+    /**
+     * TextFeld, in welches die Fractionals eingegeben werden.
+     */
     private final JTextField tf;
 
+    /**
+     * Konstruktor, welcher alle Variablen und Objekte initialisiert.
+     */
     public FractionalTableCellEditor() {
 	super(new JTextField());
 	this.tf = (JTextField) getComponent();
@@ -68,6 +81,11 @@ public class FractionalTableCellEditor extends DefaultCellEditor {
 	this.tf.setBorder(BorderFactory.createCompoundBorder(outer, inner));
     }
 
+    /**
+     * Gibt den eingegebenen Wert als Fractional zurück.
+     * 
+     * @return Wert als Object
+     */
     @Override
     public Object getCellEditorValue() {
 	if (this.tf.getText() == null || this.tf.getText().length() == 0)
@@ -75,6 +93,23 @@ public class FractionalTableCellEditor extends DefaultCellEditor {
 	return FractionalFactory.getInstance(this.tf.getText());
     }
 
+    /**
+     * Gibt die Editorkomponente zurück, in der der User Werte eingeben kann.
+     * 
+     * @param table -
+     *                Tabelle, in der der Editor registriert ist.
+     * @param value -
+     *                Vordefinierter Wert (sollte vom Typ Fractional sein), den
+     *                der Editor annehmen soll.
+     * @param isSelected -
+     *                Gibt an, ob der Editor durch den User selektiert wurde.
+     * @param row -
+     *                Zeile der Zelle, welche bearbeitet werden soll.
+     * @param column -
+     *                Spalte der Zelle, welche bearbeitet werden soll.
+     * 
+     * @return Die Bearbeitungskomponente.
+     */
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value,
 	    boolean isSelected, int row, int column) {
@@ -90,6 +125,13 @@ public class FractionalTableCellEditor extends DefaultCellEditor {
 	return comp;
     }
 
+    /**
+     * Wird aufgerufen, wenn der User das Beabeiten der Zelle beenden will. Hier
+     * wird der eingegebene Wert auf zulässigkeit überprüft (kann er in ein
+     * Fractional konvertiert werden).
+     * 
+     * @return "True" wenn der eingegebene Wert gültig ist, ansonsten "FALSE".
+     */
     @Override
     public boolean stopCellEditing() {
 	if (FractionalFactory.getInstance(this.tf.getText()) != null)

@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ *  05.03.2008 - Version 0.3.3
+ * - An Änderungen in LOPMinMax angepasst.
  * 01.02.2008 - Version 0.3.2.1
  * - BugFix: Fehler in der Lösungsberechnung behoben
  * 01.02.2008 - Version 0.3.2
@@ -71,7 +73,7 @@ import javax.swing.table.AbstractTableModel;
  * Wandelt das duale LOP in ein von JTable lesbares Format um.
  * 
  * @author Peer Sterner
- * @version 0.3.2.1
+ * @version 0.3.3
  * @since 09.11.2007
  * 
  */
@@ -93,7 +95,7 @@ public final class DualLOPTableModel extends AbstractTableModel {
     private final List<Vector3Frac> dualLOPSols;
 
     /**
-     * Duales Problem ist Maximum oder Minimum.
+     * Primales Problem ist Maximum oder Minimum.
      */
     private boolean max;
 
@@ -237,7 +239,7 @@ public final class DualLOPTableModel extends AbstractTableModel {
 			    : "<html>&le;</html>");
 	    case 4:
 		if (row == 0)
-		    return (this.max ? LOPMinMax.MIN : LOPMinMax.MAX);
+		    return LOPMinMax.get(!this.max);
 		else if (row == getRowCount() - 1)
 		    return this.userValues[2];
 		else

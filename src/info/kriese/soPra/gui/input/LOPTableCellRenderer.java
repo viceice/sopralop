@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 05.03.2008 - Version 0.1.4
+ * - LOPEmpty & LOPInfinity entfernt, da nicht mehr verwendet
  * 25.01.2008 - Version 0.1.3
  * - Hintergrund geändert
  * - Tooltips für Relationszeichen gelöscht, da nicht mehr benötigt
@@ -47,22 +49,45 @@ import javax.swing.border.Border;
 import javax.swing.table.TableCellRenderer;
 
 /**
- * Dient zur Visualisierung von Werte in einer Tabelle.
+ * Dient zur Visualisierung von Werten in einer Tabelle.
  * 
  * @author Michael Kriese
- * @version 0.1.3
+ * @version 0.1.4
  * @since 03.11.2007
  */
 public class LOPTableCellRenderer implements TableCellRenderer {
 
+    /**
+     * Dient zur Serialisierung.
+     */
     private static final long serialVersionUID = -253463264318895844L;
 
+    /**
+     * Komponente, welche zum Rendern der Fractionals benutzt wird.
+     */
     private final JLabel content;
+
+    /**
+     * Nicht sichbarer Rahmen.
+     */
     private final Border noBorder = BorderFactory.createEmptyBorder(1, 1, 1, 1);
+
+    /**
+     * Standardrahmen für die Komponente. (ein grauer EtchedBorder außen & ein
+     * unsichbarer Rahmen innen)
+     */
     private final Border normal;
 
+    /**
+     * Rahmen, falls die Komponente durch den User selektiert ist. (selected für
+     * editierbare Felder, er ist grün, und selected2 für uneditierbare Felder,
+     * er ist schwarz)
+     */
     private final Border selected, selected2;
 
+    /**
+     * Konstruktor, der alle Variablen und Objekte initialisiert.
+     */
     public LOPTableCellRenderer() {
 	this.content = new JLabel();
 	this.content.setBorder(this.noBorder);
@@ -94,6 +119,24 @@ public class LOPTableCellRenderer implements TableCellRenderer {
 
     }
 
+    /**
+     * Gibt die Komponente mit dem entsprechenden Wert aus der Tabelle zurück.
+     * 
+     * @param table -
+     *                Tabelle, in der diser Renderer registriert ist.
+     * @param value -
+     *                Wert, welcher angezeigt werden soll.
+     * @param isSelected -
+     *                Ist die Komponente durch den User selektiert.
+     * @param hasFocus -
+     *                Hat die Komponente den Fokus.
+     * @param row -
+     *                Zeile der Zelle, die gerendert werden soll.
+     * @param column -
+     *                Spalte der Zelle, die gerendert werden soll.
+     * 
+     * @return Die Komponente zum rendern.
+     */
     public Component getTableCellRendererComponent(JTable table, Object value,
 	    boolean isSelected, boolean hasFocus, int row, int column) {
 	int rows = table.getRowCount();
@@ -136,11 +179,7 @@ public class LOPTableCellRenderer implements TableCellRenderer {
 			.getString("Strings.Constraint"));
 	    else if (row == rows - 1)
 		this.content.setToolTipText(Lang.getString("Strings.Solution"));
-	} else if (value instanceof LOPInfinity)
-	    this.content.setToolTipText(Lang.getString("Strings.Infinity"));
-	else if (value instanceof LOPEmpty)
-	    this.content.setToolTipText(Lang.getString("Strings.NotExistent"));
-	else
+	} else
 	    this.content.setToolTipText(null);
 
 	// Wert

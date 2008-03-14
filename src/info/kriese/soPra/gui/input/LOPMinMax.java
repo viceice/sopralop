@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 05.03.2008 - Version 0.3
+ * - Komplett überarbeitet (es gibt nur noch 2 Instanzen)
  * 29.01.2008 - Version 0.2.0.1
  * - BugFix: Min & Max in get waren vertauscht
  * 29.01.2008 - Version 0.2
@@ -28,39 +30,73 @@
  */
 package info.kriese.soPra.gui.input;
 
+import info.kriese.soPra.gui.lang.Lang;
+
 /**
  * WrapperKlasse, dient dazu, dass die JTable den richtigen CellEditor benutzt.
  * 
  * @author Michael Kriese
- * @version 0.2.0.1
+ * @version 0.3
  * @since 04.11.2007
  * 
  */
-public class LOPMinMax {
+public final class LOPMinMax {
 
-    public static final String MAX = "max!";
-    public static final String MIN = "min!";
+    /**
+     * Das LOP ist ein Maximierungsproblem.
+     */
+    public static final LOPMinMax MAX = new LOPMinMax(true);
 
+    /**
+     * Das LOP ist ein Minimierungsproblem.
+     */
+    public static final LOPMinMax MIN = new LOPMinMax(false);
+
+    /**
+     * Wandelt den Boolean in die Wrapperklasse um.
+     * 
+     * @param value -
+     *                Minimum oder Maximum.
+     * @return Die entsprechende Wrapperklasse.
+     */
     public static LOPMinMax get(boolean value) {
-	return new LOPMinMax(value ? MAX : MIN);
+	return value ? MAX : MIN;
     }
 
-    public static LOPMinMax get(String value) {
-	return new LOPMinMax(value);
-    }
+    /**
+     * Privates Flag, das angibt, ob dieses Objekt ein Minimum oder Maximum
+     * repräsentiert.
+     */
+    private final boolean value;
 
-    private final String value;
-
-    private LOPMinMax(String value) {
+    /**
+     * Privater Konstruktor, welcher das Objekt als Minimum oder Maximum
+     * initialisiert.
+     * 
+     * @param value -
+     *                Minimum ("FALSE") oder Maximum ("TRUE")
+     */
+    private LOPMinMax(boolean value) {
 	this.value = value;
     }
 
+    /**
+     * Repräsentiert dieses Objekt ein Maximum?
+     * 
+     * @return "TRUE", wenn ja, sonst "FALSE".
+     */
     public boolean isMax() {
-	return MAX.equals(this.value);
+	return this.value;
     }
 
+    /**
+     * Gibt eine Stringrepräsentation zur Anzeige in der Tabelle zurück.
+     * 
+     * @return Minimum oder Maximum als String
+     */
     @Override
     public String toString() {
-	return this.value;
+	return this.value ? Lang.getString("Strings.Max") : Lang
+		.getString("Strings.Min");
     }
 }
