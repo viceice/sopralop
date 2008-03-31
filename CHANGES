@@ -2,7 +2,7 @@ SoPraLOP
 (c)2007-2008 Michael Kriese & Peer Sterner
 
 -------------------------------------------------------------------------------
-Version 0.7 - 16.03.2008  (vorraussichtlich)
+Version 0.7 - 31.03.2008 (Rev. 282)
 -------------------------------------------------------------------------------
  - BugFix: Bei einer Fehlermeldung waren Titel und Nachricht vertauscht
  - BugFix: Quickhull filtert jetzt keinen ungewollten Vektoren mehr
