@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 09.04.2008 - Version 0.4.8.1
+ * - Debugausgabe erweitert (Spezialfall)
  * 05.03.2008 - Version 0.4.8
  * - An Änderungen in LOPMinMax angepasst.
  * 01.02.2008 - Version 0.4.7
@@ -94,7 +96,7 @@ import javax.swing.table.AbstractTableModel;
  * Wandelt das LOP in ein von JTable lesbares Format um.
  * 
  * @author Peer Sterner
- * @version 0.4.8
+ * @version 0.4.8.1
  * @since 01.11.2007
  * 
  */
@@ -513,7 +515,8 @@ public final class LOPTableModel extends AbstractTableModel {
 	// Eingegebener Spezialfall muss stimmen
 	if (sCase != this.specialCases.getSpecialCase()) {
 	    if (SettingsFactory.getInstance().isDebug())
-		System.out.println("Wrong user special case!");
+		System.out.println("Wrong user special case!" + " ("
+			+ this.specialCases.getSpecialCase() + ")");
 
 	    MessageHandler.showError(Lang.getString("Strings.Solution"), Lang
 		    .getString("Strings.IncorrectSolution"));

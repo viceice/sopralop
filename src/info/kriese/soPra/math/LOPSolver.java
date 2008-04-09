@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 09.04.2008 - Version 0.5.10
+ * - BugFix: Ein Spezialfall wurde nicht korrekt behandelt. ( Zielfunktion
+ *   beschränkt, Lösungbereich unbeschränkt, 1 Punkt)
  * 28.01.2008 - Version 0.5.9.2
  * - Kanten werden erkannt, und benachbarte Flächen wieder der Lösung hinzugefügt
  * - Bugfix: Erkennung der Spezialfälle sollte jetzt korrekt funktionieren
@@ -117,7 +120,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author Michael Kriese
- * @version 0.5.9
+ * @version 0.5.10
  * @since 10.05.2007
  * 
  */
@@ -246,6 +249,7 @@ public final class LOPSolver {
 
 	LOPSolution sol = lop.getSolution();
 	sol.clearAreas();
+	sol.setSpecialCase(0);
 
 	this.hull.build(lop.getVectors());
 
@@ -427,30 +431,31 @@ public final class LOPSolver {
 			| LOPSolution.TARGET_FUNCTION_UNLIMITED);
 		sol.clearAreas();
 		opt = Fractional.MAX_VALUE;
-	    }
-
-	    if (!max && opt.compareTo(value_unlimit) > 0) {
+	    } else if (!max && opt.compareTo(value_unlimit) > 0) {
 		sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
 			| LOPSolution.SOLUTION_AREA_UNLIMITED
 			| LOPSolution.TARGET_FUNCTION_UNLIMITED);
 		sol.clearAreas();
 		opt = Fractional.MIN_VALUE;
-	    }
-
-	    if (max && opt.compareTo(value_high) < 0)
-		sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
-			| LOPSolution.SOLUTION_AREA_UNLIMITED
-			| LOPSolution.TARGET_FUNCTION_LIMITED);
- 
-	    if (!max && opt.compareTo(value_high) > 0)
+	    } else if (max && opt.compareTo(value_high) < 0)
 		sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
 			| LOPSolution.SOLUTION_AREA_UNLIMITED
 			| LOPSolution.TARGET_FUNCTION_LIMITED);
 
-	    if (sol.countAreas() >= 2)
+	    else if (!max && opt.compareTo(value_high) > 0)
+		sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
+			| LOPSolution.SOLUTION_AREA_UNLIMITED
+			| LOPSolution.TARGET_FUNCTION_LIMITED);
+
+	    else if (sol.countAreas() >= 2)
 		sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE
 			| LOPSolution.SOLUTION_AREA_UNLIMITED
 			| LOPSolution.TARGET_FUNCTION_LIMITED);
+	    else
+		sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
+			| LOPSolution.SOLUTION_AREA_UNLIMITED
+			| LOPSolution.TARGET_FUNCTION_LIMITED);
+
 	} else if (!unlimited && opt != null && sol.countAreas() >= 2)
 	    sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE
 		    | LOPSolution.SOLUTION_AREA_LIMITED

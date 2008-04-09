@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 09.04.2008 - Version 0.5.3
+ * - Ausgabe in print verändert
  * 29.01.2008 - Version 0.5.2
  * - Debug-Statement für die Ausgabe des Spezialfalles eingefügt
  * 28.01.2008 - Version 0.5.1
@@ -88,7 +90,7 @@ import org.w3c.dom.NamedNodeMap;
 /**
  * 
  * @author Michael Kriese
- * @version 0.5.2
+ * @version 0.5.3
  * @since 29.07.2007
  * 
  */
@@ -236,7 +238,8 @@ public final class IOUtils {
 	LOPSolution sol = lop.getSolution();
 
 	out.println();
-	out.println("Lösung: " + sol.getValue());
+	out.println("Lösung: " + sol.getValue() + " (" + sol.getSpecialCase()
+		+ ")");
 
 	switch (sol.getSpecialCase()) {
 	    case (LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
@@ -279,8 +282,7 @@ public final class IOUtils {
 		    + " ] = [ " + area.getL1Amount() + ", "
 		    + area.getL2Amount() + " ]");
 
-	out.println("--------------------------------------------------------");
-	out.println("Spezialfall: " + sol.getSpecialCase());
+	out.println();
     }
 
     /**
