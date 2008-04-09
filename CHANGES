@@ -2,7 +2,7 @@ SoPraLOP
 (c)2007-2008 Michael Kriese & Peer Sterner
 
 -------------------------------------------------------------------------------
-Version 0.7.1 - 09.04.2008 (Rev. 283)
+Version 0.7.1 - 09.04.2008 (Rev. 285)
 -------------------------------------------------------------------------------
  - BugFix: Ein Spezialfall wurde bei der Lösung nicht korrekt behandelt /
    erkannt. ( Zielfunktion  beschränkt, Lösungbereich unbeschränkt, 1
