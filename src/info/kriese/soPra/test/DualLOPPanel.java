@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,7 +19,7 @@
  * 
  * ChangeLog:
  * 
- *  * 25.01.2008 - Version 0.2.3
+ * 25.01.2008 - Version 0.2.3
  * - Variablennamen für Spezialfälle angepasst
  * 04.12.2007 - Version 0.2.2
  * - Fehlerbereinigung bei den Richtungsvektoren
@@ -32,7 +32,7 @@
  * 10.11.2007 - Version 0.1
  *  - Aus TestDualPanel extrahiert
  */
-package info.kriese.soPra.gui;
+package info.kriese.soPra.test;
 
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPAdapter;
@@ -100,7 +100,8 @@ public final class DualLOPPanel extends JPanel {
     }
 
     /**
-     * Methode zum Zeichnen des Diagrammes zur Visualisierung des dualen Problems.
+     * Methode zum Zeichnen des Diagrammes zur Visualisierung des dualen
+     * Problems.
      * 
      */
     @Override
@@ -151,7 +152,7 @@ public final class DualLOPPanel extends JPanel {
 	    g2.setPaint(fg);
 	    g2.drawString(Math
 		    .round((((step - this.offsetX) / this.scaleFactor * 10) // *
-												// 10)
+			    // 10)
 			    / this.stepWidth)
 			    * this.scaleFactor)
 		    / 10.0 + "", step - 3, this.d.height - 15);
@@ -211,11 +212,10 @@ public final class DualLOPPanel extends JPanel {
 		// Verschieberichtung)
 		double horizontal, vertical;
 		int dirVecX, dirVecY, dirLength = 15;
-		
-		if (!this.minMax) {
-			dirLength = -15;
-		}
-		
+
+		if (!this.minMax)
+		    dirLength = -15;
+
 		g2.setStroke(this.normal);
 		if (this.vectors.get(i).getCoordX().isZero())
 		    g2.drawLine((this.d.width - this.offsetX) / 2,
@@ -223,8 +223,8 @@ public final class DualLOPPanel extends JPanel {
 			    localCoordY2 - dirLength);
 		else if (this.vectors.get(i).getCoordY().isZero())
 		    g2.drawLine(localCoordX1,
-			    (this.d.height - this.offsetX) / 2,
-			    localCoordX1 + dirLength,
+			    (this.d.height - this.offsetX) / 2, localCoordX1
+				    + dirLength,
 			    (this.d.height - this.offsetX) / 2);
 		else {
 		    horizontal = localCoordX1 - this.offsetX;
@@ -258,13 +258,17 @@ public final class DualLOPPanel extends JPanel {
 
 	// Zeichnen des Strahls, der durch das Optimum geht (nur, wenn es
 	// mindestens eine Lösung gibt)
-	if (this.solution.getSpecialCase() == 21 || this.solution.getSpecialCase() == 22
-			|| this.solution.getSpecialCase() == 25  || this.solution.getSpecialCase() == 26 )
+	if (this.solution.getSpecialCase() == 21
+		|| this.solution.getSpecialCase() == 22
+		|| this.solution.getSpecialCase() == 25
+		|| this.solution.getSpecialCase() == 26)
 	    if (this.tmp.getCoordX().toFloat() >= 0
 		    && this.tmp.getCoordY().toFloat() >= 0) {
-	    	
-	    	System.out.println("X: " + this.tmp.getCoordX() + ", Y: "
-	    			+ this.tmp.getCoordY() + ", Z: " + this.tmp.getCoordZ());
+
+		System.out
+			.println("X: " + this.tmp.getCoordX() + ", Y: "
+				+ this.tmp.getCoordY() + ", Z: "
+				+ this.tmp.getCoordZ());
 
 		g2.setPaint(optimum);
 		int localOptimumX1 = this.offsetX
@@ -298,8 +302,14 @@ public final class DualLOPPanel extends JPanel {
 		} else {
 		    g2.drawLine(localOptimumX1, localOptimumY1, this.offsetX,
 			    localOptimumY2);
-		    g2.drawString("Gerade der Zielfunktion", ((localOptimumX1 - this.offsetX) / 3) + this.offsetX + 5,
-			    localOptimumY2 + (this.d.height - this.offsetY - localOptimumY2) / 3);
+		    g2
+			    .drawString(
+				    "Gerade der Zielfunktion",
+				    ((localOptimumX1 - this.offsetX) / 3)
+					    + this.offsetX + 5,
+				    localOptimumY2
+					    + (this.d.height - this.offsetY - localOptimumY2)
+					    / 3);
 		}
 
 		// Zeichnen der Senkrechten auf der optimalen Geraden
@@ -345,10 +355,12 @@ public final class DualLOPPanel extends JPanel {
     }
 
     /**
-     * Methode zum Transponieren der Vektormatrix (notwendig zur Darstellung des dualen LOP).
+     * Methode zum Transponieren der Vektormatrix (notwendig zur Darstellung des
+     * dualen LOP).
      * 
-     * @param lop - das aktuell bearbeitete LOP
-	 *
+     * @param lop -
+     *                das aktuell bearbeitete LOP
+     * 
      */
     public void setLOP(LOP lop) {
 	lop.addProblemListener(new LOPAdapter() {
@@ -364,8 +376,8 @@ public final class DualLOPPanel extends JPanel {
 
 		DualLOPPanel.this.vectors = lop.getVectors();
 
-		if (DualLOPPanel.this.solution.getSpecialCase() != (LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY | LOPSolution.SOLUTION_AREA_EMPTY 
-				| LOPSolution.TARGET_FUNCTION_EMPTY)) {
+		if (DualLOPPanel.this.solution.getSpecialCase() != (LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
+			| LOPSolution.SOLUTION_AREA_EMPTY | LOPSolution.TARGET_FUNCTION_EMPTY)) {
 		    Vector3Frac vec1 = DualLOPPanel.this.solution.getAreas()
 			    .get(0).getL1();
 		    Vector3Frac vec2 = DualLOPPanel.this.solution.getAreas()
@@ -397,9 +409,9 @@ public final class DualLOPPanel extends JPanel {
     }
 
     /**
-     * Methode zum Berechnen des Skalierungsfaktors des Koordinatensystems
-     * zur feineren Darstellung der Vektorengeraden
-	 *
+     * Methode zum Berechnen des Skalierungsfaktors des Koordinatensystems zur
+     * feineren Darstellung der Vektorengeraden
+     * 
      */
     private void setScale() {
 	float temp = 0;

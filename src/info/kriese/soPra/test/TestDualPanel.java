@@ -28,7 +28,6 @@ package info.kriese.soPra.test;
 
 import info.kriese.soPra.SoPraLOP;
 import info.kriese.soPra.gui.ActionHandler;
-import info.kriese.soPra.gui.DualLOPPanel;
 import info.kriese.soPra.io.IOUtils;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPEditor;

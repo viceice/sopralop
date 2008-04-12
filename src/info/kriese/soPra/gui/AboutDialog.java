@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -49,7 +49,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /**
- * 
+ * Diese Klasse erstellt ein kleines Aboutfenster.
  * 
  * @author Michael Kriese
  * @version 0.2.1
@@ -58,17 +58,37 @@ import javax.swing.JPanel;
  */
 public class AboutDialog extends JDialog {
 
+    /**
+     * Private Instanz des Aboutfensters, da es diese nur einmal geben darf.
+     */
     private static AboutDialog instance;
 
-    /** */
+    /** Dient zur Serialisierung. (Hat bei uns keine Verwendung) */
     private static final long serialVersionUID = -254806736634900337L;
 
+    /**
+     * Erstellt Das Aboutfenster und gibt eine Referenz darauf zurück.
+     * 
+     * @param owner -
+     *                Übergeordnetes Fenster, über dem das Aboutfenster
+     *                zentriert werden soll.
+     * @return Referenz auf das Aboutfenster.
+     */
     public static AboutDialog getInstance(MainFrame owner) {
 	if (instance == null)
 	    instance = new AboutDialog(owner);
 	return instance;
     }
 
+    /**
+     * Versucht ein Bild relativ zum Speicherort dieser Klasse zu laden und gibt
+     * es dann zurück.
+     * 
+     * @param path -
+     *                Pfad inklusive Dateiname des Bildes
+     * @return Gibt das gefundene Bild zurück, oder "null", falls das Bild nicht
+     *         gefunden wurde.
+     */
     protected static ImageIcon createImageIcon(String path) {
 	java.net.URL imgURL = AboutDialog.class.getResource(path);
 	if (imgURL != null)
@@ -79,17 +99,22 @@ public class AboutDialog extends JDialog {
 	}
     }
 
+    /**
+     * Label, auf dem das Programmlogo angezeigt wird.
+     */
     private final JLabel pictureLabel;
 
+    /**
+     * Eine Referenz auf die Einstellungen des Programms.
+     */
     private final Settings props = SettingsFactory.getInstance();
 
     /**
+     * Konstruktor, welcher die Einstellungen lädt und alle Variablen
+     * initialisiert.
      * 
-     * @author Michael Kriese
-     * @since 29.07.2007
-     * @version 0.2
      * @param owner
-     *                Hauptfenster
+     *                Hauptfenster, zu dem das Aboutfenster gehört.
      */
     private AboutDialog(MainFrame owner) {
 	super(owner, true);
@@ -108,24 +133,22 @@ public class AboutDialog extends JDialog {
 	updatePicture();
 	pn.add(this.pictureLabel, BorderLayout.CENTER);
 
-	JLabel info = new JLabel(
-		"<html><body style=\"width:180px\"><font color=\"#FFFFFF\"><center><font size=\"5\">"
-			+ this.props.getTitle()
-			+ "</font><br><br> Version: "
-			+ this.props.getVersion()
-			+ "<br><br>Copyright: &copy; 2007 <br> "
-			+ this.props.getAuthor()
-			+ " <br><br>"
-			+ "eMail: "
-			+ this.props.getMail()
-			+ "<br>Web: "
-			+ this.props.getWeb()
-			+ "</center></font></body></html>");
+	JLabel info = new JLabel("<html><body style=\"width:180px\">"
+		+ "<font color=\"#FFFFFF\"><center><font size=\"5\">"
+		+ this.props.getTitle() + "</font><br><br> Version: "
+		+ this.props.getVersion()
+		+ "<br><br>Copyright: &copy; 2007 <br> "
+		+ this.props.getAuthor() + " <br><br>" + "eMail: "
+		+ this.props.getMail() + "<br>Web: " + this.props.getWeb()
+		+ "</center></font></body></html>");
 	pn.add(info, BorderLayout.EAST);
 
 	pack();
     }
 
+    /**
+     * Diese Funktion versucht das Logo auf das Panel zu bringen.
+     */
     protected void updatePicture() {
 	// Get the icon corresponding to the image.
 	ImageIcon icon = createImageIcon("images/logo.png");

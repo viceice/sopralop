@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -66,26 +66,57 @@ import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 
 /**
+ * Dialogfenster zum Anzeigen der Hilfe.
  * 
  * @author Michael Kriese
  * @version 0.1.3
  * @since 11.12.2007
- * 
  */
 public final class HelpDialog extends JDialog {
 
+    /**
+     * Link auf das Stylesheet zum Formatieren der HTML-Hilfe.
+     */
     private static URL CSS = IOUtils.getURL("gui/lang/style.css");
 
+    /**
+     * Standard-HTML-Code, der angezeigt wird, wenn noch keine Hilfe geladen
+     * ist.
+     */
     private static final String DEFAULT = "<html><body style=\"background-color:"
 	    + "green;color:white;text-align:center\"><h1>Error</h1></body></html>";
+
+    /**
+     * Die einzige Instanz des Hilfefensters.
+     */
     private static HelpDialog INSTANCE = null;
 
+    /**
+     * Übergeordnetes Fenster, vor dem die Hilfe dargestellt wird.
+     */
     private static JFrame PARENT = null;
+
+    /**
+     * Pfad zu den Hilfe-Dateien.
+     */
     private static final String PATH = "gui/lang/help";
+
+    /**
+     * Referenz auf die Einstellungen des Programms.
+     */
     private static final Settings PROPS = SettingsFactory.getInstance();
 
+    /**
+     * Dient zur Serialisierung. (Hat bei uns keine Verwendung)
+     */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Gibt eine Referenz auf das Hilfefenster zurück, welches beim ersten
+     * Aufruf erstellt wird.
+     * 
+     * @return Referenz auf das Hilfefenster.
+     */
     public static HelpDialog getInstance() {
 	if (INSTANCE == null)
 	    INSTANCE = new HelpDialog();
@@ -107,7 +138,7 @@ public final class HelpDialog extends JDialog {
     }
 
     /**
-     * Liest die Style-Datei in das HTML-Dokument
+     * Liest die Stylesheet-Datei in das HTML-Dokument
      * 
      * @param doc -
      *                HTML-Dokument, in welches die Styles geladen werden sollen
@@ -150,12 +181,25 @@ public final class HelpDialog extends JDialog {
 	return sb;
     }
 
+    /**
+     * Referenz auf die Anzeigekomponente für den HTML-Code.
+     */
     private final JEditorPane content;
 
+    /**
+     * Referenz auf das EditorKit, welches den HTML-Code auf die
+     * Anzeigekomponente rendert.
+     */
     private final HTMLEditorKit editor;
 
+    /**
+     * Die aktuell geladene URL.
+     */
     private URL page = null;
 
+    /**
+     * Konstruktor, welcher alle Variablen und Objekte initialisiert.
+     */
     private HelpDialog() {
 	super(PARENT, PROPS.getName() + " " + Lang.getString("Strings.Help")
 		+ " - Version " + PROPS.getVersion(), true);
@@ -185,6 +229,12 @@ public final class HelpDialog extends JDialog {
 	this.editor = (HTMLEditorKit) this.content.getEditorKit();
     }
 
+    /**
+     * Versucht die entsprechende Hilfe zu laden.
+     * 
+     * @param file -
+     *                Hilfe-Datei, welche angezeigt werden soll.
+     */
     public void setHelp(String file) {
 	String query = null;
 
@@ -228,7 +278,10 @@ public final class HelpDialog extends JDialog {
     }
 
     /**
-     * @param query
+     * Lässt die Hilfe zum entsprechenden HTML-Anker scrollen.
+     * 
+     * @param query -
+     *                HTML-Anker, zu dem gescrollt werden soll.
      */
     private void scroll(final String query) {
 	if (query == null)

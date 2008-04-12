@@ -33,7 +33,6 @@
 	</resources>
 
 	<application-desc main-class="info.kriese.soPra.SoPraLOP">
-		<argument>debug</argument>
 	</application-desc>
 
 </jnlp>

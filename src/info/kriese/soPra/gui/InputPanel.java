@@ -124,7 +124,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 
 /**
- * grafische Klasse zur Eingabe der Zielfunktion
+ * Grafische Klasse zur Eingabe der Zielfunktion
  * 
  * @author Peer Sterner
  * @since 13.05.2007
@@ -132,13 +132,32 @@ import javax.swing.table.TableColumn;
  */
 public final class InputPanel extends JPanel {
 
-    /** */
+    /**
+     * Dient zu Serialisierung. (Hat bei uns keine Verwendung)
+     */
     private static final long serialVersionUID = 4944381133035213540L;
 
+    /**
+     * Erstellt einen einfachen Rahmen mit Titel.
+     * 
+     * @param title -
+     *                Titel des Rahmens
+     * @return Ein Rahmen mit Titel.
+     */
     public static Border createBorder(String title) {
 	return createBorder(title, false);
     }
 
+    /**
+     * Erstellt einen einfachen Rahmen mit Titel.
+     * 
+     * @param title -
+     *                Titel des Rahmens
+     * @param last -
+     *                Falls "TRUE", wird unter dem Rahmen noch ein kleiner
+     *                Abstand hinzugefügt.
+     * @return Ein Rahmen mit Titel.
+     */
     public static Border createBorder(String title, boolean last) {
 	Border outer, inner, titled;
 
@@ -151,28 +170,74 @@ public final class InputPanel extends JPanel {
 	return BorderFactory.createCompoundBorder(outer, titled);
     }
 
+    /**
+     * Button, der die Überprüfung der durch den Benutzer eigegebenen Lösungen
+     * anstößt.
+     */
     private JButton check = null;
 
+    /**
+     * Modell, welches das duale LOP in die Tabelle rendert.
+     */
     private final DualLOPTableModel dualModel;
 
+    /**
+     * Liste von Menüeinträgen, welche in das Hauptmenü eingebunden werden
+     * sollen.
+     */
     private final List<JMenuItem> functions;
 
+    /**
+     * Aufwahlbox, damit kann der Benutzer das primale Problem als Minimum oder
+     * Maximum markieren.
+     */
     private final JComboBox maxEditor;
 
+    /**
+     * Modell, welches das primale LOP in die Tabelle rendert.
+     */
     private final LOPTableModel primalModel;
 
+    /**
+     * Button, welcher das LOP auf den zuletzt übernommenen Zustand setzten
+     * lässt.
+     */
     private JButton reset = null;
 
+    /**
+     * EingabePanel, auf dem der Benutzer die Spezialfälle der LOP eingeben
+     * kann.
+     */
     private final SpecialCaseInputPanel sci;
+
+    /**
+     * Tabelle, in der die LOP's gerendert werden.
+     */
     private final JTable table;
 
+    /**
+     * Button, der Änderungen in der Tabelle in das LOP übernehmen lässt.
+     */
     private JButton take = null;
+
+    /**
+     * Menüpinkte, welche den Funktionen der entsprechenden Buttons entsprechen.
+     */
     private JMenuItem take2, check2, reset2;
 
+    /**
+     * Toolbar, in der die Buttons angezeigt werden.
+     */
     private final JToolBar toolbar;
 
+    /**
+     * Liste der Buttons, diese dient zum de- / aktivieren der Buttons.
+     */
     private final List<Component> toolbarBtns;
 
+    /**
+     * Konstruktor, der alle benötigten Variablen und Objekte initialisiert.
+     */
     public InputPanel() {
 	JScrollPane scrollPane;
 	JPanel body;
@@ -215,6 +280,7 @@ public final class InputPanel extends JPanel {
 	    }
 	});
 
+	// Überladen einiger Funktionen der JTable
 	this.table = new JTable() {
 
 	    private static final long serialVersionUID = 1L;
@@ -320,10 +386,23 @@ public final class InputPanel extends JPanel {
 	add(scrollPane, BorderLayout.CENTER);
     }
 
+    /**
+     * Gibt eine Referenz auf die Menüpunkte zurück, über diese man sie in das
+     * Hauptmenü integrieren kann.
+     * 
+     * @return Liste von Menüpunkten.
+     */
     public List<JMenuItem> getFunctions() {
 	return this.functions;
     }
 
+    /**
+     * Setzt den LOPEditor, damit sich das EingabePanel und die TabellenModelle
+     * für Aktionen registrieren können.
+     * 
+     * @param editor -
+     *                LOPEditor, bei dem sich registriert werden soll.
+     */
     public void setEditor(LOPEditor editor) {
 	this.primalModel.setEditor(editor);
 	this.dualModel.setEditor(editor);
@@ -349,8 +428,7 @@ public final class InputPanel extends JPanel {
     }
 
     /**
-     * Toolbar fuer das Eingabefenster, stellt div. Buttons bereit
-     * 
+     * Generiert die Toolbar und die Menüpunkte für das Eingabefenster.
      */
     private void generateEditToolbar() {
 
@@ -389,8 +467,7 @@ public final class InputPanel extends JPanel {
     }
 
     /**
-     * Formatierung der Zellenelemente
-     * 
+     * Formatiert die TabellenSpaleten auf bestimmte Breiten.
      */
     private void initColumnSizes() {
 	TableColumn column = null;
@@ -414,6 +491,10 @@ public final class InputPanel extends JPanel {
 	column.setPreferredWidth(50);
     }
 
+    /**
+     * De- / Aktiviert Buttons und Menüpunkte entsprechend dem Zustand des
+     * LOP's.
+     */
     private void setSaveBtn() {
 	if (this.primalModel.isEdited()) {
 	    this.take.setEnabled(true);
@@ -428,6 +509,14 @@ public final class InputPanel extends JPanel {
 	}
     }
 
+    /**
+     * De- / Aktiviert Buttons und Menüpunkte entsprechend dem Zustand des
+     * LOP's.
+     * 
+     * @param value -
+     *                "TRUE", falls alle Buttons und Menüpunkte aktiv sein
+     *                sollen.
+     */
     private void setToolbarEnabled(boolean value) {
 	for (Component c : this.toolbarBtns)
 	    c.setEnabled(value);

@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -68,22 +68,34 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 /**
- * Klasse zum handeln aller Actions in SoPraLOP
+ * Klasse zum Handeln und Delegieren aller Aktionen in SoPraLOP
  * 
  * @author Michael Kriese
  * @version 0.4.3
  * @since 24.10.2007
  * 
+ * TODO: mögliche NullPointer abfangen
  */
 public final class ActionHandler {
-    // TODO: NullPointer abfangen
 
+    /**
+     * Die einziege Instanz dieser Klasse.
+     */
     public static final ActionHandler INSTANCE = new ActionHandler();
 
+    /**
+     * Beendet das Programm.
+     */
     public static void exit() {
 	exit(0);
     }
 
+    /**
+     * Beendet das Programm mit einem definierten Exit-Code.
+     * 
+     * @param code -
+     *                Exit-Code des Programms.
+     */
     public static void exit(int code) {
 	SoPraLOP.ABOUT.setVisible(false);
 	SoPraLOP.VISUAL.setVisible(false);
@@ -91,17 +103,38 @@ public final class ActionHandler {
 	System.exit(code);
     }
 
+    /**
+     * LOP-Dateiname, welche im Programm gerade geöffnet ist.
+     */
     public String file = null;
 
+    /**
+     * ActionListener, welcher in diversen Objekten registriert wird. Über
+     * diesen werden Aktionen an andere Objekte delegiert.
+     */
     private final ActionListener ac;
 
+    /**
+     * Das LOP, welches im Programm geöffnet ist.
+     */
     private LOP lop = null;
 
+    /**
+     * MouseListener, welcher in diversen Objekten registriert wird. Über diesen
+     * werden Hilfstexte in der Statusleiste angezeigt..
+     */
     private final MouseListener ml;
 
+    /**
+     * Konstruktor, welcher die Variablen und Objekte dieser Klasse
+     * initialisiert.
+     */
     private ActionHandler() {
 	this.ac = new ActionListener() {
 
+	    /**
+	     * Delegation der Aktion an den ActionHandler.
+	     */
 	    public void actionPerformed(ActionEvent e) {
 		ActionHandler.this.actionPerformed(e);
 	    }
@@ -109,6 +142,10 @@ public final class ActionHandler {
 
 	this.ml = new MouseAdapter() {
 
+	    /**
+	     * Zeigt einen Hilfstext der Komponete, über der die Maus sich
+	     * befindet, in der Statusleiste an, sofern vorhanden.
+	     */
 	    @Override
 	    public void mouseEntered(MouseEvent e) {
 		Component c = e.getComponent();
@@ -121,24 +158,51 @@ public final class ActionHandler {
 		}
 	    }
 
+	    /**
+	     * Blendet den Hilfstext wieder aus, wenn die Maus die Komponente
+	     * verlässt.
+	     */
 	    @Override
 	    public void mouseExited(MouseEvent e) {
 		MessageHandler.showHelp();
 	    }
 	};
 
+	/**
+	 * Registriert den ActionHandler im Menü.
+	 */
 	MenuMaker.setDefaultActionHandler(this);
     }
 
+    /**
+     * Mit dieser Funtion kann sich ein Button beim ActionHandler registrieren.
+     * 
+     * @param btn -
+     *                Ein Button, der registriert werden soll.
+     */
     public void add(AbstractButton btn) {
 	btn.addActionListener(this.ac);
 	btn.addMouseListener(this.ml);
     }
 
+    /**
+     * Setzt die Referenz des LOP's.
+     * 
+     * Diese wird benötigt, um Aktionen auf dem LOP aufrufen zu können.
+     * 
+     * @param lop -
+     *                Referenz auf ein LOP
+     */
     public void setLOP(LOP lop) {
 	this.lop = lop;
     }
 
+    /**
+     * Delegiert die Aktionen an die entsprechenden Komponenten weiter.
+     * 
+     * @param e -
+     *                Eine Referenz auf den Auslöser der Aktion.
+     */
     private void actionPerformed(ActionEvent e) {
 	String cmd = e.getActionCommand();
 
@@ -195,6 +259,12 @@ public final class ActionHandler {
 	    SoPraLOP.EDITOR.update();
     }
 
+    /**
+     * Sicherheitsabfrage, falls das Problem bearbeitet wurde, aber nicht
+     * gespeichert wurde.
+     * 
+     * @return "TRUE", falls der Benutzer zugestimmt hat, sonst "FALSE".
+     */
     private boolean askEdit() {
 	if (!SoPraLOP.EDITOR.isEdited())
 	    return true;
@@ -215,6 +285,8 @@ public final class ActionHandler {
     /**
      * Ladefunktion für LOP-Dateien.
      * 
+     * Zeigt dem Benutzer einen Datei-Öffnen-Dialog und öffnet gegebenenfalls
+     * das ausgewählte LOP.
      */
     private void fileOpenClass() {
 	if (SoPraLOP.FC.showOpenDialog(MessageHandler.getParent()) == JFileChooser.APPROVE_OPTION) {
@@ -233,6 +305,8 @@ public final class ActionHandler {
     /**
      * Speicherfunktion für LOP-Dateien.
      * 
+     * Zeigt dem Benutzer einen Datei-Schließen-Dialog und speichert
+     * gegebenenfalls das LOP.
      */
     private void fileSaveClass(boolean saveAs) {
 	if (saveAs || this.file == null)

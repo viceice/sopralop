@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 12.02.2008 - Version 0.9
+ * - setStatus und getTitle entfernt
+ * - edit in view umbenant
  * 01.02.2008 - Version 0.8.4
  * - Schriftformatierung vom Info-Label in HTML-Code ausgelagert
  * 26.01.2008 - Version 0.8.3.1
@@ -109,21 +112,35 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 
 /**
- * @author Michael Kriese
- * @version 0.8.4
- * @since 12.05.2007
+ * Erstellt das Hauptfenster des Programms
  * 
+ * @author Michael Kriese
+ * @version 0.9
+ * @since 12.05.2007
  */
 public final class MainFrame extends JFrame implements Virtual3DFrame,
 	HelpProvider {
 
+    /**
+     * Höhe des Hauptfensters.
+     */
     private static final int HEIGHT = 500;
 
-    /**	*/
+    /**
+     * Dient zur Serialisierung. ( Hat bei uns keine Verwendung)
+     */
     private static final long serialVersionUID = -2209082679810518777L;
 
+    /**
+     * Höhe des Hauptfensters.
+     */
     private static final int WIDTH = 800;
 
+    /**
+     * Erstellt den Rahmen für die Statusleiste.
+     * 
+     * @return ein Rahmen.
+     */
     private static Border createStatusBarBorder() {
 	Border inner, outer;
 	outer = BorderFactory.createBevelBorder(BevelBorder.LOWERED);
@@ -131,20 +148,41 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 	return BorderFactory.createCompoundBorder(outer, inner);
     }
 
+    /**
+     * Das SplitPane ermöglicht es den Platz der Eingabe und des 3D-Panels frei
+     * zu definieren.
+     */
     private final JSplitPane body;
 
-    private JMenu edit, functions;
-
+    /**
+     * Menüpunkte zum anzeigen des primalen bzw. dualen Problems.
+     */
     private JMenuItem primale, duale;
 
+    /**
+     * Label, auf dem angezeigt wird, ob das primale oder duale Problem aktiv
+     * ist.
+     */
     private final JLabel problem;
 
+    /**
+     * Referenz auf die Programmeinstellungen.
+     */
     private final Settings PROPS = SettingsFactory.getInstance();
 
+    /**
+     * Referenz auf die Statusbar
+     */
     private final JLabel status;
 
-    private String title = "";
+    /**
+     * Referenzen auf Menüpunkte des Hauptmenüs ( Ansicht & Bearbeiten )
+     */
+    private JMenu view, functions;
 
+    /**
+     * Konstuktor, welcher alle Variablen und Objekte initialisiert.
+     */
     public MainFrame() {
 	setTitle(this.PROPS.getName() + " - Version " + this.PROPS.getVersion());
 	setSize(WIDTH, HEIGHT);
@@ -155,6 +193,7 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 	if (ico != null)
 	    setIconImage(ico.getImage());
 
+	// reagiere auf Größenveränderungen
 	addComponentListener(new ComponentAdapter() {
 
 	    @Override
@@ -182,6 +221,12 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 	generateMainToolbar();
     }
 
+    /**
+     * Hiermit wird die 3D-Zeichenfläche dem Hauptfenster hinzugefügt.
+     * 
+     * @param canvas -
+     *                3D-Zeichenfläche
+     */
     public void addCanvas(Canvas3D canvas) {
 	canvas.setMinimumSize(new Dimension(0, 0));
 	canvas.setPreferredSize(new Dimension(WIDTH / 2, 300));
@@ -191,11 +236,12 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 	repaint();
     }
 
-    @Override
-    public String getTitle() {
-	return this.title;
-    }
-
+    /**
+     * Hiermit wird das EingabePanel dem Hauptfenster hinzugefügt.
+     * 
+     * @param content -
+     *                Komponente zur Eingabe / Änderung des LOP's
+     */
     public void setContent(JComponent content) {
 	content.setMinimumSize(new Dimension(0, 0));
 	content.setPreferredSize(new Dimension(WIDTH / 2, 300));
@@ -203,6 +249,12 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 	this.body.setDividerLocation(WIDTH / 2);
     }
 
+    /**
+     * Hiermit kann man dem Menüpunkt "Bearbeiten" Menupunkte hinzufügen.
+     * 
+     * @param items -
+     *                Liste von Menüpunkten, welche hinzugefügt werden sollen.
+     */
     public void setFunctions(List<JMenuItem> items) {
 	this.functions.removeAll();
 
@@ -213,12 +265,19 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 		this.functions.add(item);
     }
 
+    /**
+     * Gibt dem Hauptfenster eine Referenz auf das LOP, damit es auf Aktionen
+     * reagieren kann.
+     * 
+     * @param lop -
+     *                LOP, bei welchem sich das Hauptfenster registrieren soll.
+     */
     public void setLOP(LOP lop) {
 	lop.addProblemListener(new LOPAdapter() {
 	    @Override
 	    public void showDualProblem(LOP lop) {
-		MainFrame.this.edit.remove(MainFrame.this.duale);
-		MainFrame.this.edit.add(MainFrame.this.primale);
+		MainFrame.this.view.remove(MainFrame.this.duale);
+		MainFrame.this.view.add(MainFrame.this.primale);
 		MainFrame.this.problem.setText(Lang
 			.getString("Strings.DualProblem"));
 		validate();
@@ -227,8 +286,8 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 
 	    @Override
 	    public void showPrimalProblem(LOP lop) {
-		MainFrame.this.edit.remove(MainFrame.this.primale);
-		MainFrame.this.edit.add(MainFrame.this.duale);
+		MainFrame.this.view.remove(MainFrame.this.primale);
+		MainFrame.this.view.add(MainFrame.this.duale);
 		MainFrame.this.problem.setText(Lang
 			.getString("Strings.PrimalProblem"));
 		validate();
@@ -237,22 +296,25 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 	});
     }
 
-    @Deprecated
-    public void setStatus(String msg) {
-	showHelp(msg);
-    }
-
+    /**
+     * Hiermit wird der Titel des Hauptfensters geändert.
+     */
     @Override
     public void setTitle(String title) {
-	this.title = title;
 	super.setTitle(title + " - " + this.PROPS.getName() + " - Version "
 		+ this.PROPS.getVersion());
     }
 
+    /**
+     * Zeigt die Schnellhilfe in der Statuszeile an.
+     */
     public void showHelp(String msg) {
 	this.status.setText(msg != null ? msg : "");
     }
 
+    /**
+     * Hiermit wird das Hauptmenü generiert.
+     */
     private void generateMainMenu() {
 	JMenuBar menubar;
 	JMenu menu, submenu;
@@ -288,7 +350,7 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 	this.duale = MenuMaker.getMenuItem("Menu.View.ShowDualProblem");
 
 	menu.add(this.duale);
-	this.edit = menu;
+	this.view = menu;
 
 	menu = MenuMaker.getMenu("Menu.Help");
 	menu.add(MenuMaker.getMenuItem("Menu.Help.Help"));
@@ -297,6 +359,9 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 	menubar.add(menu);
     }
 
+    /**
+     * Hiermit wird die HauptToolbar generiert.
+     */
     private void generateMainToolbar() {
 	JToolBar tb = new JToolBar();
 	tb.setFloatable(false);

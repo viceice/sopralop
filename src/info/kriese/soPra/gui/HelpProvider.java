@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -25,6 +25,11 @@
 package info.kriese.soPra.gui;
 
 /**
+ * Dient zur Abstraktion der Schnellhilfe.
+ * 
+ * Objekte, welche dieses Interface implementieren, können sich beim
+ * MessageHandler registrieren. Diese Objekte sind dann dafür verantwortlich die
+ * Schnellhilfe anzuzeigen.
  * 
  * @author Michael Kriese
  * @version 0.1
@@ -33,5 +38,11 @@ package info.kriese.soPra.gui;
  */
 public interface HelpProvider {
 
+    /**
+     * Zeigt die Schnellhilfe an.
+     * 
+     * @param msg -
+     *                Hilfetext, welcher angezeigt werden soll.
+     */
     void showHelp(String msg);
 }
