@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 15.05.2008 - Version 0.9.1
+ * - BugFix: Bei Programmstart war der Titel doppelt
  * 12.02.2008 - Version 0.9
  * - setStatus und getTitle entfernt
  * - edit in view umbenant
@@ -115,7 +117,7 @@ import javax.swing.border.Border;
  * Erstellt das Hauptfenster des Programms
  * 
  * @author Michael Kriese
- * @version 0.9
+ * @version 0.9.1
  * @since 12.05.2007
  */
 public final class MainFrame extends JFrame implements Virtual3DFrame,
@@ -184,7 +186,7 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
      * Konstuktor, welcher alle Variablen und Objekte initialisiert.
      */
     public MainFrame() {
-	setTitle(this.PROPS.getName() + " - Version " + this.PROPS.getVersion());
+	setTitle(null);
 	setSize(WIDTH, HEIGHT);
 	setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 	setLayout(new BorderLayout());
@@ -301,8 +303,12 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
      */
     @Override
     public void setTitle(String title) {
-	super.setTitle(title + " - " + this.PROPS.getName() + " - Version "
-		+ this.PROPS.getVersion());
+	if (title == null || title.length() == 0)
+	    super.setTitle(this.PROPS.getName() + " - Version "
+		    + this.PROPS.getVersion());
+	else
+	    super.setTitle(title + " - " + this.PROPS.getName() + " - Version "
+		    + this.PROPS.getVersion());
     }
 
     /**
