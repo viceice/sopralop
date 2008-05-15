@@ -6,6 +6,8 @@ Version 0.7.2
 -------------------------------------------------------------------------------
  - Es können auch Werte mit einem "+" eingegeben werden
  - BugFix: Wenn Min = Max, dann nur eine optimale Lösung (primales LOP)
+ - BugFix: Bei Berechnung der Lösungen des dualen Problems muss z immer auf
+   -1 normiert werden
 -------------------------------------------------------------------------------
 Version 0.7.1 - 09.04.2008 (Rev. 285)
 -------------------------------------------------------------------------------

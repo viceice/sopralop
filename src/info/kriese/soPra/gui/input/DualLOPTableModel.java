@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ *  15.05.2008 - Version 0.3.4
+ * - BugFix: Bei Berechnung der Lösungen des dualen Problems muss z immer auf
+ *   -1 normiert werden
  *  05.03.2008 - Version 0.3.3
  * - An Änderungen in LOPMinMax angepasst.
  * 01.02.2008 - Version 0.3.2.1
@@ -73,7 +76,7 @@ import javax.swing.table.AbstractTableModel;
  * Wandelt das duale LOP in ein von JTable lesbares Format um.
  * 
  * @author Peer Sterner
- * @version 0.3.3
+ * @version 0.3.4
  * @since 09.11.2007
  * 
  */
@@ -414,11 +417,8 @@ public final class DualLOPTableModel extends AbstractTableModel {
 		    if (SettingsFactory.getInstance().isDebug())
 			System.out.print(area + "\t_|_\t");
 
-		    Fractional z = vec.getCoordZ();
-
-		    if (z.is(Fractional.GEQUAL_ZERO))
-			z = z.mul(-1);
-
+		    // normiere z auf -1
+		    Fractional z = vec.getCoordZ().mul(-1);
 		    vec.setCoordX(vec.getCoordX().div(z));
 		    vec.setCoordY(vec.getCoordY().div(z));
 		    vec.setCoordZ(vec.getCoordZ().div(z));
