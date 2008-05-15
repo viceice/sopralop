@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 13.04.2008 - Version 0.2.1
+ * - Copyright geändert
  * 19.10.2007 - Version 0.2
  * - Kopie von AboutDialog
  * - In Splash-Fenster umdesigned
@@ -38,6 +40,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.util.GregorianCalendar;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -47,19 +50,41 @@ import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 
+/**
+ * Stellt den SplashScreen beim Programmstart dar.
+ * 
+ * @author Michael Kriese
+ * @version 0.2.1
+ * @since 19.10.2007
+ */
 public class SplashDialog extends JDialog {
 
+    /**
+     * Einzige Instanz dieser KLasse.
+     */
     private static SplashDialog instance;
 
-    /** */
+    /**
+     * Dient zur Serialisierung (Hat bei uns keine Verwendung).
+     */
     private static final long serialVersionUID = -254806736634900337L;
 
+    /**
+     * Gibt eine Referenz auf den SplashScreen zurück.
+     * 
+     * @return Referenz auf SplashScreen.
+     */
     public static SplashDialog getInstance() {
 	if (instance == null)
 	    instance = new SplashDialog();
 	return instance;
     }
 
+    /**
+     * Erstellt dern Hauptrahmen des Fensters.
+     * 
+     * @return Ein Rahmen.
+     */
     private static Border createMainBorder() {
 	Border inner, outer;
 	outer = BorderFactory.createBevelBorder(BevelBorder.RAISED,
@@ -68,6 +93,13 @@ public class SplashDialog extends JDialog {
 	return BorderFactory.createCompoundBorder(outer, inner);
     }
 
+    /**
+     * Versucht ein Bild zu laden und gibt es gegebenenfalls zurück.
+     * 
+     * @param path -
+     *                Relativer Pfad zum Bild
+     * @return Das gefundene Bild, andernfalls gibt es "NULL" zurück.
+     */
     protected static ImageIcon createImageIcon(String path) {
 	java.net.URL imgURL = SplashDialog.class.getResource(path);
 	if (imgURL != null)
@@ -78,15 +110,18 @@ public class SplashDialog extends JDialog {
 	}
     }
 
+    /**
+     * Referenzen auf die LogoZeichnugsfläche und die Nachrichtenfläche.
+     */
     private final JLabel pictureLabel, msg;
 
+    /**
+     * Referenz auf die Programmeinstellungen.
+     */
     private final Settings props = SettingsFactory.getInstance();
 
     /**
-     * 
-     * @author Michael Kriese
-     * @since 19.10.2007
-     * @version 0.2
+     * Konstruktor, welcher alle Variablen und Objekte initialisiert.
      */
     private SplashDialog() {
 	setTitle("Splash " + this.props.getName());
@@ -106,9 +141,12 @@ public class SplashDialog extends JDialog {
 
 	JLabel info = new JLabel(
 		"<html><font color=\"#FFFFFF\"><center><font size=\"5\">"
-			+ this.props.getTitle() + "</font><br><br> Version: "
+			+ this.props.getTitle()
+			+ "</font><br><br> Version: "
 			+ this.props.getVersion()
-			+ "<br><br>Copyright: &copy; 2007 <br> "
+			+ "<br><br>Copyright: &copy; 2007 - "
+			+ GregorianCalendar.getInstance().get(
+				GregorianCalendar.YEAR) + "<br> "
 			+ this.props.getAuthor() + " <br><br>" + "eMail: "
 			+ this.props.getMail() + "<br>Web: "
 			+ this.props.getWeb() + "</center></font></html>");
@@ -127,10 +165,20 @@ public class SplashDialog extends JDialog {
 	setLocationRelativeTo(null);
     }
 
+    /**
+     * Setzt die Nachricht, die dem Benutzer auf dem SplashScreen angezeigt
+     * wird.
+     * 
+     * @param msg -
+     *                Nachricht, die angezeigt werden soll.
+     */
     public void setMessage(String msg) {
 	this.msg.setText(msg);
     }
 
+    /**
+     * Versucht das Programmlogo auf die BildZeichenfläche zu rendern.
+     */
     protected void updatePicture() {
 	// Get the icon corresponding to the image.
 	ImageIcon icon = createImageIcon("images/logo.png");

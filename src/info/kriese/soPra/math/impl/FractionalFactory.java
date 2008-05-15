@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 15.05.2008 - Version 0.1.3
+ * - Ein "+" am Anfang wird jetzt auch akzeptiert
  * 04.11.2007 - Version 0.1.2
  * - Ein Double String wird jetzt auch als Fractional geparsed
  * 03.10.2007 - Version 0.1.1
@@ -35,7 +37,7 @@ import info.kriese.soPra.math.Math2;
 /**
  * 
  * @author Michael Kriese
- * @version 0.1.2
+ * @version 0.1.3
  * @since 17.09.2007
  * 
  */
@@ -76,6 +78,9 @@ public final class FractionalFactory {
 	try {
 	    if (frac == null || "".equals(frac))
 		return getInstance();
+
+	    if (frac.startsWith("+"))
+		frac = frac.substring(1);
 
 	    if (frac.contains("."))
 		return getInstance(Double.parseDouble(frac));

@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -28,13 +28,20 @@ package info.kriese.soPra.gui;
 
 import javax.media.j3d.Canvas3D;
 
-
 /**
+ * Interface zum verbinden von 3D-Engine und Oberfläche.
+ * 
  * @author Michael Kriese
  * @version 0.1
  * @since 11.05.2007
- *
  */
 public interface Virtual3DFrame {
-	void addCanvas(Canvas3D canvas);
+
+    /**
+     * Fügt der Oberfläche eine 3D-Zeichenfläche hinzu.
+     * 
+     * @param canvas -
+     *                3D-Zeichenfläche.
+     */
+    void addCanvas(Canvas3D canvas);
 }

@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 13.04.2008 - Version 0.2.3
+ * - Copyright geändert
  * 23.10.2007 - Version 0.2.1
  * - An neues Logo angepasst
  * 19.10.2007 - Version 0.2
@@ -41,6 +43,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.util.GregorianCalendar;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -52,7 +55,7 @@ import javax.swing.JPanel;
  * Diese Klasse erstellt ein kleines Aboutfenster.
  * 
  * @author Michael Kriese
- * @version 0.2.1
+ * @version 0.2.2
  * @since 29.07.2007
  * 
  */
@@ -136,9 +139,9 @@ public class AboutDialog extends JDialog {
 	JLabel info = new JLabel("<html><body style=\"width:180px\">"
 		+ "<font color=\"#FFFFFF\"><center><font size=\"5\">"
 		+ this.props.getTitle() + "</font><br><br> Version: "
-		+ this.props.getVersion()
-		+ "<br><br>Copyright: &copy; 2007 <br> "
-		+ this.props.getAuthor() + " <br><br>" + "eMail: "
+		+ this.props.getVersion() + "<br><br>Copyright: &copy; 2007 - "
+		+ GregorianCalendar.getInstance().get(GregorianCalendar.YEAR)
+		+ "<br> " + this.props.getAuthor() + " <br><br>" + "eMail: "
 		+ this.props.getMail() + "<br>Web: " + this.props.getWeb()
 		+ "</center></font></body></html>");
 	pn.add(info, BorderLayout.EAST);

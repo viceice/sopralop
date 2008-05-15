@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 15.05.2008 - Version 0.5.11
+ * - BugFix: Wenn Min = Max, dann nur eine optimale Lösung
  * 09.04.2008 - Version 0.5.10
  * - BugFix: Ein Spezialfall wurde nicht korrekt behandelt. ( Zielfunktion
  *   beschränkt, Lösungbereich unbeschränkt, 1 Punkt)
@@ -120,7 +122,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author Michael Kriese
- * @version 0.5.10
+ * @version 0.5.11
  * @since 10.05.2007
  * 
  */
@@ -456,7 +458,7 @@ public final class LOPSolver {
 			| LOPSolution.SOLUTION_AREA_UNLIMITED
 			| LOPSolution.TARGET_FUNCTION_LIMITED);
 
-	} else if (!unlimited && opt != null && sol.countAreas() >= 2)
+	} else if (opt != null && sol.countAreas() >= 2 && edge == null)
 	    sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE
 		    | LOPSolution.SOLUTION_AREA_LIMITED
 		    | LOPSolution.TARGET_FUNCTION_LIMITED);

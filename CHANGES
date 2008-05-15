@@ -2,6 +2,11 @@ SoPraLOP
 (c)2007-2008 Michael Kriese & Peer Sterner
 
 -------------------------------------------------------------------------------
+Version 0.7.2
+-------------------------------------------------------------------------------
+ - Es können auch Werte mit einem "+" eingegeben werden
+ - BugFix: Wenn Min = Max, dann nur eine optimale Lösung (primales LOP)
+-------------------------------------------------------------------------------
 Version 0.7.1 - 09.04.2008 (Rev. 285)
 -------------------------------------------------------------------------------
  - BugFix: Ein Spezialfall wurde bei der Lösung nicht korrekt behandelt /

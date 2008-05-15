@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -44,18 +44,34 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
 /**
+ * Mit dieser Klasse lassen sich leicht mehrsprachfähige Menüs und Tollbars
+ * erstellen.
  * 
  * @author Michael Kriese
  * @version 0.3.2
  * @since 29.07.2007
- * 
  */
 public final class MenuMaker {
 
+    /**
+     * Dient zur Erkennung von Separatoren in Menüs und Toolsbars.
+     */
     public static final String SEPARATOR = "SEPARATOR";
 
+    /**
+     * AtionHandler, er wird durch Menüs und Toolbars aufgerufen.
+     */
     private static ActionHandler AC = null;
 
+    /**
+     * Versucht ein Bild zu laden und gibt es gegebenenfalls zurück.
+     * 
+     * @param key -
+     *                Schlüssel, über den der Pfad aus den Einstellungen geladen
+     *                wird.
+     * @return Das geladene Bild oder "NULL", falls das Bild nicht gefunden
+     *         wurde
+     */
     public static ImageIcon getImage(String key) {
 	String imgLocation = Lang.getString(key + ".Image");
 	URL imageURL = MenuMaker.class.getResource(imgLocation);
@@ -65,6 +81,13 @@ public final class MenuMaker {
 	    return null;
     }
 
+    /**
+     * Erstellt ein Hauptmenüeintrag.
+     * 
+     * @param key -
+     *                Schlüssel, über den die Einstellungen geladen werden.
+     * @return Ein Hauptmenüeitrag.
+     */
     public static JMenu getMenu(String key) {
 	JMenu res = new JMenu(getMenuTitle(key));
 	res.setMnemonic(getMenuMnemonic(key));
@@ -72,6 +95,14 @@ public final class MenuMaker {
 	return res;
     }
 
+    /**
+     * Erstellt eine Tastenkombination, mit der ein Menüeintrag ausgewählt
+     * werden kann.
+     * 
+     * @param key -
+     *                Schlüssel, über den die Einstellung gefunden werden kann.
+     * @return Eine Tastenkombination.
+     */
     public static KeyStroke getMenuAccelerator(String key) {
 	KeyStroke res = KeyStroke.getKeyStroke(Lang.getString(key
 		+ ".Accelerator"));
