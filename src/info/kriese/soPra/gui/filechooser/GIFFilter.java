@@ -19,57 +19,51 @@
  * 
  * ChangeLog:
  * 
- * 20.05.2008 - Version 0.3
- * - neue Methode implementiert
- * 03.12.2007 - Version 0.2
- * - Methode check implementiert
- * 01.11.2007 - Version 0.1
+ * 17.05.2008 - Version 0.1
  *  - Datei hinzugefuegt
  */
-package info.kriese.soPra.lop;
+package info.kriese.soPra.gui.filechooser;
+
+import info.kriese.soPra.gui.lang.Lang;
+import info.kriese.soPra.io.IOUtils;
 
 import java.io.File;
-import java.net.URL;
+
+import javax.swing.filechooser.FileFilter;
 
 /**
  * 
  * @author Michael Kriese
- * @version 0.3
- * @since 01.11.2007
+ * @version 0.1
+ * @since 17.05.2008
  * 
  */
-public class LOPEditorAdapter implements LOPEditorListener {
+public class GIFFilter extends FileFilter {
 
-    public void addVariable(LOP lop) {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see javax.swing.filechooser.FileFilter#accept(java.io.File)
+     */
+    @Override
+    public boolean accept(File f) {
+	if (f == null)
+	    return false;
+
+	if (f.isDirectory())
+	    return true;
+
+	return IOUtils.checkExtension(f, "gif");
     }
 
-    public void captureImage(LOP lop, File file) {
-    }
-
-    public void check(LOP lop) {
-    }
-
-    public void clear(LOP lop) {
-    }
-
-    public boolean open(LOP lop, URL file) {
-	return true;
-    }
-
-    public void removeVariable(LOP lop) {
-    }
-
-    public void save(LOP lop, URL file) {
-    }
-
-    public void solve(LOP lop) {
-    }
-
-    public boolean take(LOP lop) {
-	return true;
-    }
-
-    public void update(LOP lop) {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see javax.swing.filechooser.FileFilter#getDescription()
+     */
+    @Override
+    public String getDescription() {
+	return Lang.getString("Files.GIF") + " (*.gif)";
     }
 
 }

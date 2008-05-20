@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 20.05.2008 - Version 0.6
+ * - neue Methoden getExternsion & checkExtension
  * 09.04.2008 - Version 0.5.3
  * - Ausgabe in print verändert
  * 29.01.2008 - Version 0.5.2
@@ -90,7 +92,7 @@ import org.w3c.dom.NamedNodeMap;
 /**
  * 
  * @author Michael Kriese
- * @version 0.5.3
+ * @version 0.6
  * @since 29.07.2007
  * 
  */
@@ -107,6 +109,22 @@ public final class IOUtils {
     private static final String VECTOR = "\t<vector x=\"{0}\" y=\"{1}\" z=\"{2}\"  />";
 
     /**
+     * Überprüft, ob die gegebene Datei die entsprechende Erweitrung besitzt.
+     * 
+     * @param file -
+     *                Datei, die überprüft werden soll
+     * @param ext -
+     *                Dateierweiterung, mit der getestet werden soll
+     * @return "TRUE" falls die Datei die Erweiterung hat, sonst "FALSE"
+     */
+    public static boolean checkExtension(File file, String ext) {
+	if (ext != null && file != null
+		&& ext.equals(IOUtils.getExtension(file)))
+	    return true;
+	return false;
+    }
+
+    /**
      * Formatiert einen Vektor mittels gegebenen Format in einen String zum
      * speichern.
      * 
@@ -119,6 +137,22 @@ public final class IOUtils {
     public static String format(String pattern, Vector3Frac vec) {
 	return MessageFormat.format(pattern, new Object[] { vec.getCoordX(),
 		vec.getCoordY(), vec.getCoordZ() });
+    }
+
+    /**
+     * Gibt die Dateierweiterung zurück.
+     * 
+     * @param file -
+     *                Datei, von der die Erweiterung zurückgegeben werden soll.
+     * @return Dateierweiterung falls vorhanden, sonst "NULL"
+     */
+    public static String getExtension(File file) {
+	String f = file.getName();
+	int i = f.lastIndexOf(".");
+
+	if (i > 0 && i < f.length() - 1)
+	    return f.substring(i + 1).toLowerCase();
+	return null;
     }
 
     /**

@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 20.05.2008 - Version 0.10
+ * - neuer Menüpunkt "save as image" und 2 neue ToolbarButtons "save as image"
+ *   & "schow pp / dp"
  * 15.05.2008 - Version 0.9.1
  * - BugFix: Bei Programmstart war der Titel doppelt
  * 12.02.2008 - Version 0.9
@@ -102,6 +105,7 @@ import java.util.List;
 import javax.media.j3d.Canvas3D;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -117,7 +121,7 @@ import javax.swing.border.Border;
  * Erstellt das Hauptfenster des Programms
  * 
  * @author Michael Kriese
- * @version 0.9.1
+ * @version 0.10
  * @since 12.05.2007
  */
 public final class MainFrame extends JFrame implements Virtual3DFrame,
@@ -155,6 +159,8 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
      * zu definieren.
      */
     private final JSplitPane body;
+
+    private JButton btn_primal_duale;
 
     /**
      * Menüpunkte zum anzeigen des primalen bzw. dualen Problems.
@@ -282,6 +288,12 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 		MainFrame.this.view.add(MainFrame.this.primale);
 		MainFrame.this.problem.setText(Lang
 			.getString("Strings.DualProblem"));
+		MainFrame.this.btn_primal_duale
+			.setActionCommand("Menu.View.ShowPrimalProblem");
+		MainFrame.this.btn_primal_duale.setToolTipText(MenuMaker
+			.getMenuTitle("Menu.View.ShowPrimalProblem"));
+		MainFrame.this.btn_primal_duale.setIcon(MenuMaker
+			.getImage("Menu.View.ShowPrimalProblem"));
 		validate();
 		repaint();
 	    }
@@ -292,6 +304,12 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 		MainFrame.this.view.add(MainFrame.this.duale);
 		MainFrame.this.problem.setText(Lang
 			.getString("Strings.PrimalProblem"));
+		MainFrame.this.btn_primal_duale
+			.setActionCommand("Menu.View.ShowDualProblem");
+		MainFrame.this.btn_primal_duale.setToolTipText(MenuMaker
+			.getMenuTitle("Menu.View.ShowDualProblem"));
+		MainFrame.this.btn_primal_duale.setIcon(MenuMaker
+			.getImage("Menu.View.ShowDualProblem"));
 		validate();
 		repaint();
 	    }
@@ -333,6 +351,7 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 	menu.add(MenuMaker.getMenuItem("Menu.File.Open"));
 	menu.add(MenuMaker.getMenuItem("Menu.File.Save"));
 	menu.add(MenuMaker.getMenuItem("Menu.File.SaveAs"));
+	menu.add(MenuMaker.getMenuItem("Menu.File.SaveImage"));
 	menu.addSeparator();
 	submenu = MenuMaker.getMenu("Menu.File.Samples");
 
@@ -376,9 +395,14 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 
 	tb.add(MenuMaker.getToolBarButton("Menu.File.Open"));
 	tb.add(MenuMaker.getToolBarButton("Menu.File.Save"));
+	tb.add(MenuMaker.getToolBarButton("Menu.File.SaveImage"));
 	tb.addSeparator();
 	tb.add(MenuMaker.getToolBarButton("Menu.View.Show"));
 	tb.add(MenuMaker.getToolBarButton("Menu.View.Reset"));
+	tb.addSeparator();
+	this.btn_primal_duale = MenuMaker
+		.getToolBarButton("Menu.View.ShowDualProblem");
+	tb.add(this.btn_primal_duale);
 	tb.addSeparator();
 	tb.add(this.problem);
     }

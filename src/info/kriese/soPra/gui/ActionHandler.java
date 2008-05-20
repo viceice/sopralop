@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 20.05.2008 - Version 0.5
+ * - an neuen FileChooser angepasst
+ * - Handler für captureImage implementiert
  * 27.12.2007 - Version 0.4.3
  * - Hilfe-Fenster hinzugefügt
  * - BugFix: Bei einer Fehlermeldung waren Titel und Nachricht vertauscht
@@ -50,6 +53,7 @@
 package info.kriese.soPra.gui;
 
 import info.kriese.soPra.SoPraLOP;
+import info.kriese.soPra.gui.filechooser.FileChooserFactory;
 import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.io.IOUtils;
 import info.kriese.soPra.lop.LOP;
@@ -64,14 +68,13 @@ import java.io.File;
 import java.net.MalformedURLException;
 
 import javax.swing.AbstractButton;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 /**
  * Klasse zum Handeln und Delegieren aller Aktionen in SoPraLOP
  * 
  * @author Michael Kriese
- * @version 0.4.3
+ * @version 0.5
  * @since 24.10.2007
  * 
  * TODO: mögliche NullPointer abfangen
@@ -106,7 +109,7 @@ public final class ActionHandler {
     /**
      * LOP-Dateiname, welche im Programm gerade geöffnet ist.
      */
-    public String file = null;
+    public File file = null;
 
     /**
      * ActionListener, welcher in diversen Objekten registriert wird. Über
@@ -223,7 +226,9 @@ public final class ActionHandler {
 	} else if (cmd.equals("Menu.File.SaveAs")) {
 	    if (askEdit())
 		fileSaveClass(true);
-	} else if (cmd.equals("Menu.View.Reset"))
+	} else if (cmd.equals("Menu.File.SaveImage"))
+	    fileSaveClassImage();
+	else if (cmd.equals("Menu.View.Reset"))
 	    SoPraLOP.ENGINE.resetScene();
 	else if (cmd.equals("Menu.View.Show"))
 	    SoPraLOP.VISUAL.setVisible(true);
@@ -289,39 +294,47 @@ public final class ActionHandler {
      * das ausgewählte LOP.
      */
     private void fileOpenClass() {
-	if (SoPraLOP.FC.showOpenDialog(MessageHandler.getParent()) == JFileChooser.APPROVE_OPTION) {
-	    this.file = SoPraLOP.FC.getSelectedFile().getAbsolutePath();
-
+	this.file = FileChooserFactory.open(FileChooserFactory.FILETYP_LOP);
+	if (this.file != null && this.file.canRead())
 	    try {
-		SoPraLOP.EDITOR.open(SoPraLOP.FC.getSelectedFile().toURI()
-			.toURL());
-		SoPraLOP.MAIN.setTitle(SoPraLOP.FC.getSelectedFile().getName());
+		SoPraLOP.EDITOR.open(this.file.toURI().toURL());
+		SoPraLOP.MAIN.setTitle(this.file.getName());
 	    } catch (MalformedURLException e) {
 		e.printStackTrace();
 	    }
-	}
     }
 
     /**
      * Speicherfunktion für LOP-Dateien.
      * 
-     * Zeigt dem Benutzer einen Datei-Schließen-Dialog und speichert
+     * Zeigt dem Benutzer einen Datei-Speichern-Dialog und speichert
      * gegebenenfalls das LOP.
      */
     private void fileSaveClass(boolean saveAs) {
 	if (saveAs || this.file == null)
-	    if (SoPraLOP.FC.showSaveDialog(MessageHandler.getParent()) == JFileChooser.APPROVE_OPTION) {
-		this.file = SoPraLOP.FC.getSelectedFile().getAbsolutePath();
-		if (!this.file.toLowerCase().endsWith(".lop"))
-		    this.file += ".lop";
-	    }
+	    this.file = FileChooserFactory.save(FileChooserFactory.FILETYP_LOP);
+
 	if (this.file != null)
 	    try {
-		SoPraLOP.EDITOR.save(new File(this.file).toURI().toURL());
-		SoPraLOP.MAIN.setTitle(new File(this.file).getName());
+		SoPraLOP.EDITOR.save(this.file.toURI().toURL());
+		SoPraLOP.MAIN.setTitle(this.file.getName());
 	    } catch (MalformedURLException e) {
 		e.printStackTrace();
 	    }
+    }
+
+    /**
+     * Speicherfunktion für LOP's als Bild.
+     * 
+     * Zeigt dem Benutzer einen Datei-Speichern-Dialog und speichert
+     * gegebenenfalls das LOP als Bild.
+     */
+    private void fileSaveClassImage() {
+
+	File file = FileChooserFactory.save(FileChooserFactory.FILETYP_IMAGE);
+
+	if (file != null)
+	    SoPraLOP.EDITOR.captureImage(file);
     }
 
 }

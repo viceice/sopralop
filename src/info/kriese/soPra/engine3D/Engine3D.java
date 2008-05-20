@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 20.05.2008 - Version 0.6
+ * - neue Methode captureImage implementiert
+ * - setLOP entfernt, dafür setLOPEditor hinzugefügt
  * 04.03.2008 - Version 0.5.8
  * - Beleuchtung verbessert
  * 01.02.2008 - Version 0.5.7.1
@@ -92,9 +95,13 @@ import info.kriese.soPra.engine3D.objects.Cone3D;
 import info.kriese.soPra.engine3D.objects.CoordinatePlane3D;
 import info.kriese.soPra.engine3D.objects.Point3D;
 import info.kriese.soPra.engine3D.objects.Target3D;
+import info.kriese.soPra.gui.MessageHandler;
 import info.kriese.soPra.gui.Virtual3DFrame;
+import info.kriese.soPra.io.IOUtils;
 import info.kriese.soPra.lop.LOP;
 import info.kriese.soPra.lop.LOPAdapter;
+import info.kriese.soPra.lop.LOPEditor;
+import info.kriese.soPra.lop.LOPEditorAdapter;
 import info.kriese.soPra.lop.LOPSolution;
 import info.kriese.soPra.lop.LOPSolutionArea;
 import info.kriese.soPra.math.Vector3Frac;
@@ -105,16 +112,24 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
 
+import javax.imageio.ImageIO;
 import javax.media.j3d.AmbientLight;
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Canvas3D;
 import javax.media.j3d.DirectionalLight;
 import javax.media.j3d.GraphicsConfigTemplate3D;
+import javax.media.j3d.GraphicsContext3D;
+import javax.media.j3d.ImageComponent;
+import javax.media.j3d.ImageComponent2D;
+import javax.media.j3d.Raster;
 import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransformGroup;
 import javax.media.j3d.View;
 import javax.vecmath.Color3f;
+import javax.vecmath.Point3f;
 import javax.vecmath.Vector3d;
 
 import com.sun.j3d.utils.behaviors.vp.OrbitBehavior;
@@ -125,7 +140,7 @@ import com.sun.j3d.utils.universe.ViewingPlatform;
  * Stellt Methoden zur Berechnung der 3D-Szene bereit.
  * 
  * @author Michael Kriese
- * @version 0.5.8
+ * @version 0.6
  * @since 26.04.2007
  */
 public final class Engine3D {
@@ -256,6 +271,40 @@ public final class Engine3D {
     }
 
     /**
+     * Erstellt ein ScreenShot der 3D-Szene.
+     * 
+     * @param file -
+     *                Datei, in die der ScreenShot gespeichert werden soll.
+     */
+    public void captureImage(File file) {
+
+	try {
+	    GraphicsContext3D ctx = this.canvas.getGraphicsContext3D();
+	    ctx.flush(true);
+	    // The raster components need all be set!
+	    Raster ras = new Raster(new Point3f(-1.0f, -1.0f, -1.0f),
+		    Raster.RASTER_COLOR, 0, 0, this.canvas.getWidth(),
+		    this.canvas.getHeight(), new ImageComponent2D(
+			    ImageComponent.FORMAT_RGB, new BufferedImage(
+				    this.canvas.getWidth(), this.canvas
+					    .getHeight(),
+				    BufferedImage.TYPE_INT_RGB)), null);
+
+	    ctx.readRaster(ras);
+
+	    // Now strip out the image info
+	    BufferedImage img = ras.getImage().getImage();
+
+	    // write that to disk....
+	    String ext = IOUtils.getExtension(file);
+
+	    ImageIO.write(img, ext, file);
+	} catch (Exception e) {
+	    MessageHandler.exceptionThrown(e);
+	}
+    }
+
+    /**
      * Bewegt alle 3D-Objekte in ihre Ausgangsposition zurück.
      */
     public void resetScene() {
@@ -269,10 +318,11 @@ public final class Engine3D {
     /**
      * Verbindet das LOP mit der 3D-Scene.
      * 
-     * @param lop
+     * @param editor -
+     *                ein LOPEditor
      */
-    public void setLOP(LOP lop) {
-	lop.addProblemListener(new LOPAdapter() {
+    public void setLOPEditor(LOPEditor editor) {
+	editor.getLOP().addProblemListener(new LOPAdapter() {
 
 	    @Override
 	    public void problemSolved(LOP lop) {
@@ -292,7 +342,18 @@ public final class Engine3D {
 	    }
 	});
 
-	this.cone.setLOP(lop);
+	editor.addListener(new LOPEditorAdapter() {
+	    @Override
+	    public void captureImage(LOP lop, final File file) {
+
+		Engine3D.this.canvas.requestFocus();
+
+		Engine3D.this.captureImage(file);
+
+	    }
+	});
+
+	this.cone.setLOP(editor.getLOP());
 
     }
 

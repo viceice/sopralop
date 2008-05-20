@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 20.05.2008 - Version 0.4.9
+ * - neue Fehlermeldung bei falsch eingegebenem Fall
  * 09.04.2008 - Version 0.4.8.1
  * - Debugausgabe erweitert (Spezialfall)
  * 05.03.2008 - Version 0.4.8
@@ -96,7 +98,7 @@ import javax.swing.table.AbstractTableModel;
  * Wandelt das LOP in ein von JTable lesbares Format um.
  * 
  * @author Peer Sterner
- * @version 0.4.8.1
+ * @version 0.4.9
  * @since 01.11.2007
  * 
  */
@@ -519,7 +521,7 @@ public final class LOPTableModel extends AbstractTableModel {
 			+ this.specialCases.getSpecialCase() + ")");
 
 	    MessageHandler.showError(Lang.getString("Strings.Solution"), Lang
-		    .getString("Strings.IncorrectSolution"));
+		    .getString("Strings.IncorrectCase"));
 	    return;
 	}
 

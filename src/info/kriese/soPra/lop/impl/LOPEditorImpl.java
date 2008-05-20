@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 20.05.2008 - Version 0.4
+ * - neue Methode implementiert
  * 03.12.2007 - Version 0.3
  * - Methode check implementiert
  * 09.11.2007 - Version 0.2.1
@@ -35,14 +37,17 @@ import info.kriese.soPra.lop.LOPAdapter;
 import info.kriese.soPra.lop.LOPEditor;
 import info.kriese.soPra.lop.LOPEditorListener;
 
+import java.io.File;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.SwingUtilities;
+
 /**
  * 
  * @author Michael Kriese
- * @version 0.3
+ * @version 0.4
  * @since 01.11.2007
  * 
  */
@@ -72,6 +77,17 @@ public class LOPEditorImpl implements LOPEditor {
     public void addVariable() {
 	for (LOPEditorListener l : this.listeners)
 	    l.addVariable(this.lop);
+    }
+
+    public void captureImage(final File file) {
+	SwingUtilities.invokeLater(new Runnable() {
+
+	    public void run() {
+		for (LOPEditorListener l : LOPEditorImpl.this.listeners)
+		    l.captureImage(LOPEditorImpl.this.lop, file);
+	    }
+	});
+
     }
 
     public void check() {

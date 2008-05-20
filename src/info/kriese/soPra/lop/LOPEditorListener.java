@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 20.05.2008 - Version 0.3
+ * - neue Methode captureImage
  * 03.12.2007 - Verison 0.2
  * - Methode check hinzugefügt
  * 01.11.2007 - Version 0.1
@@ -26,18 +28,21 @@
  */
 package info.kriese.soPra.lop;
 
+import java.io.File;
 import java.net.URL;
 
 /**
  * 
  * @author Michael Kriese
- * @version 0.2
+ * @version 0.3
  * @since 01.11.2007
  * 
  */
 public interface LOPEditorListener {
 
     void addVariable(LOP lop);
+
+    void captureImage(LOP lop, File file);
 
     void check(LOP lop);
 

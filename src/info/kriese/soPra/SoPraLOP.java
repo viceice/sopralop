@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 20.05.2008 - Version 0.5.10
+ * - An neuen FileChooser angepasst
  * 26.01.2008 - Version 0.5.9
  * - Aufruf von LOP.problemChanged entfernt, da überflüssig.
  * - An neue SettingsFactory angepasst.
@@ -68,6 +70,7 @@ import info.kriese.soPra.gui.MainFrame;
 import info.kriese.soPra.gui.MessageHandler;
 import info.kriese.soPra.gui.SplashDialog;
 import info.kriese.soPra.gui.Visual3DFrame;
+import info.kriese.soPra.gui.filechooser.FileChooserFactory;
 import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.io.impl.SettingsFactory;
 import info.kriese.soPra.lop.LOP;
@@ -77,14 +80,10 @@ import info.kriese.soPra.math.LOPSolver;
 
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.io.File;
-
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
 
 /**
  * @author Michael Kriese
- * @version 0.5.8.1
+ * @version 0.5.10
  * @since 12.05.2007
  * 
  */
@@ -95,8 +94,6 @@ public final class SoPraLOP {
     public static LOPEditor EDITOR;
 
     public static Engine3D ENGINE;
-
-    public static JFileChooser FC;
 
     public static InputPanel INPUT;
 
@@ -160,21 +157,7 @@ public final class SoPraLOP {
 	HelpDialog.getInstance().setHelp("index.htm");
 
 	splash.setMessage(Lang.getString("Boot.FileChooser"));
-	FC = new JFileChooser();
-	FC.addChoosableFileFilter(new FileFilter() {
-	    @Override
-	    public boolean accept(File f) {
-		if (f.isDirectory())
-		    return true;
-		return f.getName().toLowerCase().endsWith(".lop");
-	    }
-
-	    @Override
-	    public String getDescription() {
-		return Lang.getString("Strings.LOP") + " (*.lop)";
-	    }
-	});
-	FC.setMultiSelectionEnabled(false);
+	FileChooserFactory.setParent(MAIN);
 
 	splash.setMessage(Lang.getString("Boot.InputPanel"));
 	INPUT = new InputPanel();
@@ -185,7 +168,7 @@ public final class SoPraLOP {
 	splash.setMessage(Lang.getString("Boot.3DEngine"));
 	ENGINE = new Engine3D();
 	ENGINE.addConnection(MAIN);
-	ENGINE.setLOP(lop);
+	ENGINE.setLOPEditor(EDITOR);
 
 	splash.setMessage(Lang.getString("Boot.Solver"));
 	SOLVER = new LOPSolver();
@@ -197,5 +180,4 @@ public final class SoPraLOP {
 	splash.setMessage("");
 	splash.setVisible(false);
     }
-
 }

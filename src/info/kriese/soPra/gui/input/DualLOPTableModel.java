@@ -467,7 +467,7 @@ public final class DualLOPTableModel extends AbstractTableModel {
 		System.out.println("Wrong user special case!");
 
 	    MessageHandler.showError(Lang.getString("Strings.Solution"), Lang
-		    .getString("Strings.IncorrectSolution"));
+		    .getString("Strings.IncorrectCase"));
 	    return;
 	}
 

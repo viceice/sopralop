@@ -1,6 +1,6 @@
 /**
  * @version		$Id$
- * @copyright	(c)2007 Michael Kriese & Peer Sterner
+ * @copyright	(c)2007-2008 Michael Kriese & Peer Sterner
  * 
  * This file is part of SoPraLOP Project.
  *
@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 20.05.2008 - Version 0.4
+ * - neue Methode captureImage
  * 03.12.2007 - Verison 0.3
  * - Methoden check, isEdited & setEdited hinzugefügt
  * 06.11.2007 - Version 0.2
@@ -28,12 +30,13 @@
  */
 package info.kriese.soPra.lop;
 
+import java.io.File;
 import java.net.URL;
 
 /**
  * 
  * @author Michael Kriese
- * @version 0.3
+ * @version 0.4
  * @since 01.11.2007
  * 
  */
@@ -41,6 +44,8 @@ public interface LOPEditor {
     void addListener(LOPEditorListener l);
 
     void addVariable();
+
+    void captureImage(File file);
 
     void check();
 

@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 20.05.2008 - Version 0.1.5
+ * - ScreenShot der Szene wird erstellt
  * 04.03.2008 - Version 0.1.4
  * - Fensterposition angepasst
  * - Mit [F5] kann die Szene zurückgesetzt werden
@@ -34,12 +36,6 @@
  */
 package info.kriese.soPra.test;
 
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-
-import javax.media.j3d.Canvas3D;
-import javax.swing.JFrame;
-
 import info.kriese.soPra.engine3D.Engine3D;
 import info.kriese.soPra.gui.Virtual3DFrame;
 import info.kriese.soPra.gui.Visual3DFrame;
@@ -51,11 +47,18 @@ import info.kriese.soPra.lop.LOPEditor;
 import info.kriese.soPra.lop.impl.LOPFactory;
 import info.kriese.soPra.math.LOPSolver;
 
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.File;
+
+import javax.media.j3d.Canvas3D;
+import javax.swing.JFrame;
+
 /**
  * Programm zum testen der 3D-Szene.
  * 
  * @author Michael Kriese
- * @version 0.1.4
+ * @version 0.1.5
  * @since 17.09.2007
  * 
  */
@@ -110,12 +113,14 @@ public final class TestView {
 			} else if (e.getKeyCode() == KeyEvent.VK_F5) {
 			    engine.resetScene();
 			    e.consume();
-			}
+			} else if (e.getKeyCode() == KeyEvent.VK_F2)
+			    engine.captureImage(new File("test.png"));
+			e.consume();
 		    }
 		});
 	    }
 	});
-	engine.setLOP(lop);
+	engine.setLOPEditor(editor);
 
 	editor.open(IOUtils.getURL("problems/"
 		+ Lang.getString("Menu.File.Samples." + SAMPLE + ".File")
@@ -123,5 +128,4 @@ public final class TestView {
 
 	view.setVisible(true);
     }
-
 }
