@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 27.05.2008 - Version 0.7.4
+ * - BugFix: Navigation in Eingabetabelle mit Cursor-Tasten war nicht richtig
+ *   möglich
  * 01.02.2008 - Version 0.7.3
  * - Fälle für Lösungsbereich werden im dualen ausgeblendet
  * - Unendlich und Leer kann nicht mehr eingegeben werden
@@ -128,7 +131,7 @@ import javax.swing.table.TableColumn;
  * 
  * @author Peer Sterner
  * @since 13.05.2007
- * @version 0.7.3
+ * @version 0.7.4
  */
 public final class InputPanel extends JPanel {
 
@@ -285,6 +288,8 @@ public final class InputPanel extends JPanel {
 
 	    private static final long serialVersionUID = 1L;
 
+	    private int lastCol = 0, lastRow = 0;
+
 	    /**
 	     * Überschriebene Funktion zur Selektierung von Zellen.
 	     * 
@@ -308,13 +313,23 @@ public final class InputPanel extends JPanel {
 
 		if (getModel() == InputPanel.this.primalModel) {
 
-		    if (row == 1 || row == rows - 2)
-			row++;
+		    if (row == 1 || row == rows - 2) {
+			if (this.lastRow < row)
+			    row++;
+			else
+			    row--;
+			this.lastRow = row;
+		    }
 		} else
 		    row = rows - 1;
 
-		if (col == 0 || col == cols - 2)
-		    col++;
+		if (col == 0 || col == cols - 2) {
+		    if (this.lastCol < col)
+			col++;
+		    else
+			col--;
+		    this.lastCol = col;
+		}
 
 		super.changeSelection(row, col, toggle, extend);
 	    }

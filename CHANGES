@@ -13,6 +13,7 @@ Version 0.7.2
  - BugFix: Bei Berechnung der Lösungen des dualen Problems muss z immer auf
    -1 normiert werden
  - BugFix: Bei Programmstart war der Titel doppelt
+ - BugFix: Navigation in Eingabetabelle mit Cursor-Tasten war nicht richtig möglich
 -------------------------------------------------------------------------------
 Version 0.7.1 - 09.04.2008 (Rev. 285)
 -------------------------------------------------------------------------------
