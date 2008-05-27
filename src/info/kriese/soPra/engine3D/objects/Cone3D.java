@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 21.05.2008 - Version 0.6
+ * - Neue Methode switchBackgroundColor, diese verändert die Seiten des Kegels
+ *   um den Kontrast bei weißem Hintergrund zu erhöhen
  * 08.11.2007 - Version 0.5
  * - Kegelkanten haben jetzt ihre Beschriftung bekommen
  * 23.10.2007 - Version 0.4
@@ -63,11 +66,14 @@ import com.sun.j3d.utils.geometry.GeometryInfo;
  * Erstellt aus den Vektoren des LOP's einen konvexen Kegel im Raum.
  * 
  * @author Michael Kriese
- * @version 0.5
+ * @version 0.6
  * @since 12.05.2007
  * 
  */
 public class Cone3D extends TransformGroup {
+
+    private final Appearance aprBack = Tools3D.generateApperance();
+    private final Appearance aprFront = Tools3D.generateApperance();
 
     /**
      * Außenseite, Innenseite und Kanten des Kegels.
@@ -83,6 +89,8 @@ public class Cone3D extends TransformGroup {
      * LOP, welches der Kegel darstellt.
      */
     private LOP lop;
+
+    private final Material matFront1, matFront2, matBack1, matBack2;
 
     /**
      * Gruppe der Kantenbeschriftung.
@@ -111,6 +119,21 @@ public class Cone3D extends TransformGroup {
 	this.verticesOrig = new ArrayList<Vector3Frac>();
 
 	addChild(this.names);
+
+	this.matFront1 = new Material(new Color3f(0.8f, 0.8f, 0.8f),
+		new Color3f(0.0f, 0.0f, 0.0f), new Color3f(1f, 1f, 1f),
+		new Color3f(1f, 1f, 0f), 10f);
+	this.matFront2 = new Material(new Color3f(0.5f, 0.5f, 0.5f),
+		new Color3f(03f, 0.3f, 0.3f), new Color3f(0.0f, 0.0f, 0.0f),
+		new Color3f(0.7f, 0.7f, 0f), 10f);
+
+	this.matBack1 = new Material(new Color3f(0.4f, 0.7f, 0.0f),
+		new Color3f(0.0f, 0.0f, 0.0f), new Color3f(1f, 1f, 1f),
+		new Color3f(1f, 1f, 0f), 10f);
+
+	this.matBack2 = new Material(new Color3f(0.4f, 0.7f, 0.0f),
+		new Color3f(0.7f, 0.7f, 0.0f), new Color3f(0.3f, 0.3f, 0.3f),
+		new Color3f(0.7f, 0.7f, 0f), 10f);
 
 	initFront();
 	initBack();
@@ -185,6 +208,19 @@ public class Cone3D extends TransformGroup {
      */
     public void setLOP(LOP lop) {
 	this.lop = lop;
+    }
+
+    public void switchBackgroundColor(boolean bgBlack) {
+	if (bgBlack) {
+	    this.aprFront.setMaterial(this.matFront1);
+	    this.aprBack.setMaterial(this.matBack1);
+	} else {
+	    this.aprFront.setMaterial(this.matFront2);
+	    this.aprBack.setMaterial(this.matBack2);
+	}
+
+	this.back.setAppearance(this.aprBack);
+	this.front.setAppearance(this.aprFront);
     }
 
     /**
@@ -285,18 +321,25 @@ public class Cone3D extends TransformGroup {
      * Initialisiert die Innenseiten des Kegels.
      */
     private void initBack() {
-	Appearance apr = Tools3D.generateApperance();
 
-	apr.setMaterial(new Material(new Color3f(0.4f, 0.7f, 0.0f),
-		new Color3f(0.0f, 0.0f, 0.0f), new Color3f(1f, 1f, 1f),
-		new Color3f(1f, 1f, 0f), 10f));
-	apr.getTransparencyAttributes().setTransparencyMode(
+	this.aprBack.setMaterial(this.matBack1);
+	this.aprBack.getMaterial()
+		.setCapability(Material.ALLOW_COMPONENT_WRITE);
+	this.aprBack.getTransparencyAttributes().setTransparencyMode(
 		TransparencyAttributes.NICEST);
-	apr.getTransparencyAttributes().setTransparency(0.2f);
+	this.aprBack.getTransparencyAttributes().setTransparency(0.2f);
+	this.aprBack.getTransparencyAttributes().setCapability(
+		TransparencyAttributes.ALLOW_VALUE_WRITE);
+
+	this.aprBack
+		.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_WRITE);
+	this.aprBack.setCapability(Appearance.ALLOW_MATERIAL_WRITE);
+	this.aprBack.setCapability(Appearance.ALLOW_COLORING_ATTRIBUTES_WRITE);
 
 	this.back = new Shape3D();
-	this.back.setAppearance(apr);
+	this.back.setAppearance(this.aprBack);
 	this.back.setCapability(Shape3D.ALLOW_GEOMETRY_WRITE);
+	this.back.setCapability(Shape3D.ALLOW_APPEARANCE_WRITE);
 	addChild(this.back);
     }
 
@@ -304,18 +347,25 @@ public class Cone3D extends TransformGroup {
      * Initialisiert die Außenseiten des Kegels.
      */
     private void initFront() {
-	Appearance apr = Tools3D.generateApperance();
-	apr.setMaterial(new Material(new Color3f(0.8f, 0.8f, 0.8f),
-		new Color3f(0.0f, 0.0f, 0.0f), new Color3f(1f, 1f, 1f),
-		new Color3f(1f, 1f, 0f), 10f));
+	this.aprFront.setMaterial(this.matFront1);
 
-	apr.getTransparencyAttributes().setTransparencyMode(
+	this.aprFront.getTransparencyAttributes().setTransparencyMode(
 		TransparencyAttributes.NICEST);
-	apr.getTransparencyAttributes().setTransparency(0.4f);
+	this.aprFront.getTransparencyAttributes().setTransparency(0.4f);
+	this.aprFront.getTransparencyAttributes().setCapability(
+		TransparencyAttributes.ALLOW_VALUE_WRITE);
+	this.aprFront.getTransparencyAttributes().setCapability(
+		TransparencyAttributes.ALLOW_MODE_WRITE);
+
+	this.aprFront
+		.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_WRITE);
+	this.aprFront.setCapability(Appearance.ALLOW_MATERIAL_WRITE);
+	this.aprFront.setCapability(Appearance.ALLOW_COLORING_ATTRIBUTES_WRITE);
 
 	this.front = new Shape3D();
-	this.front.setAppearance(apr);
+	this.front.setAppearance(this.aprFront);
 	this.front.setCapability(Shape3D.ALLOW_GEOMETRY_WRITE);
+	this.front.setCapability(Shape3D.ALLOW_APPEARANCE_WRITE);
 	addChild(this.front);
     }
 

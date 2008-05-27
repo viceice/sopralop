@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 21.05.2008 - Version 0.5
+ * - Neue Konstante COLOR_WHITE
  * 08.11.2007 - Verison 0.4.2
  * - Methode createAxisName hinzugefügt
  * 02.10.2007 - Version 0.4.1
@@ -68,7 +70,7 @@ import com.sun.j3d.utils.geometry.Stripifier;
  * Einige Hilfskonstanten und Funktionen für Berechnungen im Raum.
  * 
  * @author Michael Kriese
- * @version 0.4.2
+ * @version 0.5
  * @since 12.05.2007
  * 
  */
@@ -83,6 +85,11 @@ public final class Tools3D {
      * Farbe Schwarz.
      */
     public static final Color3f COLOR_BLACK = new Color3f(0.0f, 0.0f, 0.0f);
+
+    /**
+     * Farbe Weiß.
+     */
+    public static final Color3f COLOR_WHITE = new Color3f(Color.WHITE);
 
     /**
      * Front-Clipping-Plane, ab der Entfernung wird nicht mehr gezeichnet.

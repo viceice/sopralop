@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 21.05.2008 - Version 0.6.1
+ * - Neue Methode switchBackgroundColor
  * 20.05.2008 - Version 0.6
  * - neue Methode captureImage implementiert
  * - setLOP entfernt, dafür setLOPEditor hinzugefügt
@@ -117,6 +119,7 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 import javax.media.j3d.AmbientLight;
+import javax.media.j3d.Background;
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Canvas3D;
 import javax.media.j3d.DirectionalLight;
@@ -140,10 +143,14 @@ import com.sun.j3d.utils.universe.ViewingPlatform;
  * Stellt Methoden zur Berechnung der 3D-Szene bereit.
  * 
  * @author Michael Kriese
- * @version 0.6
+ * @version 0.6.1
  * @since 26.04.2007
  */
 public final class Engine3D {
+
+    private final Background bg;
+
+    private boolean bgBlack = true;
 
     /**
      * Zeichenfläche, auf die gerendert wird.
@@ -208,6 +215,9 @@ public final class Engine3D {
 		if (e.getKeyCode() == KeyEvent.VK_F2) {
 		    resetScene();
 		    e.consume();
+		} else if (e.getKeyCode() == KeyEvent.VK_F3) {
+		    switchBackgroundColor();
+		    e.consume();
 		}
 	    }
 	});
@@ -249,8 +259,14 @@ public final class Engine3D {
 	this.intersection = new Point3D();
 	this.elemsGroup.addChild(this.intersection);
 
+	// Hintergrundfarbe soll änderbar sein
+	this.bg = new Background();
+	this.bg.setApplicationBounds(Tools3D.LIGHT_BOUNDS);
+	this.bg.setCapability(Background.ALLOW_COLOR_WRITE);
+
 	BranchGroup bg = new BranchGroup();
 	bg.addChild(this.elemsGroup);
+	bg.addChild(this.bg);
 	bg.compile();
 	this.su.addBranchGraph(bg);
 
@@ -355,6 +371,24 @@ public final class Engine3D {
 
 	this.cone.setLOP(editor.getLOP());
 
+    }
+
+    /**
+     * Lässt den Hintergrund zwischen Weiß und Schwaqrz wechseln.
+     */
+    public void switchBackgroundColor() {
+
+	if (this.bgBlack) {
+	    this.bgBlack = false;
+	    this.bg.setColor(Tools3D.COLOR_WHITE);
+	} else {
+	    this.bgBlack = true;
+	    this.bg.setColor(Tools3D.COLOR_BLACK);
+	}
+
+	this.cone.switchBackgroundColor(this.bgBlack);
+
+	this.canvas.repaint();
     }
 
     /**

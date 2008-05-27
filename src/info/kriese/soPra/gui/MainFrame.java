@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 21.05.2008 - Version 0.10.1
+ * - Neuer Menüpunkt "change background color"
  * 20.05.2008 - Version 0.10
  * - neuer Menüpunkt "save as image" und 2 neue ToolbarButtons "save as image"
  *   & "schow pp / dp"
@@ -121,7 +123,7 @@ import javax.swing.border.Border;
  * Erstellt das Hauptfenster des Programms
  * 
  * @author Michael Kriese
- * @version 0.10
+ * @version 0.10.1
  * @since 12.05.2007
  */
 public final class MainFrame extends JFrame implements Virtual3DFrame,
@@ -351,6 +353,7 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 	menu.add(MenuMaker.getMenuItem("Menu.File.Open"));
 	menu.add(MenuMaker.getMenuItem("Menu.File.Save"));
 	menu.add(MenuMaker.getMenuItem("Menu.File.SaveAs"));
+	// TODO: Übersetzung
 	menu.add(MenuMaker.getMenuItem("Menu.File.SaveImage"));
 	menu.addSeparator();
 	submenu = MenuMaker.getMenu("Menu.File.Samples");
@@ -369,6 +372,8 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 	menu = MenuMaker.getMenu("Menu.View");
 	menubar.add(menu);
 	menu.add(MenuMaker.getMenuItem("Menu.View.Reset"));
+	// TODO: Übersetzung
+	menu.add(MenuMaker.getMenuItem("Menu.View.Color"));
 	menu.addSeparator();
 	menu.add(MenuMaker.getMenuItem("Menu.View.Show"));
 	this.primale = MenuMaker.getMenuItem("Menu.View.ShowPrimalProblem");

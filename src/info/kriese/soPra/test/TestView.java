@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 21.05.2008 - Version 0.1.6
+ * - Hintergrung kann zwischen weiß & schwarz wechseln
  * 20.05.2008 - Version 0.1.5
  * - ScreenShot der Szene wird erstellt
  * 04.03.2008 - Version 0.1.4
@@ -58,7 +60,7 @@ import javax.swing.JFrame;
  * Programm zum testen der 3D-Szene.
  * 
  * @author Michael Kriese
- * @version 0.1.5
+ * @version 0.1.6
  * @since 17.09.2007
  * 
  */
@@ -115,6 +117,8 @@ public final class TestView {
 			    e.consume();
 			} else if (e.getKeyCode() == KeyEvent.VK_F2)
 			    engine.captureImage(new File("test.png"));
+			else if (e.getKeyCode() == KeyEvent.VK_F3)
+			    engine.switchBackgroundColor();
 			e.consume();
 		    }
 		});

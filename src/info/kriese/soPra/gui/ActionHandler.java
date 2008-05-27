@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 21.05.2008 - Version 0.5.1
+ * - Handler für Wechsel der Hintergrundfarbe implementiert
  * 20.05.2008 - Version 0.5
  * - an neuen FileChooser angepasst
  * - Handler für captureImage implementiert
@@ -74,7 +76,7 @@ import javax.swing.JOptionPane;
  * Klasse zum Handeln und Delegieren aller Aktionen in SoPraLOP
  * 
  * @author Michael Kriese
- * @version 0.5
+ * @version 0.5.1
  * @since 24.10.2007
  * 
  * TODO: mögliche NullPointer abfangen
@@ -230,6 +232,8 @@ public final class ActionHandler {
 	    fileSaveClassImage();
 	else if (cmd.equals("Menu.View.Reset"))
 	    SoPraLOP.ENGINE.resetScene();
+	else if (cmd.equals("Menu.View.Color"))
+	    SoPraLOP.ENGINE.switchBackgroundColor();
 	else if (cmd.equals("Menu.View.Show"))
 	    SoPraLOP.VISUAL.setVisible(true);
 	else if (cmd.equals("Menu.View.ShowDualProblem")) {

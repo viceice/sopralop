@@ -8,6 +8,7 @@ Version 0.7.2
  - Das LOP kann auch als Bild exportiert werden
  - Interne Änderung an den Datei-Auswahl-Dialogen
  - Neue Menüpunkte
+ - Hindergrund der 3D-Szene kann zwischen weiß & schwarz wechseln
  - BugFix: Wenn Min = Max, dann nur eine optimale Lösung (primales LOP)
  - BugFix: Bei Berechnung der Lösungen des dualen Problems muss z immer auf
    -1 normiert werden
