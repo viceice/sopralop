@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 28.05.2008 - Version 0.4.6
+ * - Achsenbeschriftung wird nur noch im Debug-Modus angezeigt
  * 17.01.2008 - Version 0.4.5
  * - Polygonzahl für Primitive erhöht
  * 15.01.2008 - Version 0.4.4
@@ -49,6 +51,7 @@
 package info.kriese.soPra.engine3D.objects;
 
 import info.kriese.soPra.engine3D.Tools3D;
+import info.kriese.soPra.io.impl.SettingsFactory;
 
 import javax.media.j3d.Appearance;
 import javax.media.j3d.BranchGroup;
@@ -70,7 +73,7 @@ import com.sun.j3d.utils.geometry.Sphere;
  * 
  * @author Michael Kriese
  * @since 11.04.2007
- * @version 0.4.5
+ * @version 0.4.6
  */
 public final class CoordinatePlane3D extends TransformGroup {
 
@@ -196,8 +199,9 @@ public final class CoordinatePlane3D extends TransformGroup {
 	this.units = new TransformGroup();
 	this.units.setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
 	this.units.setCapability(TransformGroup.ALLOW_CHILDREN_WRITE);
-	addChild(this.units);
 
+	if (SettingsFactory.getInstance().isDebug())
+	    addChild(this.units);
     }
 
     /**
