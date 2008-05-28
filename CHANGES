@@ -9,6 +9,8 @@ Version 0.7.2
  - Interne Änderung an den Datei-Auswahl-Dialogen
  - Neue Menüpunkte
  - Hindergrund der 3D-Szene kann zwischen weiß & schwarz wechseln
+ - Die Hilfe wurde überarbeitet
+ - Übersetzungen wurden angepasst
  - BugFix: Wenn Min = Max, dann nur eine optimale Lösung (primales LOP)
  - BugFix: Bei Berechnung der Lösungen des dualen Problems muss z immer auf
    -1 normiert werden
