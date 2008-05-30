@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 30.05.2008 - Version 0.5.2
+ * - BugFix: Falls Punkt unterhalb von x-y-Ebene, muss die Rotation um
+ *   z-Achse invertiert werden
  * 04.03.2008 - Version 0.5.1
  * - Falls Normalenvektor der Ebene nach unten zeigt muss die Rotation
  *    um die x-Achse negiert werden.
@@ -58,7 +61,7 @@ import com.sun.j3d.utils.geometry.Sphere;
  * Klasse, welche den Schnittpunkt und die Hilfslinien repräsentiert.
  * 
  * @author Michael Kriese
- * @version 0.5.1
+ * @version 0.5.2
  * @since 10.09.2007
  * 
  */
@@ -169,6 +172,11 @@ public class Point3D extends TransformGroup {
 	    // um die x-Achse negiert werden.
 	    if (targ.z < 0)
 		rot.x *= -1.0;
+
+	    // falls Punkt unterhalb von x-y-Ebene, muss die Roptation um
+	    // z-Achse invertiert werden
+	    if (pos.z < 0.0)
+		rot.z *= -1.0;
 	}
 
 	this.grpDualLine.setTransform(Tools3D

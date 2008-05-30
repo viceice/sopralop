@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 30.05.2008 - Version 0.6.2
+ * - Sinnlose Ausgabe entfernt
  * 21.05.2008 - Version 0.6.1
  * - Neue Methode switchBackgroundColor
  * 20.05.2008 - Version 0.6
@@ -143,7 +145,7 @@ import com.sun.j3d.utils.universe.ViewingPlatform;
  * Stellt Methoden zur Berechnung der 3D-Szene bereit.
  * 
  * @author Michael Kriese
- * @version 0.6.1
+ * @version 0.6.2
  * @since 26.04.2007
  */
 public final class Engine3D {
@@ -412,8 +414,6 @@ public final class Engine3D {
 	if (sCase == LOPSolution.TARGET_FUNCTION_LIMITED)
 	    this.size = (this.size > Math.abs(lop.getSolution().getValue()) + 3.0f ? this.size
 		    : (float) Math.abs(lop.getSolution().getValue())) + 3.0f;
-
-	System.out.println("Scale: " + this.size);
 
 	this.hull.build(lop.getVectors(), false);
 
