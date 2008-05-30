@@ -18,6 +18,8 @@ Version 0.7.2
  - BugFix: Bei Programmstart war der Titel doppelt
  - BugFix: Navigation in Eingabetabelle mit Cursor-Tasten war nicht richtig
    möglich
+ - BugFix: Falls Punkt unterhalb von x-y-Ebene, muss die Rotation um
+   z-Achse invertiert werden (Gerade vom DP)
 -------------------------------------------------------------------------------
 Version 0.7.1 - 09.04.2008 (Rev. 285)
 -------------------------------------------------------------------------------
