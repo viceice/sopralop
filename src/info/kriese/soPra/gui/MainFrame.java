@@ -402,6 +402,7 @@ public final class MainFrame extends JFrame implements Virtual3DFrame,
 	tb.add(MenuMaker.getToolBarButton("Menu.File.Save"));
 	tb.add(MenuMaker.getToolBarButton("Menu.File.SaveImage"));
 	tb.addSeparator();
+	tb.add(MenuMaker.getToolBarButton("Menu.View.Color"));
 	tb.add(MenuMaker.getToolBarButton("Menu.View.Show"));
 	tb.add(MenuMaker.getToolBarButton("Menu.View.Reset"));
 	tb.addSeparator();
