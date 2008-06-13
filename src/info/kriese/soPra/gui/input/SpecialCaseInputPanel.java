@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 13:06.2008 - Version 0.2.1
+ * - BugFix: Die Kombination der Fälle war falsch
  * 01.02.2008 - Version 0.2
  * - Fälle für Lösungsbereich können ausgeblendet werden
  * 29.01.2008 - Version 0.1.2
@@ -49,7 +51,7 @@ import javax.swing.JRadioButton;
  * Panel, welches die Elemente zur eingabe der Spezialfälle enthält.
  * 
  * @author Michael Kriese
- * @version 0.2
+ * @version 0.2.1
  * @since 28.01.2008
  * 
  */
@@ -217,7 +219,7 @@ public class SpecialCaseInputPanel extends JPanel implements SpecialCasesInput {
     public int getSpecialCase() {
 	return this.optimalSolArea
 		| (this.solArea == this.solProjTo ? this.solArea : 0)
-		| this.targetFunction | this.solProjTo;
+		| this.targetFunction;
     }
 
     /**
