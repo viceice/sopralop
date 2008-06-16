@@ -98,6 +98,7 @@
 package info.kriese.soPra.math;
 
 import info.kriese.soPra.gui.MessageHandler;
+import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.io.IOUtils;
 import info.kriese.soPra.io.impl.SettingsFactory;
 import info.kriese.soPra.lop.LOP;
@@ -253,7 +254,14 @@ public final class LOPSolver {
 	sol.clearAreas();
 	sol.setSpecialCase(0);
 
-	this.hull.build(lop.getVectors());
+	try {
+	    this.hull.build(lop.getVectors());
+	} catch (IllegalArgumentException e) {
+	    // TODO: translation
+	    MessageHandler.showError(Lang.getString("Strings.Error"), Lang
+		    .getString("Errors.VectorsAreCoplanar"));
+	    return;
+	}
 
 	Vector3Frac sln, opt_vector = lop.getTarget().clone();
 
