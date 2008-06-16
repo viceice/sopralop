@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 16.06.2008 - Version 0.5.12
+ * - Mit koplanaren Vektoren kann keine Lösung berechnet werden, daher gibt es
+ *   eine Fehlermeldung
  * 15.05.2008 - Version 0.5.11
  * - BugFix: Wenn Min = Max, dann nur eine optimale Lösung
  * 09.04.2008 - Version 0.5.10
@@ -123,7 +126,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author Michael Kriese
- * @version 0.5.11
+ * @version 0.5.12
  * @since 10.05.2007
  * 
  */
@@ -257,7 +260,6 @@ public final class LOPSolver {
 	try {
 	    this.hull.build(lop.getVectors());
 	} catch (IllegalArgumentException e) {
-	    // TODO: translation
 	    MessageHandler.showError(Lang.getString("Strings.Error"), Lang
 		    .getString("Errors.VectorsAreCoplanar"));
 	    return;

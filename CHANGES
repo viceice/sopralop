@@ -5,6 +5,8 @@ SoPraLOP
 Version 0.8.1
 -------------------------------------------------------------------------------
 - Icons angepasst
+- Hilfe angepasst
+- Bei koplanaren Vektoren gibt es jetzt eine Fehlermeldung
 - BugFix: Die Kombination der Fälle in der Eingabemaske war falsch
 -------------------------------------------------------------------------------
 Version 0.8 - 12.06.2008 (Rev. 312)

@@ -19,6 +19,8 @@
  * 
  * ChangeLog:
  * 
+ * 16.06.2008 - Version 0.4.10
+ * - Bei koplanaren Vektoren wird das Problem nicht übernommen
  * 20.05.2008 - Version 0.4.9
  * - neue Fehlermeldung bei falsch eingegebenem Fall
  * 09.04.2008 - Version 0.4.8.1
@@ -78,6 +80,7 @@ import info.kriese.soPra.gui.MessageHandler;
 import info.kriese.soPra.gui.lang.Lang;
 import info.kriese.soPra.io.impl.SettingsFactory;
 import info.kriese.soPra.lop.LOP;
+import info.kriese.soPra.lop.LOPAdapter;
 import info.kriese.soPra.lop.LOPEditor;
 import info.kriese.soPra.lop.LOPEditorAdapter;
 import info.kriese.soPra.lop.LOPSolution;
@@ -98,7 +101,7 @@ import javax.swing.table.AbstractTableModel;
  * Wandelt das LOP in ein von JTable lesbares Format um.
  * 
  * @author Peer Sterner
- * @version 0.4.9
+ * @version 0.4.10
  * @since 01.11.2007
  * 
  */
@@ -113,6 +116,11 @@ public final class LOPTableModel extends AbstractTableModel {
      * Spaltenbezeichnungen in der Tabelle.
      */
     private final Vector<String> columnNames;
+
+    /**
+     * Ist das Problem geändert worden.
+     */
+    private boolean edited;
 
     /**
      * Editor, er benachrichtigt das Model über Änderungen durch den User.
@@ -163,6 +171,7 @@ public final class LOPTableModel extends AbstractTableModel {
 	this.values = new ArrayList<Fractional>();
 	this.sol = null;
 	this.editor = null;
+	this.edited = false;
 
 	setColumnCount();
     }
@@ -299,9 +308,9 @@ public final class LOPTableModel extends AbstractTableModel {
      */
     public boolean isEdited() {
 	if (this.editor != null)
-	    return this.editor.isEdited();
+	    return this.editor.isEdited() || this.edited;
 	else
-	    return false;
+	    return this.edited;
     }
 
     /**
@@ -351,6 +360,14 @@ public final class LOPTableModel extends AbstractTableModel {
 	    @Override
 	    public void update(LOP lop) {
 		LOPTableModel.this.update(lop);
+	    }
+	});
+
+	editor.getLOP().addProblemListener(new LOPAdapter() {
+	    @Override
+	    public void problemSolved(LOP lop) {
+		LOPTableModel.this.edited = false;
+		fireTableCellUpdated(0, 0);
 	    }
 	});
     }
@@ -745,5 +762,7 @@ public final class LOPTableModel extends AbstractTableModel {
     private void setEdited(boolean value) {
 	if (this.editor != null)
 	    this.editor.setEdited(value);
+	if (value)
+	    this.edited = true;
     }
 }
