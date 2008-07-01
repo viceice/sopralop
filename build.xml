@@ -75,6 +75,7 @@
 				<include name="**/*.lop" />
 			</fileset>
 		</jar>
+		<echo file="${dist.dir}/VERSION" message="${sopra.version}" />
 	</target>
 
 	<target name="webstart" depends="jar">
