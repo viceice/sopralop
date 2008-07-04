@@ -19,6 +19,9 @@
  * 
  * ChangeLog:
  * 
+ * 04.07.2008 - Version 0.5.13
+ * - BugFix: Wenn die Lösung auf einer Kante (Vektor) lag, wurde eine Lösung
+ *   zuviel gezählt.
  * 16.06.2008 - Version 0.5.12
  * - Mit koplanaren Vektoren kann keine Lösung berechnet werden, daher gibt es
  *   eine Fehlermeldung
@@ -126,7 +129,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author Michael Kriese
- * @version 0.5.12
+ * @version 0.5.13
  * @since 10.05.2007
  * 
  */
@@ -230,10 +233,10 @@ public final class LOPSolver {
     /**
      * Speichert das LOP in die angegebene Datei
      * 
-     * @param lop -
-     *                LOP, welches gespeichert werden soll.
-     * @param file -
-     *                Datei, in die gespeichert werden soll.
+     * @param lop
+     *            - LOP, welches gespeichert werden soll.
+     * @param file
+     *            - Datei, in die gespeichert werden soll.
      * @return true, falls das Speichern erfolgreich war, sonst false.
      */
     private boolean save(LOP lop, URL file) {
@@ -436,53 +439,67 @@ public final class LOPSolver {
 				edge_value);
 	}
 
+	int sols = sol.countAreas();
+	int sCase = 0;
+
 	if (unlimited && opt != null) {
 	    if (max && opt.compareTo(value_unlimit) < 0) {
-		sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
+		sCase = LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
 			| LOPSolution.SOLUTION_AREA_UNLIMITED
-			| LOPSolution.TARGET_FUNCTION_UNLIMITED);
+			| LOPSolution.TARGET_FUNCTION_UNLIMITED;
 		sol.clearAreas();
 		opt = Fractional.MAX_VALUE;
 	    } else if (!max && opt.compareTo(value_unlimit) > 0) {
-		sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
+		sCase = LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
 			| LOPSolution.SOLUTION_AREA_UNLIMITED
-			| LOPSolution.TARGET_FUNCTION_UNLIMITED);
+			| LOPSolution.TARGET_FUNCTION_UNLIMITED;
 		sol.clearAreas();
 		opt = Fractional.MIN_VALUE;
 	    } else if (max && opt.compareTo(value_high) < 0)
-		sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
+		sCase = LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
 			| LOPSolution.SOLUTION_AREA_UNLIMITED
-			| LOPSolution.TARGET_FUNCTION_LIMITED);
+			| LOPSolution.TARGET_FUNCTION_LIMITED;
 
 	    else if (!max && opt.compareTo(value_high) > 0)
-		sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
+		sCase = LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
 			| LOPSolution.SOLUTION_AREA_UNLIMITED
-			| LOPSolution.TARGET_FUNCTION_LIMITED);
+			| LOPSolution.TARGET_FUNCTION_LIMITED;
 
-	    else if (sol.countAreas() >= 2)
-		sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE
+	    else if (sols >= 2) {
+		sCase = LOPSolution.SOLUTION_AREA_UNLIMITED
+			| LOPSolution.TARGET_FUNCTION_LIMITED;
+
+		if (edge == null)
+		    sCase |= LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE;
+		else if (sols > 2)
+		    sCase |= LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE;
+		else
+		    sCase |= LOPSolution.OPTIMAL_SOLUTION_AREA_POINT;
+	    } else
+		sCase = LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
 			| LOPSolution.SOLUTION_AREA_UNLIMITED
-			| LOPSolution.TARGET_FUNCTION_LIMITED);
+			| LOPSolution.TARGET_FUNCTION_LIMITED;
+
+	} else if (opt != null && sol.countAreas() >= 2) {
+	    sCase = LOPSolution.SOLUTION_AREA_LIMITED
+		    | LOPSolution.TARGET_FUNCTION_LIMITED;
+	    if (edge == null)
+		sCase |= LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE;
+	    else if (sols > 2)
+		sCase |= LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE;
 	    else
-		sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
-			| LOPSolution.SOLUTION_AREA_UNLIMITED
-			| LOPSolution.TARGET_FUNCTION_LIMITED);
-
-	} else if (opt != null && sol.countAreas() >= 2 && edge == null)
-	    sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_MULTIPLE
-		    | LOPSolution.SOLUTION_AREA_LIMITED
-		    | LOPSolution.TARGET_FUNCTION_LIMITED);
-
-	else if (opt == null) {
-	    sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
+		sCase |= LOPSolution.OPTIMAL_SOLUTION_AREA_POINT;
+	} else if (opt == null) {
+	    sCase = LOPSolution.OPTIMAL_SOLUTION_AREA_EMPTY
 		    | LOPSolution.SOLUTION_AREA_EMPTY
-		    | LOPSolution.TARGET_FUNCTION_EMPTY);
+		    | LOPSolution.TARGET_FUNCTION_EMPTY;
 	    opt = Fractional.MAX_VALUE;
 	} else
-	    sol.setSpecialCase(LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
+	    sCase = LOPSolution.OPTIMAL_SOLUTION_AREA_POINT
 		    | LOPSolution.SOLUTION_AREA_LIMITED
-		    | LOPSolution.TARGET_FUNCTION_LIMITED);
+		    | LOPSolution.TARGET_FUNCTION_LIMITED;
 
+	sol.setSpecialCase(sCase);
 	sol.setValue(opt);
 
 	lop.problemSolved();
