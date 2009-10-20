@@ -2,7 +2,7 @@ SoPraLOP
 (c)2007-2008 Michael Kriese & Peer Sterner
 
 -------------------------------------------------------------------------------
-Version 1.0.1 b1
+Version 1.0.1 - 20.10.2009 (Rev. 345)
 -------------------------------------------------------------------------------
 - BugFix: Wenn die Lösung auf einer Kante (Vektor) lag, wurde eine Lösung
   zuviel gezählt.
