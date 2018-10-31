@@ -1,7 +1,16 @@
-apply plugin: "java"
-apply plugin: "application"
+plugins {
+   id 'java'
+   id 'application'
+   id 'net.nemerosa.versioning' version '2.8.2'
+}
 
-mainClassName = "info.kriese.sopra.SoPraLOP"
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+mainClassName = 'info.kriese.sopra.SoPraLOP'
+def title = 'Software-Praktikum Lineare Optimierung'
+def author = 'Michael Kriese & Peer Sterner'
+version = '2.0.0-beta.1'
 
 repositories {
     flatDir {
@@ -11,31 +20,61 @@ repositories {
 }
 
 dependencies {
-    implementation "org.jogamp.gluegen:gluegen-rt:2.3.2"
-    implementation "org.jogamp.jogl:jogl-all:2.3.2"
+    implementation 'org.jogamp.gluegen:gluegen-rt:2.3.2'
+    implementation 'org.jogamp.jogl:jogl-all:2.3.2'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    runtimeOnly "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-android-aarch64"
-    runtimeOnly "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-android-armv6"
-    runtimeOnly "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-linux-amd64"
-    runtimeOnly "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-linux-armv6"
-    runtimeOnly "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-linux-armv6hf"
-    runtimeOnly "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-linux-i586"
-    runtimeOnly "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-macosx-universal"
-    runtimeOnly "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-solaris-amd64"
-    runtimeOnly "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-solaris-i586"
-    runtimeOnly "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-windows-amd64"
-    runtimeOnly "org.jogamp.gluegen:gluegen-rt:2.3.2:natives-windows-i586"
+    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.3.2:natives-android-aarch64'
+    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.3.2:natives-android-armv6'
+    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.3.2:natives-linux-amd64'
+    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.3.2:natives-linux-armv6'
+    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.3.2:natives-linux-armv6hf'
+    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.3.2:natives-linux-i586'
+    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.3.2:natives-macosx-universal'
+    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.3.2:natives-solaris-amd64'
+    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.3.2:natives-solaris-i586'
+    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.3.2:natives-windows-amd64'
+    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.3.2:natives-windows-i586'
 
-    runtimeOnly "org.jogamp.jogl:jogl-all:2.3.2:natives-android-aarch64"
-    runtimeOnly "org.jogamp.jogl:jogl-all:2.3.2:natives-android-armv6"
-    runtimeOnly "org.jogamp.jogl:jogl-all:2.3.2:natives-linux-amd64"
-    runtimeOnly "org.jogamp.jogl:jogl-all:2.3.2:natives-linux-armv6"
-    runtimeOnly "org.jogamp.jogl:jogl-all:2.3.2:natives-linux-armv6hf"
-    runtimeOnly "org.jogamp.jogl:jogl-all:2.3.2:natives-linux-i586"
-    runtimeOnly "org.jogamp.jogl:jogl-all:2.3.2:natives-macosx-universal"
-    runtimeOnly "org.jogamp.jogl:jogl-all:2.3.2:natives-solaris-amd64"
-    runtimeOnly "org.jogamp.jogl:jogl-all:2.3.2:natives-solaris-i586"
-    runtimeOnly "org.jogamp.jogl:jogl-all:2.3.2:natives-windows-amd64"
-    runtimeOnly "org.jogamp.jogl:jogl-all:2.3.2:natives-windows-i586"
+    runtimeOnly 'org.jogamp.jogl:jogl-all:2.3.2:natives-android-aarch64'
+    runtimeOnly 'org.jogamp.jogl:jogl-all:2.3.2:natives-android-armv6'
+    runtimeOnly 'org.jogamp.jogl:jogl-all:2.3.2:natives-linux-amd64'
+    runtimeOnly 'org.jogamp.jogl:jogl-all:2.3.2:natives-linux-armv6'
+    runtimeOnly 'org.jogamp.jogl:jogl-all:2.3.2:natives-linux-armv6hf'
+    runtimeOnly 'org.jogamp.jogl:jogl-all:2.3.2:natives-linux-i586'
+    runtimeOnly 'org.jogamp.jogl:jogl-all:2.3.2:natives-macosx-universal'
+    runtimeOnly 'org.jogamp.jogl:jogl-all:2.3.2:natives-solaris-amd64'
+    runtimeOnly 'org.jogamp.jogl:jogl-all:2.3.2:natives-solaris-i586'
+    runtimeOnly 'org.jogamp.jogl:jogl-all:2.3.2:natives-windows-amd64'
+    runtimeOnly 'org.jogamp.jogl:jogl-all:2.3.2:natives-windows-i586'
 }
+
+jar {
+    manifest {
+        attributes(
+            'Main-Class'     : mainClassName,
+            'Built-By'       : System.properties['user.name'],
+            'Build-Timestamp': new java.text.SimpleDateFormat('yyyy-MM-dd\'T\'HH:mm:ss.SSSZ').format(new Date()),
+            'Build-Revision' : "${versioning.info.full}",
+            'Created-By'     : "Gradle ${gradle.gradleVersion}",
+            'Build-Jdk'      : "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
+            'Build-OS'       : "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}",
+
+            'Specification-Title': title,
+            'Specification-Vendor': author,
+            'Specification-Version': '2.0',
+            'Implementation-Title': title,
+            'Implementation-Vendor': author,
+            'Implementation-Version': version
+        )
+    }
+}
+
+processResources {
+    with copySpec {
+        from 'sopra.properties'
+        filter(ReplaceTokens, tokens: [version: version, title: title, author: author])
+    }
+}
+
+import org.apache.tools.ant.filters.ReplaceTokens

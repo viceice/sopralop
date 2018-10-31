@@ -49,7 +49,7 @@ import javax.swing.UIManager;
 public final class SettingsFactory {
 
     private static boolean DEBUG = false;
-    private static final String FILE = "sopra.properties";
+    private static final String FILE = "/sopra.properties";
 
     private static Settings props = null;
 
