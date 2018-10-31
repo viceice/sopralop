@@ -24,8 +24,8 @@
  */
 package stuff;
 
-import info.kriese.soPra.math.Vector3Frac;
-import info.kriese.soPra.math.impl.Vector3FracFactory;
+import info.kriese.sopra.math.Vector3Frac;
+import info.kriese.sopra.math.impl.Vector3FracFactory;
 
 import java.util.LinkedList;
 

@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<lop type="max">
+<vectors>
+  <vector x="2" y="2" z="2"  />
+  <vector x="-2" y="2" z="2"  />
+  <vector x="-2" y="-2" z="2"  />
+  <vector x="2" y="-2" z="2"  />
+</vectors>
+<target  x="1" y="1" z="0" />
+<ops x="equal" y="equal"/>
+</lop>
+
