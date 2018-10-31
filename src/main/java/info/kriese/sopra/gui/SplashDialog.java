@@ -181,15 +181,15 @@ public class SplashDialog extends JDialog {
      */
     protected void updatePicture() {
 	// Get the icon corresponding to the image.
-	ImageIcon icon = createImageIcon("images/logo.png");
+    ImageIcon icon = createImageIcon("images/logo.png");
+    if (icon == null) {
+        this.pictureLabel.setText("Missing Image");
+        return;
+    }
 	Image im = icon.getImage();
 	im = im.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
 
 	this.pictureLabel.setIcon(new ImageIcon(im));
-
-	if (icon == null)
-	    this.pictureLabel.setText("Missing Image");
-	else
-	    this.pictureLabel.setText(null);
+    //this.pictureLabel.setText(null);
     }
 }
