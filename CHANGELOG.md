@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Changed
-- Use graddle for build
+- Use gradle for build
 - Updated [java3d v1.6.1](https://github.com/hharrison/java3d-core/releases/tag/1.6.1)
 
 ## [1.0.1] - 2009-10-20
