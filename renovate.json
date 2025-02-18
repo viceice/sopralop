@@ -1,6 +1,14 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "local>viceice/.github:renovate-config"
+  "extends": ["local>viceice/.github:renovate-config"],
+  "packageRules": [
+    {
+      "matchPackageNames": ["org.jogamp.jogl:*", "org.jogamp.gluegen:*"],
+      "registryUrls": ["https://jogamp.org/deployment/maven/"]
+    },
+    {
+      "matchPackageNames": ["org.jogamp.java3d:*"],
+      "registryUrls": ["https://jogamp.org/deployment/maven-java3d/"]
+    }
   ]
 }
