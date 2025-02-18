@@ -5,7 +5,6 @@ second geometric interpretation of linear optimization
 
 ## Build
 
-Download jars from [java3d 1.6.1](https://github.com/hharrison/java3d-core/releases/tag/1.6.1) to [libs](libs) folder
 Use gradle wrapper to build.
 
 ## Changes

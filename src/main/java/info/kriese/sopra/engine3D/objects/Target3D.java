@@ -44,12 +44,12 @@ package info.kriese.sopra.engine3D.objects;
 
 import info.kriese.sopra.engine3D.Tools3D;
 
-import javax.media.j3d.Transform3D;
-import javax.media.j3d.TransformGroup;
-import javax.vecmath.Vector3d;
-import javax.vecmath.Vector3f;
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.java3d.TransformGroup;
+import org.jogamp.vecmath.Vector3d;
+import org.jogamp.vecmath.Vector3f;
 
-import com.sun.j3d.utils.geometry.Cylinder;
+import org.jogamp.java3d.utils.geometry.Cylinder;
 
 /**
  * Erstellt aus dem Zielvektor eine Gerade im Raum.

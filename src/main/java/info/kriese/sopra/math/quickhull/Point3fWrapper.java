@@ -26,7 +26,7 @@ package info.kriese.sopra.math.quickhull;
 
 import info.kriese.sopra.math.Math2;
 
-import javax.vecmath.Point3f;
+import org.jogamp.vecmath.Point3f;
 
 import ca.ubc.cs.spider.lloyed.quickhull3d.Point3d;
 

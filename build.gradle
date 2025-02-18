@@ -4,49 +4,37 @@ plugins {
    id 'net.nemerosa.versioning' version '3.1.0'
 }
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
-
 mainClassName = 'info.kriese.sopra.SoPraLOP'
 def title = 'Software-Praktikum Lineare Optimierung'
 def author = 'Michael Kriese & Peer Sterner'
 version = '2.0.0-beta.1'
 
 repositories {
-    flatDir {
-        dirs 'lib'
+    mavenCentral()
+    maven {
+        url = uri('https://jogamp.org/deployment/maven/')
     }
-    jcenter()
+    maven {
+        url = uri('https://jogamp.org/deployment/maven-java3d/')
+    }
 }
 
 dependencies {
-    implementation 'org.jogamp.gluegen:gluegen-rt:2.3.2'
-    implementation 'org.jogamp.jogl:jogl-all:2.3.2'
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'org.jogamp.java3d:java3d-core:1.7.2'
+    implementation 'org.jogamp.java3d:java3d-utils:1.7.2'
+    implementation 'org.jogamp.java3d:vecmath:1.7.2'
 
-    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.3.2:natives-android-aarch64'
-    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.3.2:natives-android-armv6'
-    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.3.2:natives-linux-amd64'
-    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.3.2:natives-linux-armv6'
-    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.3.2:natives-linux-armv6hf'
-    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.3.2:natives-linux-i586'
-    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.3.2:natives-macosx-universal'
-    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.3.2:natives-solaris-amd64'
-    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.3.2:natives-solaris-i586'
-    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.3.2:natives-windows-amd64'
-    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.3.2:natives-windows-i586'
+    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.5.0:natives-android-aarch64'
+    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.5.0:natives-linux-amd64'
+    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.5.0:natives-linux-armv6hf'
+    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.5.0:natives-macosx-universal'
+    runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.5.0:natives-windows-amd64'
 
-    runtimeOnly 'org.jogamp.jogl:jogl-all:2.3.2:natives-android-aarch64'
-    runtimeOnly 'org.jogamp.jogl:jogl-all:2.3.2:natives-android-armv6'
-    runtimeOnly 'org.jogamp.jogl:jogl-all:2.3.2:natives-linux-amd64'
-    runtimeOnly 'org.jogamp.jogl:jogl-all:2.3.2:natives-linux-armv6'
-    runtimeOnly 'org.jogamp.jogl:jogl-all:2.3.2:natives-linux-armv6hf'
-    runtimeOnly 'org.jogamp.jogl:jogl-all:2.3.2:natives-linux-i586'
-    runtimeOnly 'org.jogamp.jogl:jogl-all:2.3.2:natives-macosx-universal'
-    runtimeOnly 'org.jogamp.jogl:jogl-all:2.3.2:natives-solaris-amd64'
-    runtimeOnly 'org.jogamp.jogl:jogl-all:2.3.2:natives-solaris-i586'
-    runtimeOnly 'org.jogamp.jogl:jogl-all:2.3.2:natives-windows-amd64'
-    runtimeOnly 'org.jogamp.jogl:jogl-all:2.3.2:natives-windows-i586'
+    runtimeOnly 'org.jogamp.jogl:jogl-all:2.5.0:natives-android-aarch64'
+    runtimeOnly 'org.jogamp.jogl:jogl-all:2.5.0:natives-linux-amd64'
+    runtimeOnly 'org.jogamp.jogl:jogl-all:2.5.0:natives-linux-armv6hf'
+    runtimeOnly 'org.jogamp.jogl:jogl-all:2.5.0:natives-macosx-universal'
+    runtimeOnly 'org.jogamp.jogl:jogl-all:2.5.0:natives-windows-amd64'
 }
 
 jar {

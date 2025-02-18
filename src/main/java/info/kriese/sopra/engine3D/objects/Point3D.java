@@ -47,15 +47,15 @@ package info.kriese.sopra.engine3D.objects;
 import info.kriese.sopra.engine3D.Tools3D;
 import info.kriese.sopra.math.Math2;
 
-import javax.media.j3d.Appearance;
-import javax.media.j3d.RenderingAttributes;
-import javax.media.j3d.TransformGroup;
-import javax.vecmath.Vector3d;
-import javax.vecmath.Vector3f;
+import org.jogamp.java3d.Appearance;
+import org.jogamp.java3d.RenderingAttributes;
+import org.jogamp.java3d.TransformGroup;
+import org.jogamp.vecmath.Vector3d;
+import org.jogamp.vecmath.Vector3f;
 
-import com.sun.j3d.utils.geometry.Cylinder;
-import com.sun.j3d.utils.geometry.Primitive;
-import com.sun.j3d.utils.geometry.Sphere;
+import org.jogamp.java3d.utils.geometry.Cylinder;
+import org.jogamp.java3d.utils.geometry.Primitive;
+import org.jogamp.java3d.utils.geometry.Sphere;
 
 /**
  * Klasse, welche den Schnittpunkt und die Hilfslinien repräsentiert.

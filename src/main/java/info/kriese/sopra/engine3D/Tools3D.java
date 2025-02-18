@@ -39,32 +39,31 @@
  */
 package info.kriese.sopra.engine3D;
 
-import java.awt.Color;
 import java.awt.Font;
 
-import javax.media.j3d.Appearance;
-import javax.media.j3d.BoundingSphere;
-import javax.media.j3d.Font3D;
-import javax.media.j3d.FontExtrusion;
-import javax.media.j3d.LineAttributes;
-import javax.media.j3d.Material;
-import javax.media.j3d.OrientedShape3D;
-import javax.media.j3d.PolygonAttributes;
-import javax.media.j3d.Text3D;
-import javax.media.j3d.Transform3D;
-import javax.media.j3d.TransformGroup;
-import javax.media.j3d.TransparencyAttributes;
-import javax.vecmath.Color3f;
-import javax.vecmath.Point3d;
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3d;
-import javax.vecmath.Vector3f;
+import org.jogamp.java3d.Appearance;
+import org.jogamp.java3d.BoundingSphere;
+import org.jogamp.java3d.Font3D;
+import org.jogamp.java3d.FontExtrusion;
+import org.jogamp.java3d.LineAttributes;
+import org.jogamp.java3d.Material;
+import org.jogamp.java3d.OrientedShape3D;
+import org.jogamp.java3d.PolygonAttributes;
+import org.jogamp.java3d.Text3D;
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.java3d.TransformGroup;
+import org.jogamp.java3d.TransparencyAttributes;
+import org.jogamp.vecmath.Color3f;
+import org.jogamp.vecmath.Point3d;
+import org.jogamp.vecmath.Point3f;
+import org.jogamp.vecmath.Vector3d;
+import org.jogamp.vecmath.Vector3f;
 
-import com.sun.j3d.utils.geometry.Cylinder;
-import com.sun.j3d.utils.geometry.GeometryInfo;
-import com.sun.j3d.utils.geometry.NormalGenerator;
-import com.sun.j3d.utils.geometry.Primitive;
-import com.sun.j3d.utils.geometry.Stripifier;
+import org.jogamp.java3d.utils.geometry.Cylinder;
+import org.jogamp.java3d.utils.geometry.GeometryInfo;
+import org.jogamp.java3d.utils.geometry.NormalGenerator;
+import org.jogamp.java3d.utils.geometry.Primitive;
+import org.jogamp.java3d.utils.geometry.Stripifier;
 
 /**
  * Einige Hilfskonstanten und Funktionen für Berechnungen im Raum.
@@ -89,7 +88,7 @@ public final class Tools3D {
     /**
      * Farbe Weiß.
      */
-    public static final Color3f COLOR_WHITE = new Color3f(Color.WHITE);
+    public static final Color3f COLOR_WHITE = new Color3f(255,255,255);
 
     /**
      * Front-Clipping-Plane, ab der Entfernung wird nicht mehr gezeichnet.
@@ -145,7 +144,7 @@ public final class Tools3D {
     /**
      * Gelbe Farbe.
      */
-    public static final Color3f YELLOW = new Color3f(Color.YELLOW);
+    public static final Color3f YELLOW = new Color3f(255,255,0);
 
     /**
      * Normalen-Generator, dient zur Berechnung der Lichtreflexionen.

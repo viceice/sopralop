@@ -26,7 +26,7 @@
  */
 package info.kriese.sopra.gui;
 
-import javax.media.j3d.Canvas3D;
+import org.jogamp.java3d.Canvas3D;
 
 /**
  * Interface zum verbinden von 3D-Engine und Oberfläche.

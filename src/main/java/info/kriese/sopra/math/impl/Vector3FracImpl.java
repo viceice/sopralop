@@ -38,8 +38,8 @@
  */
 package info.kriese.sopra.math.impl;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
+import org.jogamp.vecmath.Point3f;
+import org.jogamp.vecmath.Vector3f;
 
 import info.kriese.sopra.math.Fractional;
 import info.kriese.sopra.math.Math2;
