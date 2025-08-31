@@ -30,11 +30,11 @@ dependencies {
     runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.6.0:natives-macosx-universal'
     runtimeOnly 'org.jogamp.gluegen:gluegen-rt:2.6.0:natives-windows-amd64'
 
-    runtimeOnly 'org.jogamp.jogl:jogl-all:2.5.0:natives-android-aarch64'
-    runtimeOnly 'org.jogamp.jogl:jogl-all:2.5.0:natives-linux-amd64'
-    runtimeOnly 'org.jogamp.jogl:jogl-all:2.5.0:natives-linux-armv6hf'
-    runtimeOnly 'org.jogamp.jogl:jogl-all:2.5.0:natives-macosx-universal'
-    runtimeOnly 'org.jogamp.jogl:jogl-all:2.5.0:natives-windows-amd64'
+    runtimeOnly 'org.jogamp.jogl:jogl-all:2.6.0:natives-android-aarch64'
+    runtimeOnly 'org.jogamp.jogl:jogl-all:2.6.0:natives-linux-amd64'
+    runtimeOnly 'org.jogamp.jogl:jogl-all:2.6.0:natives-linux-armv6hf'
+    runtimeOnly 'org.jogamp.jogl:jogl-all:2.6.0:natives-macosx-universal'
+    runtimeOnly 'org.jogamp.jogl:jogl-all:2.6.0:natives-windows-amd64'
 }
 
 jar {
