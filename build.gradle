@@ -2,7 +2,7 @@ buildscript {
     dependencies {
         classpath 'com.tmatesoft.svnkit:svnkit:1.10.13'
         classpath 'org.eclipse.jgit:org.eclipse.jgit:6.10.1.202505221210-r'
-        classpath 'org.apache.sshd:sshd-core:2.12.1'
+        classpath 'org.apache.sshd:sshd-core:2.16.0'
         modules {
             module('org.tmatesoft.svnkit:svnkit') {
                 replacedBy("com.tmatesoft.svnkit:svnkit", "was renamed in v1.10.12")
