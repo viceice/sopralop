@@ -16,7 +16,7 @@ plugins {
    id 'net.nemerosa.versioning' version '3.1.0'
 }
 
-mainClassName = 'info.kriese.sopra.SoPraLOP'
+def main = 'info.kriese.sopra.SoPraLOP'
 def title = 'Software-Praktikum Lineare Optimierung'
 def author = 'Michael Kriese & Peer Sterner'
 version = '2.0.0-beta.1'
@@ -49,10 +49,21 @@ dependencies {
     runtimeOnly 'org.jogamp.jogl:jogl-all:2.6.0:natives-windows-amd64'
 }
 
+application {
+    mainClass = main
+}
+
+test {
+    // required for gradle v9 because we don't have tests yet
+    if (GradleVersion.version('9.0.0').compareTo(GradleVersion.current()) <= 0) {
+        failOnNoDiscoveredTests = false
+    }
+}
+
 jar {
     manifest {
         attributes(
-            'Main-Class'     : mainClassName,
+            'Main-Class'     : main,
             'Built-By'       : System.properties['user.name'],
             'Build-Timestamp': new java.text.SimpleDateFormat('yyyy-MM-dd\'T\'HH:mm:ss.SSSZ').format(new Date()),
             'Build-Revision' : "${versioning.info.full}",
