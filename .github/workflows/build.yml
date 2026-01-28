@@ -23,7 +23,7 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - uses: gradle/actions/setup-gradle@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # v5
+    - uses: gradle/actions/setup-gradle@f29f5a9d7b09a7c6b29859002d29d24e1674c884 # v5
 
     - name: Build with Gradle Wrapper
       run: ./gradlew build
@@ -45,4 +45,4 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - uses: gradle/actions/dependency-submission@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # v5
+    - uses: gradle/actions/dependency-submission@f29f5a9d7b09a7c6b29859002d29d24e1674c884 # v5
